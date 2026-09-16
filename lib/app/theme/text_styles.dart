@@ -60,7 +60,15 @@ abstract final class AppTextStyles {
     color: AppColors.ink,
   );
 
-  static const TextStyle fieldPlaceholder = TextStyle(
+  static const TextStyle fieldError = TextStyle(
+  fontFamily: AppFonts.body,
+  fontWeight: FontWeight.w400,
+  fontSize: 12,
+  height: 1.3,
+  color: AppColors.rose,
+);
+
+static const TextStyle fieldPlaceholder = TextStyle(
     fontFamily: AppFonts.body,
     fontWeight: FontWeight.w400,
     fontSize: 15.5,
