@@ -60,7 +60,14 @@ class KanbanColumnView extends StatelessWidget {
             children: [
               _buildHeader(context),
               const SizedBox(height: 12),
-              ..._buildTaskList(context),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: _buildTaskList(context),
+                  ),
+                ),
+              ),
             ],
           ),
         );

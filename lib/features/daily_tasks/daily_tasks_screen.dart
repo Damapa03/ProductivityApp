@@ -198,7 +198,7 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.fromLTRB(24, 0, 28, 18),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           for (var i = 0; i < board.columns.length; i++) ...[
             KanbanColumnView(
