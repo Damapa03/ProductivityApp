@@ -27,6 +27,52 @@ abstract final class AppTextStyles {
     color: AppColors.inkSoft,
   );
 
+  /// Título de pantalla tipo Daily Tasks (27px, Space Grotesk 700).
+  static const TextStyle screenTitle = TextStyle(
+    fontFamily: AppFonts.display,
+    fontWeight: FontWeight.w700,
+    fontSize: 27,
+    height: 1.15,
+    letterSpacing: -0.01,
+    color: AppColors.ink,
+  );
+
+  /// Nombre de columna del kanban.
+  static const TextStyle columnTitle = TextStyle(
+    fontFamily: AppFonts.body,
+    fontWeight: FontWeight.w600,
+    fontSize: 13,
+    height: 1.3,
+    color: AppColors.ink,
+  );
+
+  /// Contador de tareas de una columna.
+  static const TextStyle columnCount = TextStyle(
+    fontFamily: AppFonts.body,
+    fontWeight: FontWeight.w500,
+    fontSize: 11.5,
+    height: 1.3,
+    color: AppColors.inkSoft,
+  );
+
+  /// Texto de una tarjeta de tarea.
+  static const TextStyle taskText = TextStyle(
+    fontFamily: AppFonts.body,
+    fontWeight: FontWeight.w400,
+    fontSize: 13.5,
+    height: 1.35,
+    color: AppColors.ink,
+  );
+
+  /// Aviso de columna vacía.
+  static const TextStyle emptyHint = TextStyle(
+    fontFamily: AppFonts.body,
+    fontWeight: FontWeight.w400,
+    fontSize: 12,
+    height: 1.3,
+    color: AppColors.inkFaint,
+  );
+
   static const TextStyle eyebrow = TextStyle(
     fontFamily: AppFonts.body,
     fontWeight: FontWeight.w500,
