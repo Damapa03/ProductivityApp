@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 
 import '../../app/theme/text_styles.dart';
 import '../../data/profile_repository.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/profile.dart';
 import '../../widgets/brand_mark.dart';
 import '../../widgets/social_button.dart';
 import '../../widgets/underline_field.dart';
 
-/// Pantalla de Registro ("Create an account") — espejo de Login + validación
+/// Pantalla de Registro ("Crear cuenta") — espejo de Login + validación
 /// de igualdad de contraseñas + persistencia local del perfil.
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -33,7 +34,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> _submit() async {
-    if (!(_formKey.currentState?.validate() ?? false)) return     ;
+    if (!(_formKey.currentState?.validate() ?? false)) return;
     final profile = Profile(
       name: _nameController.text.trim(),
       email: _emailController.text.trim().toLowerCase(),
@@ -41,30 +42,33 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
     await LocalProfileRepository().save(profile);
     if (!mounted) return;
+    final l10n = AppLocalizations.of(context);
     // Registro OK → vuelve al login con un aviso.
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Welcome to Flowly, ${profile.name} 🎉'),
+        content: Text(l10n.registerWelcome(profile.name)),
       ),
     );
     Navigator.of(context).pop();
   }
 
-
   String? _validatePassword(String? v) {
-    if (v == null || v.length < 8) return 'Use at least 8 characters.';
+    if (v == null || v.length < 8) {
+      return AppLocalizations.of(context).fieldPasswordMinLength;
+    }
     return null;
   }
 
   String? _validateConfirm(String? v) {
     if (v != _passwordController.text) {
-      return 'Passwords do not match.';
+      return AppLocalizations.of(context).fieldPasswordMismatch;
     }
     return null;
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -78,26 +82,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 children: [
                   const BrandMark(),
                   const SizedBox(height: 52),
-                  const Text(
-                    'Create your account.',
+                  Text(
+                    l10n.registerHeadline,
                     style: AppTextStyles.headline,
                   ),
                   const SizedBox(height: 10),
-                  const Text(
-                    'Start building habits that stick.',
+                  Text(
+                    l10n.registerSubline,
                     style: AppTextStyles.subline,
                   ),
                   const SizedBox(height: 42),
                   UnderlineField(
-                    label: 'NAME',
-                    placeholder: 'Your full name',
+                    label: l10n.fieldNameLabel,
+                    placeholder: l10n.fieldNamePlaceholder,
                     initiallyFocused: true,
                     onSubmitted: (_) => FocusScope.of(context).nextFocus(),
                   ),
                   const SizedBox(height: 28),
                   UnderlineField(
-                    label: 'EMAIL',
-                    placeholder: 'you@flowly.com',
+                    label: l10n.fieldEmailLabel,
+                    placeholder: l10n.fieldEmailPlaceholder,
                     onSubmitted: (_) => FocusScope.of(context).nextFocus(),
                   ),
                   const SizedBox(height: 28),
@@ -108,8 +112,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         UnderlineField(
-                          label: 'PASSWORD',
-                          placeholder: '8+ characters',
+                          label: l10n.fieldPasswordLabel,
+                          placeholder: l10n.fieldPasswordPlaceholder,
                           obscureText: true,
                           onChanged: (v) => field.didChange(v),
                         ),
@@ -131,8 +135,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         UnderlineField(
-                          label: 'CONFIRM PASSWORD',
-                          placeholder: 'Repeat your password',
+                          label: l10n.fieldConfirmPasswordLabel,
+                          placeholder: l10n.fieldConfirmPasswordPlaceholder,
                           obscureText: true,
                           onChanged: (v) => field.didChange(v),
                         ),
@@ -148,14 +152,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                   const SizedBox(height: 38),
-                  const Row(
+                  Row(
                     children: [
                       SocialButton(
                         icon: Icons.g_mobiledata,
-                        label: 'Google',
+                        label: l10n.socialGoogle,
                       ),
-                      SizedBox(width: 12),
-                      SocialButton(icon: Icons.apple, label: 'Apple'),
+                      const SizedBox(width: 12),
+                      SocialButton(icon: Icons.apple, label: l10n.socialApple),
                     ],
                   ),
                   const SizedBox(height: 20),
@@ -167,7 +171,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         borderRadius: BorderRadius.circular(6),
                       ),
                     ),
-                    child: const Text('Create account'),
+                    child: Text(l10n.registerSubmit),
                   ),
                 ],
               ),

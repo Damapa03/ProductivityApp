@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../app/theme/text_styles.dart';
+import '../../l10n/app_localizations.dart';
 import '../../widgets/brand_mark.dart';
 import '../../widgets/social_button.dart';
 import '../../widgets/underline_field.dart';
@@ -28,8 +29,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _logIn() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
+    final l10n = AppLocalizations.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Welcome back. (demo, sin API)')),
+      SnackBar(content: Text(l10n.loginWelcomeBack)),
     );
   }
 
@@ -41,6 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -54,33 +57,33 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: [
                   const BrandMark(),
                   const SizedBox(height: 52),
-                  const Text(
-                    'Good to see you again.',
+                  Text(
+                    l10n.loginHeadline,
                     style: AppTextStyles.headline,
                   ),
                   const SizedBox(height: 10),
-                  const Text(
-                    'Pick up your tasks where you left off.',
+                  Text(
+                    l10n.loginSubline,
                     style: AppTextStyles.subline,
                   ),
                   const SizedBox(height: 42),
                   UnderlineField(
-                    label: 'EMAIL',
-                    placeholder: 'you@flowly.com',
+                    label: l10n.fieldEmailLabel,
+                    placeholder: l10n.fieldEmailPlaceholder,
                     initiallyFocused: true,
                     controller: _emailController,
                     validator: (v) => (v == null || !v.contains('@'))
-                        ? 'Enter a valid email address.'
+                        ? l10n.fieldEmailInvalid
                         : null,
                   ),
                   const SizedBox(height: 28),
                   UnderlineField(
-                    label: 'PASSWORD',
-                    placeholder: 'Enter your password',
+                    label: l10n.fieldPasswordLabel,
+                    placeholder: l10n.fieldPasswordPlaceholder,
                     obscureText: true,
                     controller: _passwordController,
                     validator: (v) => (v == null || v.isEmpty)
-                        ? 'Password is required.'
+                        ? l10n.fieldPasswordRequired
                         : null,
                   ),
                   const SizedBox(height: 6),
@@ -88,8 +91,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     alignment: Alignment.centerRight,
                     child: TextButton(
                       onPressed: () {},
-                      child: const Text(
-                        'Forgot password?',
+                      child: Text(
+                        l10n.loginForgotPassword,
                         style: AppTextStyles.fieldLabel,
                       ),
                     ),
@@ -100,7 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size.fromHeight(56),
                     ),
-                    child: const Text('Log in'),
+                    child: Text(l10n.loginSubmit),
                   ),
                   const SizedBox(height: 36),
                   Row(
@@ -109,7 +112,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 12),
                         child: Text(
-                          'or continue with',
+                          l10n.loginOrContinueWith,
                           style: AppTextStyles.eyebrow,
                         ),
                       ),
@@ -117,11 +120,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                   const SizedBox(height: 32),
-                  const Row(
+                  Row(
                     children: [
-                      SocialButton(icon: Icons.g_mobiledata, label: 'Google'),
-                      SizedBox(width: 12),
-                      SocialButton(icon: Icons.apple, label: 'Apple'),
+                      SocialButton(icon: Icons.g_mobiledata, label: l10n.socialGoogle),
+                      const SizedBox(width: 12),
+                      SocialButton(icon: Icons.apple, label: l10n.socialApple),
                     ],
                   ),
                   const SizedBox(height: 40),
@@ -130,11 +133,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: _openRegister,
                       child: Text.rich(
                         TextSpan(
-                          text: 'New to Flowly? ',
+                          text: l10n.loginNewToFlowly,
                           style: AppTextStyles.eyebrow,
                           children: [
                             TextSpan(
-                              text: 'Create an account',
+                              text: l10n.loginCreateAccount,
                               style: AppTextStyles.link,
                             ),
                           ],
