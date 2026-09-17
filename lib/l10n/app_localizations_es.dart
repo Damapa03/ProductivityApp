@@ -34,9 +34,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get loginCreateAccount => 'Crear una cuenta';
 
   @override
-  String get loginWelcomeBack => 'Hola de nuevo. (demo, sin API)';
-
-  @override
   String get registerHeadline => 'Crea tu cuenta.';
 
   @override

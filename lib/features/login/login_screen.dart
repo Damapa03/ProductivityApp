@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../../app/theme/text_styles.dart';
+import '../../data/profile_repository.dart';
 import '../../l10n/app_localizations.dart';
 import '../../widgets/brand_mark.dart';
 import '../../widgets/social_button.dart';
 import '../../widgets/underline_field.dart';
+import '../daily_tasks/daily_tasks_screen.dart';
 import '../register/register_screen.dart';
 
 /// Pantalla de acceso (Login) de Flowly.
@@ -29,9 +31,17 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _logIn() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
-    final l10n = AppLocalizations.of(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l10n.loginWelcomeBack)),
+    final typedEmail = _emailController.text.trim().toLowerCase();
+    // Demo sin API: se abre el tablero asociado al perfil guardado (email)
+    // o, en su defecto, al email escrito.
+    final profile = await LocalProfileRepository().load();
+    if (!mounted) return;
+    final ownerId =
+        (profile != null && profile.email.isNotEmpty) ? profile.email : typedEmail;
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => DailyTasksScreen(ownerId: ownerId),
+      ),
     );
   }
 

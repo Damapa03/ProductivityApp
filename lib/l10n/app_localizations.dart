@@ -146,12 +146,6 @@ abstract class AppLocalizations {
   /// **'Crear una cuenta'**
   String get loginCreateAccount;
 
-  /// No description provided for @loginWelcomeBack.
-  ///
-  /// In es, this message translates to:
-  /// **'Hola de nuevo. (demo, sin API)'**
-  String get loginWelcomeBack;
-
   /// No description provided for @registerHeadline.
   ///
   /// In es, this message translates to:
