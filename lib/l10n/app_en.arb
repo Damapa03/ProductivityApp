@@ -1,0 +1,55 @@
+{
+  "@@locale": "en",
+
+  "appName": "Flowly",
+
+  "loginHeadline": "Good to see you again.",
+  "loginSubline": "Pick up your tasks where you left off.",
+  "loginForgotPassword": "Forgot password?",
+  "loginSubmit": "Log in",
+  "loginOrContinueWith": "or continue with",
+  "loginNewToFlowly": "New to Flowly? ",
+  "loginCreateAccount": "Create an account",
+  "loginWelcomeBack": "Welcome back. (demo, no API)",
+
+  "registerHeadline": "Create your account.",
+  "registerSubline": "Start building habits that stick.",
+  "registerSubmit": "Create account",
+  "registerWelcome": "Welcome to Flowly, {name} 🎉",
+
+  "fieldNameLabel": "NAME",
+  "fieldNamePlaceholder": "Your full name",
+  "fieldEmailLabel": "EMAIL",
+  "fieldEmailPlaceholder": "you@flowly.com",
+  "fieldEmailInvalid": "Enter a valid email address.",
+  "fieldPasswordLabel": "PASSWORD",
+  "fieldPasswordPlaceholder": "8+ characters",
+  "fieldPasswordRequired": "Password is required.",
+  "fieldPasswordMinLength": "Use at least 8 characters.",
+  "fieldConfirmPasswordLabel": "CONFIRM PASSWORD",
+  "fieldConfirmPasswordPlaceholder": "Repeat your password",
+  "fieldPasswordMismatch": "Passwords do not match.",
+
+  "socialGoogle": "Google",
+  "socialApple": "Apple",
+
+  "dailyTasksTitle": "Daily tasks",
+  "dailyTasksNewColumn": "New column",
+  "dailyTasksAddColumn": "Add column",
+  "dailyTasksAddTask": "+ Add task",
+  "dailyTasksEmptyColumn": "No tasks yet",
+
+  "columnRename": "Rename",
+  "columnDelete": "Delete",
+
+  "dialogCreateColumnTitle": "New column",
+  "dialogRenameColumnTitle": "Rename column",
+  "dialogCreateTaskTitle": "New task",
+  "dialogNameLabel": "Name",
+  "dialogNamePlaceholder": "Column name",
+  "dialogTaskPlaceholder": "Describe the task",
+  "dialogConfirm": "Confirm",
+  "dialogCancel": "Cancel",
+  "dialogDeleteColumnTitle": "Delete column",
+  "dialogDeleteColumnBody": "Column \"{column}\" and its {count} tasks will be deleted. This cannot be undone."
+}

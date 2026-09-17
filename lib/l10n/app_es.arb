@@ -1,0 +1,67 @@
+{
+  "@@locale": "es",
+  "@@last_modified": "2026-09-17",
+
+  "appName": "Flowly",
+
+  "loginHeadline": "Buenas, de nuevo.",
+  "loginSubline": "Retoma tus tareas donde las dejaste.",
+  "loginForgotPassword": "¿Olvidaste tu contraseña?",
+  "loginSubmit": "Iniciar sesión",
+  "loginOrContinueWith": "o continúa con",
+  "loginNewToFlowly": "¿Nuevo en Flowly? ",
+  "loginCreateAccount": "Crear una cuenta",
+  "loginWelcomeBack": "Hola de nuevo. (demo, sin API)",
+
+  "registerHeadline": "Crea tu cuenta.",
+  "registerSubline": "Empieza a crear hábitos que perduran.",
+  "registerSubmit": "Crear cuenta",
+  "registerWelcome": "Bienvenido a Flowly, {name} 🎉",
+  "@registerWelcome": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+
+  "fieldNameLabel": "NOMBRE",
+  "fieldNamePlaceholder": "Tu nombre completo",
+  "fieldEmailLabel": "EMAIL",
+  "fieldEmailPlaceholder": "tu@flowly.com",
+  "fieldEmailInvalid": "Introduce un email válido.",
+  "fieldPasswordLabel": "CONTRASEÑA",
+  "fieldPasswordPlaceholder": "8+ caracteres",
+  "fieldPasswordRequired": "La contraseña es obligatoria.",
+  "fieldPasswordMinLength": "Usa al menos 8 caracteres.",
+  "fieldConfirmPasswordLabel": "CONFIRMAR CONTRASEÑA",
+  "fieldConfirmPasswordPlaceholder": "Repite tu contraseña",
+  "fieldPasswordMismatch": "Las contraseñas no coinciden.",
+
+  "socialGoogle": "Google",
+  "socialApple": "Apple",
+
+  "dailyTasksTitle": "Tareas diarias",
+  "dailyTasksNewColumn": "Nueva columna",
+  "dailyTasksAddColumn": "Añadir columna",
+  "dailyTasksAddTask": "+ Añadir tarea",
+  "dailyTasksEmptyColumn": "Sin tareas todavía",
+
+  "columnRename": "Renombrar",
+  "columnDelete": "Eliminar",
+
+  "dialogCreateColumnTitle": "Nueva columna",
+  "dialogRenameColumnTitle": "Renombrar columna",
+  "dialogCreateTaskTitle": "Nueva tarea",
+  "dialogNameLabel": "Nombre",
+  "dialogNamePlaceholder": "Nombre de la columna",
+  "dialogTaskPlaceholder": "Describe la tarea",
+  "dialogConfirm": "Confirmar",
+  "dialogCancel": "Cancelar",
+  "dialogDeleteColumnTitle": "Eliminar columna",
+  "dialogDeleteColumnBody": "Se eliminará la columna «{column}» y sus {count} tareas. Esta acción no se puede deshacer.",
+  "@dialogDeleteColumnBody": {
+    "placeholders": {
+      "column": { "type": "String" },
+      "count": { "type": "int" }
+    }
+  }
+}
