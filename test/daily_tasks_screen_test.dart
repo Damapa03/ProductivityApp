@@ -43,4 +43,78 @@ void main() {
 
     expect(find.text('Preparar café'), findsOneWidget);
   });
+
+  testWidgets('permite editar una tarea desde su menú', (tester) async {
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    // Crear la tarea.
+    await tester.tap(find.text('+ Añadir tarea').first);
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'Preparar café');
+    await tester.tap(find.text('Confirmar'));
+    await tester.pumpAndSettle();
+    expect(find.text('Preparar café'), findsOneWidget);
+
+    // Editar desde el menú de la tarjeta.
+    await tester.tap(find.byIcon(Icons.more_vert));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Editar'));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextField), 'Preparar café con leche');
+    await tester.tap(find.text('Confirmar'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Preparar café con leche'), findsOneWidget);
+    expect(find.text('Preparar café'), findsNothing);
+  });
+
+  testWidgets('permite eliminar una tarea desde su menú', (tester) async {
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    // Crear la tarea.
+    await tester.tap(find.text('+ Añadir tarea').first);
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'Preparar café');
+    await tester.tap(find.text('Confirmar'));
+    await tester.pumpAndSettle();
+    expect(find.text('Preparar café'), findsOneWidget);
+
+    // Eliminar desde el menú de la tarjeta.
+    await tester.tap(find.byIcon(Icons.more_vert));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Eliminar'));
+    await tester.pumpAndSettle();
+
+    // Confirmar el borrado.
+    expect(find.text('Eliminar tarea'), findsOneWidget);
+    await tester.tap(find.text('Confirmar'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Preparar café'), findsNothing);
+  });
+
+  testWidgets('no elimina la tarea si se cancela el diálogo', (tester) async {
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    // Crear la tarea.
+    await tester.tap(find.text('+ Añadir tarea').first);
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'Preparar café');
+    await tester.tap(find.text('Confirmar'));
+    await tester.pumpAndSettle();
+
+    // Abrir el diálogo de borrado y cancelar.
+    await tester.tap(find.byIcon(Icons.more_vert));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Eliminar'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Cancelar'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Preparar café'), findsOneWidget);
+  });
 }
