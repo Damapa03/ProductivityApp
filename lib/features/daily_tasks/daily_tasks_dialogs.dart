@@ -45,6 +45,20 @@ Future<String?> showCreateTaskDialog(BuildContext context) {
   );
 }
 
+/// Pide el nuevo título de una tarea existente.
+Future<String?> showEditTaskDialog(
+  BuildContext context, {
+  required String currentTitle,
+}) {
+  final l10n = AppLocalizations.of(context);
+  return _showNameDialog(
+    context,
+    title: l10n.dialogEditTaskTitle,
+    current: currentTitle,
+    placeholder: l10n.dialogTaskPlaceholder,
+  );
+}
+
 /// Confirma la eliminación de una columna y sus tareas.
 Future<bool> showDeleteColumnDialog(
   BuildContext context, {
@@ -58,6 +72,36 @@ Future<bool> showDeleteColumnDialog(
       title: Text(l10n.dialogDeleteColumnTitle, style: _dialogTitle),
       content: Text(
         l10n.dialogDeleteColumnBody(columnName, taskCount),
+        style: AppTextStyles.subline,
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(false),
+          child: Text(l10n.dialogCancel),
+        ),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(minimumSize: const Size(0, 40)),
+          onPressed: () => Navigator.of(context).pop(true),
+          child: Text(l10n.dialogConfirm),
+        ),
+      ],
+    ),
+  );
+  return confirmed ?? false;
+}
+
+/// Confirma la eliminación de una tarea.
+Future<bool> showDeleteTaskDialog(
+  BuildContext context, {
+  required String taskTitle,
+}) async {
+  final l10n = AppLocalizations.of(context);
+  final confirmed = await showDialog<bool>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text(l10n.dialogDeleteTaskTitle, style: _dialogTitle),
+      content: Text(
+        l10n.dialogDeleteTaskBody(taskTitle),
         style: AppTextStyles.subline,
       ),
       actions: [
