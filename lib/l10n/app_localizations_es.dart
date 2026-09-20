@@ -111,6 +111,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get columnDelete => 'Eliminar';
 
   @override
+  String get taskEdit => 'Editar';
+
+  @override
+  String get taskDelete => 'Eliminar';
+
+  @override
   String get dialogCreateColumnTitle => 'Nueva columna';
 
   @override
@@ -140,5 +146,16 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String dialogDeleteColumnBody(String column, int count) {
     return 'Se eliminará la columna «$column» y sus $count tareas. Esta acción no se puede deshacer.';
+  }
+
+  @override
+  String get dialogEditTaskTitle => 'Editar tarea';
+
+  @override
+  String get dialogDeleteTaskTitle => 'Eliminar tarea';
+
+  @override
+  String dialogDeleteTaskBody(String task) {
+    return 'Se eliminará la tarea «$task». Esta acción no se puede deshacer.';
   }
 }

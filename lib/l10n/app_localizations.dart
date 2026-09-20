@@ -296,6 +296,18 @@ abstract class AppLocalizations {
   /// **'Eliminar'**
   String get columnDelete;
 
+  /// No description provided for @taskEdit.
+  ///
+  /// In es, this message translates to:
+  /// **'Editar'**
+  String get taskEdit;
+
+  /// No description provided for @taskDelete.
+  ///
+  /// In es, this message translates to:
+  /// **'Eliminar'**
+  String get taskDelete;
+
   /// No description provided for @dialogCreateColumnTitle.
   ///
   /// In es, this message translates to:
@@ -355,6 +367,24 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Se eliminará la columna «{column}» y sus {count} tareas. Esta acción no se puede deshacer.'**
   String dialogDeleteColumnBody(String column, int count);
+
+  /// No description provided for @dialogEditTaskTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Editar tarea'**
+  String get dialogEditTaskTitle;
+
+  /// No description provided for @dialogDeleteTaskTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Eliminar tarea'**
+  String get dialogDeleteTaskTitle;
+
+  /// No description provided for @dialogDeleteTaskBody.
+  ///
+  /// In es, this message translates to:
+  /// **'Se eliminará la tarea «{task}». Esta acción no se puede deshacer.'**
+  String dialogDeleteTaskBody(String task);
 }
 
 class _AppLocalizationsDelegate

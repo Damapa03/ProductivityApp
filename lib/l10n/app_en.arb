@@ -41,6 +41,9 @@
   "columnRename": "Rename",
   "columnDelete": "Delete",
 
+  "taskEdit": "Edit",
+  "taskDelete": "Delete",
+
   "dialogCreateColumnTitle": "New column",
   "dialogRenameColumnTitle": "Rename column",
   "dialogCreateTaskTitle": "New task",
@@ -50,5 +53,8 @@
   "dialogConfirm": "Confirm",
   "dialogCancel": "Cancel",
   "dialogDeleteColumnTitle": "Delete column",
-  "dialogDeleteColumnBody": "Column \"{column}\" and its {count} tasks will be deleted. This cannot be undone."
+  "dialogDeleteColumnBody": "Column \"{column}\" and its {count} tasks will be deleted. This cannot be undone.",
+  "dialogEditTaskTitle": "Edit task",
+  "dialogDeleteTaskTitle": "Delete task",
+  "dialogDeleteTaskBody": "Task \"{task}\" will be deleted. This cannot be undone."
 }

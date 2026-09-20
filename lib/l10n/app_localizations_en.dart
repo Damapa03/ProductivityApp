@@ -111,6 +111,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get columnDelete => 'Delete';
 
   @override
+  String get taskEdit => 'Edit';
+
+  @override
+  String get taskDelete => 'Delete';
+
+  @override
   String get dialogCreateColumnTitle => 'New column';
 
   @override
@@ -140,5 +146,16 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String dialogDeleteColumnBody(String column, int count) {
     return 'Column \"$column\" and its $count tasks will be deleted. This cannot be undone.';
+  }
+
+  @override
+  String get dialogEditTaskTitle => 'Edit task';
+
+  @override
+  String get dialogDeleteTaskTitle => 'Delete task';
+
+  @override
+  String dialogDeleteTaskBody(String task) {
+    return 'Task \"$task\" will be deleted. This cannot be undone.';
   }
 }

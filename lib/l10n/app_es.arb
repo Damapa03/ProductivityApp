@@ -47,6 +47,9 @@
   "columnRename": "Renombrar",
   "columnDelete": "Eliminar",
 
+  "taskEdit": "Editar",
+  "taskDelete": "Eliminar",
+
   "dialogCreateColumnTitle": "Nueva columna",
   "dialogRenameColumnTitle": "Renombrar columna",
   "dialogCreateTaskTitle": "Nueva tarea",
@@ -61,6 +64,14 @@
     "placeholders": {
       "column": { "type": "String" },
       "count": { "type": "int" }
+    }
+  },
+  "dialogEditTaskTitle": "Editar tarea",
+  "dialogDeleteTaskTitle": "Eliminar tarea",
+  "dialogDeleteTaskBody": "Se eliminará la tarea «{task}». Esta acción no se puede deshacer.",
+  "@dialogDeleteTaskBody": {
+    "placeholders": {
+      "task": { "type": "String" }
     }
   }
 }
