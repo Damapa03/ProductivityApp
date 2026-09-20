@@ -116,6 +116,33 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
     await _persist(board.copyWith(tasks: [...board.tasks, task]));
   }
 
+  Future<void> _editTask(KanbanTask task) async {
+    final title = await showEditTaskDialog(context, currentTitle: task.title);
+    if (title == null || title == task.title || !mounted) return;
+    final board = _board;
+    if (board == null) return;
+    await _persist(
+      board.copyWith(
+        tasks: [
+          for (final t in board.tasks)
+            t.id == task.id ? t.copyWith(title: title) : t,
+        ],
+      ),
+    );
+  }
+
+  Future<void> _deleteTask(KanbanTask task) async {
+    final board = _board;
+    if (board == null) return;
+    final confirmed = await showDeleteTaskDialog(context, taskTitle: task.title);
+    if (!confirmed || !mounted) return;
+    await _persist(
+      board.copyWith(
+        tasks: board.tasks.where((t) => t.id != task.id).toList(),
+      ),
+    );
+  }
+
   Future<void> _moveTask(String taskId, String toColumnId) async {
     final board = _board;
     if (board == null) return;
@@ -211,6 +238,8 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
               onRename: () => _renameColumn(board.columns[i]),
               onDelete: () => _deleteColumn(board.columns[i]),
               onMoveTask: (taskId) => _moveTask(taskId, board.columns[i].id),
+              onEditTask: _editTask,
+              onDeleteTask: _deleteTask,
             ),
             const SizedBox(width: 14),
           ],
