@@ -8,16 +8,9 @@ import '../../l10n/app_localizations.dart';
 import '../../models/kanban_board.dart';
 import '../../models/kanban_column.dart';
 import '../../models/kanban_task.dart';
+import 'all_tasks_view.dart';
 import 'daily_tasks_dialogs.dart';
 import 'kanban_column_view.dart';
-
-/// Colores del punto de cada columna, derivados del índice (ver mockup 02).
-const _columnDots = <Color>[
-  Color(0xFF9AA79E), // Search (gris)
-  AppColors.rose, // TODO
-  AppColors.amber, // Doing
-  AppColors.pine, // Done
-];
 
 /// Pantalla "Daily Tasks": kanban con columnas y tareas asociadas al usuario.
 class DailyTasksScreen extends StatefulWidget {
@@ -33,6 +26,9 @@ class DailyTasksScreen extends StatefulWidget {
 class _DailyTasksScreenState extends State<DailyTasksScreen> {
   final KanbanRepository _repository = LocalKanbanRepository();
   KanbanBoard? _board;
+
+  /// `false` = vista «Por estado» (kanban); `true` = «Todas las tareas».
+  bool _showAllTasks = false;
 
   @override
   void initState() {
@@ -184,17 +180,33 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
                 children: [
                   _buildHeader(context, l10n),
                   const SizedBox(height: 18),
-                  Expanded(child: _buildBoard(board)),
+                  _ViewSwitcher(
+                    showAllTasks: _showAllTasks,
+                    onChanged: (all) => setState(() => _showAllTasks = all),
+                  ),
+                  const SizedBox(height: 14),
+                  Expanded(
+                    child: _showAllTasks
+                        ? AllTasksView(
+                            columns: board.columns,
+                            tasks: board.tasks,
+                            onEditTask: _editTask,
+                            onDeleteTask: _deleteTask,
+                          )
+                        : _buildBoard(board),
+                  ),
                 ],
               ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _createColumn,
-        backgroundColor: AppColors.pineDeep,
-        foregroundColor: const Color(0xFFF3F4EF),
-        tooltip: l10n.dailyTasksNewColumn,
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton: _showAllTasks
+          ? null
+          : FloatingActionButton(
+              onPressed: _createColumn,
+              backgroundColor: AppColors.pineDeep,
+              foregroundColor: const Color(0xFFF3F4EF),
+              tooltip: l10n.dailyTasksNewColumn,
+              child: const Icon(Icons.add),
+            ),
     );
   }
 
@@ -238,7 +250,7 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
               key: ValueKey(board.columns[i].id),
               columnId: board.columns[i].id,
               columnName: board.columns[i].name,
-              color: _columnDots[i % _columnDots.length],
+              color: AppColors.columnDots[i % AppColors.columnDots.length],
               tasks: board.tasksFor(board.columns[i].id),
               columnIndex: i,
               onAddTask: () => _createTask(board.columns[i]),
@@ -253,6 +265,82 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
           ],
           const SizedBox(width: 8),
         ],
+      ),
+    );
+  }
+}
+
+/// Selector de vista del tablero: «Por estado» / «Todas las tareas».
+///
+/// Es una segmentada: solo una opción activa a la vez y tocar la opción ya
+/// activa no hace nada (ver mockup 02b).
+class _ViewSwitcher extends StatelessWidget {
+  const _ViewSwitcher({
+    required this.showAllTasks,
+    required this.onChanged,
+  });
+
+  /// `true` si la vista activa es «Todas las tareas».
+  final bool showAllTasks;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 24),
+      padding: const EdgeInsets.all(3),
+      decoration: BoxDecoration(
+        color: AppColors.cardBg,
+        border: Border.all(color: AppColors.line),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: [
+          _buildOption(
+            context,
+            label: l10n.dailyTasksViewByStatus,
+            active: !showAllTasks,
+            onTap: () => onChanged(false),
+          ),
+          _buildOption(
+            context,
+            label: l10n.dailyTasksViewAll,
+            active: showAllTasks,
+            onTap: () => onChanged(true),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOption(
+    BuildContext context, {
+    required String label,
+    required bool active,
+    required VoidCallback onTap,
+  }) {
+    return Expanded(
+      child: InkWell(
+        // Tocar la opción activa es un no-op.
+        onTap: active ? null : onTap,
+        borderRadius: BorderRadius.circular(6),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 140),
+          curve: Curves.easeOut,
+          padding: const EdgeInsets.symmetric(vertical: 9),
+          decoration: BoxDecoration(
+            color: active ? AppColors.pineDeep : Colors.transparent,
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: Text(
+            label,
+            textAlign: TextAlign.center,
+            style: AppTextStyles.segmented.copyWith(
+              color: active ? const Color(0xFFF3F4EF) : AppColors.inkSoft,
+            ),
+          ),
+        ),
       ),
     );
   }
