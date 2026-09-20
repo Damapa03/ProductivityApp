@@ -26,6 +26,7 @@ class DailyTasksScreen extends StatefulWidget {
 
 class _DailyTasksScreenState extends State<DailyTasksScreen> {
   final KanbanRepository _repository = LocalKanbanRepository();
+  final ScrollController _boardScrollController = ScrollController();
   KanbanBoard? _board;
 
   /// `false` = vista «Por estado» (kanban); `true` = «Todas las tareas».
@@ -35,6 +36,12 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
   void initState() {
     super.initState();
     _load();
+  }
+
+  @override
+  void dispose() {
+    _boardScrollController.dispose();
+    super.dispose();
   }
 
   Future<void> _load() async {
@@ -208,7 +215,12 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  _buildHeader(context, l10n),
+                  Padding(
+                    // Margen superior para que la fecha no quede pegada
+                    // al borde (en navegador el SafeArea no aporta aire).
+                    padding: const EdgeInsets.only(top: 12),
+                    child: _buildHeader(context, l10n),
+                  ),
                   const SizedBox(height: 18),
                   _ViewSwitcher(
                     showAllTasks: _showAllTasks,
@@ -236,15 +248,9 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        IconButton(
-          onPressed: () => Navigator.of(context).pop(),
-          icon: const Icon(
-            Icons.arrow_back_ios_new,
-            size: 18,
-            color: AppColors.inkSoft,
-          ),
-          tooltip: l10n.appName,
-        ),
+        // Espacio que ocupaba la flecha de retroceso para que el título
+        // conserve exactamente su posición.
+        const SizedBox(width: 48),
         const SizedBox(width: 4),
         Expanded(
           child: Column(
@@ -261,33 +267,44 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
   }
 
   Widget _buildBoard(KanbanBoard board) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.fromLTRB(24, 0, 28, 18),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          for (var i = 0; i < board.columns.length; i++) ...[
-            KanbanColumnView(
-              key: ValueKey(board.columns[i].id),
-              columnId: board.columns[i].id,
-              columnName: board.columns[i].name,
-              color: AppColors.columnDots[i % AppColors.columnDots.length],
-              tasks: board.tasksFor(board.columns[i].id),
-              columnIndex: i,
-              onAddTask: () => _createTask(board.columns[i]),
-              onRename: () => _renameColumn(board.columns[i]),
-              onDelete: () => _deleteColumn(board.columns[i]),
-              onMoveTask: (taskId) => _moveTask(taskId, board.columns[i].id),
-              onEditTask: _editTask,
-              onDeleteTask: _deleteTask,
-              onReorder: _reorderColumns,
+    return Scrollbar(
+      controller: _boardScrollController,
+      thumbVisibility: true,
+      scrollbarOrientation: ScrollbarOrientation.bottom,
+      child: SingleChildScrollView(
+        controller: _boardScrollController,
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.fromLTRB(24, 0, 28, 18),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            for (var i = 0; i < board.columns.length; i++) ...[
+              KanbanColumnView(
+                key: ValueKey(board.columns[i].id),
+                columnId: board.columns[i].id,
+                columnName: board.columns[i].name,
+                color: AppColors.columnDots[i % AppColors.columnDots.length],
+                tasks: board.tasksFor(board.columns[i].id),
+                columnIndex: i,
+                onAddTask: () => _createTask(board.columns[i]),
+                onRename: () => _renameColumn(board.columns[i]),
+                onDelete: () => _deleteColumn(board.columns[i]),
+                onMoveTask: (taskId) =>
+                    _moveTask(taskId, board.columns[i].id),
+                onEditTask: _editTask,
+                onDeleteTask: _deleteTask,
+                onReorder: _reorderColumns,
+              ),
+              const SizedBox(width: 14),
+            ],
+            // Botón compacto «+» pegado a la última columna.
+            Align(
+              alignment: Alignment.topCenter,
+              child: _AddColumnButton(onPressed: _createColumn),
             ),
-            const SizedBox(width: 14),
+            const SizedBox(width: 8),
           ],
-          _AddColumnButton(onPressed: _createColumn),
-          const SizedBox(width: 8),
-        ],
+        ),
       ),
     );
   }
@@ -369,7 +386,9 @@ class _ViewSwitcher extends StatelessWidget {
   }
 }
 
-/// Botón lateral para añadir una columna al final del tablero kanban.
+/// Botón compacto para añadir una columna al final del tablero kanban.
+///
+/// Sin fondo ni texto: solo un icono «+» pegado a la última columna.
 class _AddColumnButton extends StatelessWidget {
   const _AddColumnButton({required this.onPressed});
 
@@ -378,37 +397,15 @@ class _AddColumnButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return InkWell(
-      onTap: onPressed,
-      borderRadius: BorderRadius.circular(10),
-      child: Container(
-        width: 132,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-        decoration: BoxDecoration(
-          color: AppColors.cardBg,
-          border: Border.all(color: AppColors.line),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 32,
-              height: 32,
-              decoration: const BoxDecoration(
-                color: AppColors.pinePale,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(Icons.add, size: 18, color: AppColors.pineDeep),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              l10n.dailyTasksAddColumn,
-              style: AppTextStyles.link,
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
+    return Tooltip(
+      message: l10n.dailyTasksAddColumn,
+      child: IconButton(
+        key: const Key('add-column-button'),
+        onPressed: onPressed,
+        icon: const Icon(Icons.add, color: AppColors.pine),
+        iconSize: 20,
+        padding: EdgeInsets.zero,
+        constraints: const BoxConstraints.tightFor(width: 40, height: 40),
       ),
     );
   }
