@@ -58,5 +58,7 @@
   "dialogDeleteColumnBody": "Column \"{column}\" and its {count} tasks will be deleted. This cannot be undone.",
   "dialogEditTaskTitle": "Edit task",
   "dialogDeleteTaskTitle": "Delete task",
-  "dialogDeleteTaskBody": "Task \"{task}\" will be deleted. This cannot be undone."
+  "dialogDeleteTaskBody": "Task \"{task}\" will be deleted. This cannot be undone.",
+  "dialogTaskColumnLabel": "Column",
+  "dialogTaskNoColumns": "Add a column before creating tasks."
 }

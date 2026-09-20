@@ -75,5 +75,7 @@
     "placeholders": {
       "task": { "type": "String" }
     }
-  }
+  },
+  "dialogTaskColumnLabel": "Columna",
+  "dialogTaskNoColumns": "Añade una columna antes de crear tareas."
 }

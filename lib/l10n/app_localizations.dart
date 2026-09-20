@@ -397,6 +397,18 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Se eliminará la tarea «{task}». Esta acción no se puede deshacer.'**
   String dialogDeleteTaskBody(String task);
+
+  /// No description provided for @dialogTaskColumnLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Columna'**
+  String get dialogTaskColumnLabel;
+
+  /// No description provided for @dialogTaskNoColumns.
+  ///
+  /// In es, this message translates to:
+  /// **'Añade una columna antes de crear tareas.'**
+  String get dialogTaskNoColumns;
 }
 
 class _AppLocalizationsDelegate

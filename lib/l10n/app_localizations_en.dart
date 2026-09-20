@@ -164,4 +164,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String dialogDeleteTaskBody(String task) {
     return 'Task \"$task\" will be deleted. This cannot be undone.';
   }
+
+  @override
+  String get dialogTaskColumnLabel => 'Column';
+
+  @override
+  String get dialogTaskNoColumns => 'Add a column before creating tasks.';
 }

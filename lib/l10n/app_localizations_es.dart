@@ -164,4 +164,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String dialogDeleteTaskBody(String task) {
     return 'Se eliminará la tarea «$task». Esta acción no se puede deshacer.';
   }
+
+  @override
+  String get dialogTaskColumnLabel => 'Columna';
+
+  @override
+  String get dialogTaskNoColumns => 'Añade una columna antes de crear tareas.';
 }
