@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../app/theme/text_styles.dart';
 import '../../l10n/app_localizations.dart';
+import '../../models/kanban_column.dart';
 
 /// Colección de diálogos del tablero kanban.
 ///
@@ -13,6 +14,14 @@ const _dialogTitle = TextStyle(
   fontSize: 20,
   height: 1.2,
 );
+
+/// Borrador de una tarea creada desde el diálogo con columna destino.
+class TaskDraft {
+  const TaskDraft({required this.title, required this.columnId});
+
+  final String title;
+  final String columnId;
+}
 
 /// Pide el nombre de una nueva columna.
 Future<String?> showCreateColumnDialog(BuildContext context) {
@@ -42,6 +51,81 @@ Future<String?> showCreateTaskDialog(BuildContext context) {
     context,
     title: l10n.dialogCreateTaskTitle,
     placeholder: l10n.dialogTaskPlaceholder,
+  );
+}
+
+/// Pide el título de una nueva tarea y la columna a la que irá.
+///
+/// Devuelve `null` si se cancela.
+Future<TaskDraft?> showCreateTaskDialogWithColumn(
+  BuildContext context, {
+  required List<KanbanColumn> columns,
+  String? initialColumnId,
+}) async {
+  final l10n = AppLocalizations.of(context);
+  final controller = TextEditingController();
+  var selected = initialColumnId ?? columns.first.id;
+
+  void submit() {
+    final value = controller.text.trim();
+    if (value.isEmpty) return;
+    Navigator.of(context).pop(TaskDraft(title: value, columnId: selected));
+  }
+
+  return showDialog<TaskDraft>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text(l10n.dialogCreateTaskTitle, style: _dialogTitle),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          TextField(
+            controller: controller,
+            autofocus: true,
+            maxLength: 60,
+            style: AppTextStyles.fieldInput,
+            decoration: InputDecoration(
+              hintText: l10n.dialogTaskPlaceholder,
+              hintStyle: AppTextStyles.fieldPlaceholder,
+              counterText: '',
+            ),
+            onSubmitted: (_) => submit(),
+          ),
+          const SizedBox(height: 14),
+          DropdownButtonFormField<String>(
+            initialValue: selected,
+            decoration: InputDecoration(
+              labelText: l10n.dialogTaskColumnLabel,
+              labelStyle: AppTextStyles.fieldLabel,
+            ),
+            style: AppTextStyles.fieldInput,
+            isExpanded: true,
+            items: [
+              for (final column in columns)
+                DropdownMenuItem(
+                  value: column.id,
+                  child: Text(column.name, style: AppTextStyles.fieldInput),
+                ),
+            ],
+            onChanged: (value) {
+              if (value != null) selected = value;
+            },
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(l10n.dialogCancel),
+        ),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(minimumSize: const Size(0, 40)),
+          onPressed: submit,
+          child: Text(l10n.dialogConfirm),
+        ),
+      ],
+    ),
   );
 }
 
