@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:intl/intl.dart';
 import 'package:productyivity_app/features/daily_tasks/add_task_fab.dart';
 import 'package:productyivity_app/features/daily_tasks/daily_tasks_screen.dart';
 import 'package:productyivity_app/l10n/app_localizations.dart';
@@ -371,7 +372,7 @@ void main() {
     await tester.pumpWidget(_harness());
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Añadir columna'));
+    await tester.tap(find.byKey(const Key('add-column-button')));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), 'Backlog');
     await tester.tap(find.text('Confirmar'));
@@ -382,5 +383,76 @@ void main() {
     final doneX = tester.getTopLeft(find.text('Done')).dx;
     final backlogX = tester.getTopLeft(find.text('Backlog')).dx;
     expect(backlogX, greaterThan(doneX));
+  });
+
+  testWidgets('la cabecera no tiene flecha y la fecha queda con margen',
+      (tester) async {
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    // Sin flecha de retroceso.
+    expect(find.byIcon(Icons.arrow_back_ios_new), findsNothing);
+
+    // La fecha (primer texto de la cabecera) parte 12 px más abajo del borde.
+    final formatted = DateFormat('EEEE, d MMMM', 'es').format(DateTime.now());
+    final dateText = formatted[0].toUpperCase() + formatted.substring(1);
+    final dateTop = tester.getTopLeft(find.text(dateText)).dy;
+    expect(dateTop, 12.0);
+
+    // El título conserva la posición que tenía con la flecha (esquinas
+    // izquierdas ambos textos a 52 px: 48 de la flecha + 4 del hueco).
+    final titleLeft = tester.getTopLeft(find.text('Tareas diarias')).dx;
+    expect(titleLeft, 52.0);
+  });
+
+  testWidgets('el botón de columna es compacto y no lleva texto',
+      (tester) async {
+    tester.view.physicalSize = const Size(1200, 800);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    // Sin texto visible.
+    expect(find.text('Añadir columna'), findsNothing);
+
+    // Botón compacto (~40x40), no ocupa el alto de una columna.
+    final button = find.byKey(const Key('add-column-button'));
+    expect(button, findsOneWidget);
+    final size = tester.getSize(button);
+    expect(size.width, lessThanOrEqualTo(48));
+    expect(size.height, lessThanOrEqualTo(48));
+  });
+
+  testWidgets('en viewport estrecho las columnas se desplazan horizontalmente',
+      (tester) async {
+    tester.view.physicalSize = const Size(420, 800);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    // La última columna (Done) y el botón «+» no caben a la vista inicial.
+    final board = find
+        .descendant(
+          of: find.byType(Scrollbar),
+          matching: find.byType(SingleChildScrollView),
+        )
+        .first;
+    expect(tester.getCenter(find.text('Done')).dx, greaterThan(420));
+
+    // Desplazar el tablero hacia la izquierda deja verlas.
+    await tester.drag(board, const Offset(-600, 0));
+    await tester.pumpAndSettle();
+
+    expect(tester.getCenter(find.text('Done')).dx, lessThan(420));
+    expect(
+      tester.getCenter(find.byKey(const Key('add-column-button'))).dx,
+      lessThan(420),
+    );
   });
 }
