@@ -8,6 +8,7 @@ import '../../l10n/app_localizations.dart';
 import '../../models/kanban_board.dart';
 import '../../models/kanban_column.dart';
 import '../../models/kanban_task.dart';
+import 'add_task_fab.dart';
 import 'all_tasks_view.dart';
 import 'daily_tasks_dialogs.dart';
 import 'kanban_column_view.dart';
@@ -118,6 +119,35 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
     await _persist(board.copyWith(tasks: [...board.tasks, task]));
   }
 
+  /// Añade una tarea desde el botón flotante: pide título y columna destino.
+  Future<void> _addTaskFromFab() async {
+    final board = _board;
+    if (board == null) return;
+    if (board.columns.isEmpty) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context).dialogTaskNoColumns),
+          ),
+        );
+      return;
+    }
+    final draft = await showCreateTaskDialogWithColumn(
+      context,
+      columns: board.columns,
+    );
+    if (draft == null || !mounted) return;
+    final task = KanbanTask(
+      id: _newId(),
+      title: draft.title,
+      columnId: draft.columnId,
+      createdAt: DateTime.now(),
+    );
+    await _persist(board.copyWith(tasks: [...board.tasks, task]));
+  }
+
   Future<void> _editTask(KanbanTask task) async {
     final title = await showEditTaskDialog(context, currentTitle: task.title);
     if (title == null || title == task.title || !mounted) return;
@@ -198,15 +228,7 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
                 ],
               ),
       ),
-      floatingActionButton: _showAllTasks
-          ? null
-          : FloatingActionButton(
-              onPressed: _createColumn,
-              backgroundColor: AppColors.pineDeep,
-              foregroundColor: const Color(0xFFF3F4EF),
-              tooltip: l10n.dailyTasksNewColumn,
-              child: const Icon(Icons.add),
-            ),
+      floatingActionButton: AddTaskFab(onPressed: _addTaskFromFab),
     );
   }
 
@@ -263,6 +285,7 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
             ),
             const SizedBox(width: 14),
           ],
+          _AddColumnButton(onPressed: _createColumn),
           const SizedBox(width: 8),
         ],
       ),
@@ -340,6 +363,51 @@ class _ViewSwitcher extends StatelessWidget {
               color: active ? const Color(0xFFF3F4EF) : AppColors.inkSoft,
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Botón lateral para añadir una columna al final del tablero kanban.
+class _AddColumnButton extends StatelessWidget {
+  const _AddColumnButton({required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return InkWell(
+      onTap: onPressed,
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
+        width: 132,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+        decoration: BoxDecoration(
+          color: AppColors.cardBg,
+          border: Border.all(color: AppColors.line),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 32,
+              height: 32,
+              decoration: const BoxDecoration(
+                color: AppColors.pinePale,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.add, size: 18, color: AppColors.pineDeep),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              l10n.dailyTasksAddColumn,
+              style: AppTextStyles.link,
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
       ),
     );
