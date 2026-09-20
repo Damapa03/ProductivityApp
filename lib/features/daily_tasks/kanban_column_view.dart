@@ -21,6 +21,8 @@ class KanbanColumnView extends StatelessWidget {
     required this.onRename,
     required this.onDelete,
     required this.onMoveTask,
+    required this.onEditTask,
+    required this.onDeleteTask,
   });
 
   final String columnId;
@@ -35,6 +37,12 @@ class KanbanColumnView extends StatelessWidget {
 
   /// Mueve la tarea `taskId` a esta columna.
   final ValueChanged<String> onMoveTask;
+
+  /// Abre el diálogo de edición de una tarea.
+  final ValueChanged<KanbanTask> onEditTask;
+
+  /// Pide confirmación y elimina una tarea.
+  final ValueChanged<KanbanTask> onDeleteTask;
 
   @override
   Widget build(BuildContext context) {
@@ -132,7 +140,12 @@ class KanbanColumnView extends StatelessWidget {
       for (final task in tasks)
         Padding(
           padding: const EdgeInsets.only(bottom: 10),
-          child: TaskCard(taskId: task.id, title: task.title),
+          child: TaskCard(
+            taskId: task.id,
+            title: task.title,
+            onEdit: () => onEditTask(task),
+            onDelete: () => onDeleteTask(task),
+          ),
         ),
       if (tasks.isEmpty)
         Align(
