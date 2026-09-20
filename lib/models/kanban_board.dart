@@ -32,6 +32,23 @@ class KanbanBoard {
     );
   }
 
+  /// Copia con la columna `oldIndex` insertada en `newIndex`.
+  ///
+  /// No-op si los índices son iguales o están fuera de rango.
+  KanbanBoard moveColumn(int oldIndex, int newIndex) {
+    if (oldIndex < 0 ||
+        oldIndex >= columns.length ||
+        newIndex < 0 ||
+        newIndex >= columns.length ||
+        oldIndex == newIndex) {
+      return this;
+    }
+    final reordered = [...columns];
+    final moved = reordered.removeAt(oldIndex);
+    reordered.insert(newIndex, moved);
+    return copyWith(columns: reordered);
+  }
+
   Map<String, Object?> toJson() => {
         'ownerId': ownerId,
         'columns': columns.map((c) => c.toJson()).toList(),
