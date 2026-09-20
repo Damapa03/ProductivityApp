@@ -23,4 +23,18 @@ abstract final class AppColors {
   static const Color futurePale = Color(0xFFE4E6DF);
   static const Color stageBg = Color(0xFFDADDD3);
   static const Color overviewBg = Color(0xFFC9CDBF);
+
+  // Columnas del kanban (ver mockup 02).
+  static const Color columnGray = Color(0xFF9AA79E);
+  static const Color columnGrayPale = Color(0xFFE4E9E3);
+  static const Color amberDeep = Color(0xFF8A6A22);
+  static const Color roseDeep = Color(0xFF8C443A);
+
+  /// Paleta de puntos de columna, en orden cíclico por índice.
+  static const List<Color> columnDots = [
+    columnGray, // Search (gris)
+    rose, // TODO
+    amber, // Doing
+    pine, // Done
+  ];
 }

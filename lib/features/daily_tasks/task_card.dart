@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../app/theme/colors.dart';
 import '../../app/theme/text_styles.dart';
-import '../../l10n/app_localizations.dart';
+import 'task_menu_button.dart';
 
 /// Tarjeta de tarea arrastrable (long-press) para moverla entre columnas.
 ///
@@ -31,7 +31,6 @@ class TaskCard extends StatelessWidget {
   static const double _feedbackWidth = 160;
 
   Widget _buildCard(BuildContext context, {required double opacity}) {
-    final l10n = AppLocalizations.of(context);
     final hasMenu = onEdit != null || onDelete != null;
     return Opacity(
       opacity: opacity,
@@ -58,34 +57,9 @@ class TaskCard extends StatelessWidget {
               ),
             ),
             if (hasMenu)
-              PopupMenuButton<String>(
-                icon: const Icon(
-                  Icons.more_vert,
-                  size: 16,
-                  color: AppColors.inkFaint,
-                ),
-                padding: const EdgeInsets.all(4),
-                constraints: const BoxConstraints(minWidth: 128),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                onSelected: (value) {
-                  if (value == 'edit') onEdit?.call();
-                  if (value == 'delete') onDelete?.call();
-                },
-                itemBuilder: (context) => [
-                  PopupMenuItem(
-                    value: 'edit',
-                    child: Text(l10n.taskEdit, style: AppTextStyles.columnTitle),
-                  ),
-                  PopupMenuItem(
-                    value: 'delete',
-                    child: Text(
-                      l10n.taskDelete,
-                      style: AppTextStyles.columnTitle,
-                    ),
-                  ),
-                ],
+              TaskMenuButton(
+                onEdit: onEdit!,
+                onDelete: onDelete!,
               ),
           ],
         ),

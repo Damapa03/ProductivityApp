@@ -146,4 +146,22 @@ static const TextStyle fieldPlaceholder = TextStyle(
     height: 1.3,
     color: AppColors.pine,
   );
+
+  /// Opción del selector de vista (switcher, ver mockup 02b).
+  static const TextStyle segmented = TextStyle(
+    fontFamily: AppFonts.body,
+    fontWeight: FontWeight.w500,
+    fontSize: 13.5,
+    height: 1.2,
+    color: AppColors.inkSoft,
+  );
+
+  /// Nombre del estado dentro de la burbuja de la vista de lista.
+  static const TextStyle statusBadge = TextStyle(
+    fontFamily: AppFonts.body,
+    fontWeight: FontWeight.w600,
+    fontSize: 10.5,
+    height: 1.2,
+    color: AppColors.inkSoft,
+  );
 }
