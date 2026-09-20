@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:productyivity_app/features/daily_tasks/add_task_fab.dart';
 import 'package:productyivity_app/features/daily_tasks/daily_tasks_screen.dart';
 import 'package:productyivity_app/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -308,5 +309,78 @@ void main() {
     expect(find.text('Search'), findsOneWidget);
     expect(find.text('+ Añadir tarea'), findsNWidgets(4));
     expect(find.text('Preparar café'), findsOneWidget);
+  });
+
+  testWidgets('el botón flotante añade una tarea pidiendo nombre y columna',
+      (tester) async {
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    // Abrir el diálogo desde el FAB.
+    await tester.tap(find.byType(AddTaskFab));
+    await tester.pumpAndSettle();
+
+    // Pide el título y la columna destino.
+    expect(find.text('Columna'), findsOneWidget);
+    await tester.enterText(find.byType(TextField), 'Preparar café');
+    await tester.tap(find.text('Confirmar'));
+    await tester.pumpAndSettle();
+
+    // La tarea se añade a la primera columna (Search, la seleccionada).
+    expect(find.text('Preparar café'), findsOneWidget);
+    final searchCenterX = tester.getCenter(find.text('Search')).dx;
+    final todoCenterX = tester.getCenter(find.text('TODO')).dx;
+    final taskCenterX = tester.getCenter(find.text('Preparar café')).dx;
+    expect(taskCenterX, greaterThan(searchCenterX));
+    expect(taskCenterX, lessThan(todoCenterX));
+  });
+
+  testWidgets('el FAB está en la lista y permite elegir la columna',
+      (tester) async {
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    // Cambiar a «Todas las tareas».
+    await tester.tap(find.text('Todas las tareas'));
+    await tester.pumpAndSettle();
+    expect(find.byType(AddTaskFab), findsOneWidget);
+
+    // Crear una tarea eligiendo la columna Doing.
+    await tester.tap(find.byType(AddTaskFab));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'Preparar café');
+    await tester.tap(find.byType(DropdownButtonFormField<String>));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Doing').last);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Confirmar'));
+    await tester.pumpAndSettle();
+
+    // Aparece en la lista con la burbuja del estado Doing.
+    expect(find.text('Preparar café'), findsOneWidget);
+    expect(find.text('Doing'), findsOneWidget);
+  });
+
+  testWidgets('el botón lateral añade una columna al final del tablero',
+      (tester) async {
+    tester.view.physicalSize = const Size(1200, 800);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Añadir columna'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'Backlog');
+    await tester.tap(find.text('Confirmar'));
+    await tester.pumpAndSettle();
+
+    // La nueva columna se añade al final.
+    expect(find.text('Backlog'), findsOneWidget);
+    final doneX = tester.getTopLeft(find.text('Done')).dx;
+    final backlogX = tester.getTopLeft(find.text('Backlog')).dx;
+    expect(backlogX, greaterThan(doneX));
   });
 }
