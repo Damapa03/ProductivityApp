@@ -69,6 +69,12 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
     );
   }
 
+  Future<void> _reorderColumns(int fromIndex, int toIndex) async {
+    final board = _board;
+    if (board == null || fromIndex == toIndex) return;
+    await _persist(board.moveColumn(fromIndex, toIndex));
+  }
+
   Future<void> _renameColumn(KanbanColumn column) async {
     final name = await showRenameColumnDialog(context, currentName: column.name);
     if (name == null || !mounted) return;
@@ -234,12 +240,14 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
               columnName: board.columns[i].name,
               color: _columnDots[i % _columnDots.length],
               tasks: board.tasksFor(board.columns[i].id),
+              columnIndex: i,
               onAddTask: () => _createTask(board.columns[i]),
               onRename: () => _renameColumn(board.columns[i]),
               onDelete: () => _deleteColumn(board.columns[i]),
               onMoveTask: (taskId) => _moveTask(taskId, board.columns[i].id),
               onEditTask: _editTask,
               onDeleteTask: _deleteTask,
+              onReorder: _reorderColumns,
             ),
             const SizedBox(width: 14),
           ],

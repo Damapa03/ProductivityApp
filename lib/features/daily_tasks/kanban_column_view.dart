@@ -6,10 +6,21 @@ import '../../l10n/app_localizations.dart';
 import '../../models/kanban_task.dart';
 import 'task_card.dart';
 
+/// Datos del drag de una columna: identificador e índice de origen.
+class _ColumnDragData {
+  const _ColumnDragData({required this.columnId, required this.index});
+
+  final String columnId;
+  final int index;
+}
+
 /// Columna de un tablero kanban: cabecera (color + nombre + contador + menú)
 /// y cuerpo con las tarjetas de tarea y el botón de añadir.
 ///
-/// Actúa como `DragTarget<String>` para recibir tareas arrastradas.
+/// Actúa como `DragTarget<String>` para recibir tareas arrastradas y como
+/// `DragTarget<_ColumnDragData>` para reordenar columnas soltadas sobre ella.
+/// La cabecera es `LongPressDraggable`: arrastrarla por encima de otra columna
+/// la mueve a la posición de la columna destino.
 class KanbanColumnView extends StatelessWidget {
   const KanbanColumnView({
     super.key,
@@ -17,18 +28,23 @@ class KanbanColumnView extends StatelessWidget {
     required this.columnName,
     required this.color,
     required this.tasks,
+    required this.columnIndex,
     required this.onAddTask,
     required this.onRename,
     required this.onDelete,
     required this.onMoveTask,
     required this.onEditTask,
     required this.onDeleteTask,
+    required this.onReorder,
   });
 
   final String columnId;
   final String columnName;
   final Color color;
   final List<KanbanTask> tasks;
+
+  /// Posición (índice) de esta columna dentro del tablero.
+  final int columnIndex;
 
   /// Pide crear una tarea en esta columna.
   final VoidCallback onAddTask;
@@ -44,40 +60,53 @@ class KanbanColumnView extends StatelessWidget {
   /// Pide confirmación y elimina una tarea.
   final ValueChanged<KanbanTask> onDeleteTask;
 
+  /// Mueve la columna del índice `fromIndex` al índice `toIndex`.
+  final void Function(int fromIndex, int toIndex) onReorder;
+
   @override
   Widget build(BuildContext context) {
-    return DragTarget<String>(
-      onWillAcceptWithDetails: (_) => true,
-      onAcceptWithDetails: (details) => onMoveTask(details.data),
-      builder: (context, candidateData, rejectedData) {
-        final isOver = candidateData.isNotEmpty;
-        return AnimatedContainer(
-          duration: const Duration(milliseconds: 140),
-          curve: Curves.easeOut,
-          width: 172,
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: isOver ? AppColors.pinePale : Colors.transparent,
-            border: isOver
-                ? Border.all(color: AppColors.pine, width: 1.4)
-                : Border.all(color: Colors.transparent),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeader(context),
-              const SizedBox(height: 12),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: _buildTaskList(context),
-                  ),
-                ),
+    return DragTarget<_ColumnDragData>(
+      onWillAcceptWithDetails: (details) => details.data.columnId != columnId,
+      onAcceptWithDetails: (details) =>
+          onReorder(details.data.index, columnIndex),
+      builder: (context, columnCandidateData, rejectedData) {
+        final isColumnOver = columnCandidateData.isNotEmpty;
+        return DragTarget<String>(
+          onWillAcceptWithDetails: (_) => true,
+          onAcceptWithDetails: (details) => onMoveTask(details.data),
+          builder: (context, taskCandidateData, rejectedData) {
+            final isTaskOver = taskCandidateData.isNotEmpty;
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 140),
+              curve: Curves.easeOut,
+              width: 172,
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: isTaskOver || isColumnOver
+                    ? AppColors.pinePale
+                    : Colors.transparent,
+                border: (isTaskOver || isColumnOver)
+                    ? Border.all(color: AppColors.pine, width: 1.4)
+                    : Border.all(color: Colors.transparent),
               ),
-            ],
-          ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildHeader(context),
+                  const SizedBox(height: 12),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: _buildTaskList(context),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
         );
       },
     );
@@ -85,6 +114,49 @@ class KanbanColumnView extends StatelessWidget {
 
   Widget _buildHeader(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    return LongPressDraggable<_ColumnDragData>(
+      data: _ColumnDragData(columnId: columnId, index: columnIndex),
+      delay: const Duration(milliseconds: 120),
+      feedback: _buildHeaderFeedback(context),
+      childWhenDragging: Opacity(opacity: 0.4, child: _buildHeaderRow(l10n)),
+      child: _buildHeaderRow(l10n),
+    );
+  }
+
+  /// Réplica compacta de la cabecera que sigue al puntero durante el drag.
+  Widget _buildHeaderFeedback(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        decoration: BoxDecoration(
+          color: AppColors.cardBg,
+          border: Border.all(color: AppColors.pine, width: 1.4),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 8,
+              height: 8,
+              margin: const EdgeInsets.only(right: 7),
+              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+            ),
+            Text(
+              columnName,
+              style: AppTextStyles.columnTitle,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(width: 7),
+            Text('${tasks.length}', style: AppTextStyles.columnCount),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeaderRow(AppLocalizations l10n) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
