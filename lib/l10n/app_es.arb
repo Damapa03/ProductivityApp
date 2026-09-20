@@ -43,6 +43,8 @@
   "dailyTasksAddColumn": "Añadir columna",
   "dailyTasksAddTask": "+ Añadir tarea",
   "dailyTasksEmptyColumn": "Sin tareas todavía",
+  "dailyTasksViewByStatus": "Por estado",
+  "dailyTasksViewAll": "Todas las tareas",
 
   "columnRename": "Renombrar",
   "columnDelete": "Eliminar",

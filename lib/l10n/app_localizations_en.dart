@@ -105,6 +105,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dailyTasksEmptyColumn => 'No tasks yet';
 
   @override
+  String get dailyTasksViewByStatus => 'By status';
+
+  @override
+  String get dailyTasksViewAll => 'All tasks';
+
+  @override
   String get columnRename => 'Rename';
 
   @override

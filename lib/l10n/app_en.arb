@@ -37,6 +37,8 @@
   "dailyTasksAddColumn": "Add column",
   "dailyTasksAddTask": "+ Add task",
   "dailyTasksEmptyColumn": "No tasks yet",
+  "dailyTasksViewByStatus": "By status",
+  "dailyTasksViewAll": "All tasks",
 
   "columnRename": "Rename",
   "columnDelete": "Delete",

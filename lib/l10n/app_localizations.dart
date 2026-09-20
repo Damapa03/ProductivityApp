@@ -284,6 +284,18 @@ abstract class AppLocalizations {
   /// **'Sin tareas todavía'**
   String get dailyTasksEmptyColumn;
 
+  /// No description provided for @dailyTasksViewByStatus.
+  ///
+  /// In es, this message translates to:
+  /// **'Por estado'**
+  String get dailyTasksViewByStatus;
+
+  /// No description provided for @dailyTasksViewAll.
+  ///
+  /// In es, this message translates to:
+  /// **'Todas las tareas'**
+  String get dailyTasksViewAll;
+
   /// No description provided for @columnRename.
   ///
   /// In es, this message translates to:
