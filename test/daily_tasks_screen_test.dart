@@ -117,4 +117,73 @@ void main() {
 
     expect(find.text('Preparar café'), findsOneWidget);
   });
+
+  testWidgets('permite reordenar columnas arrastrando por la cabecera',
+      (tester) async {
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    // Orden inicial: Search, TODO, Doing, Done.
+    expect(
+      tester.getTopLeft(find.text('Doing')).dx,
+      greaterThan(tester.getTopLeft(find.text('Search')).dx),
+    );
+
+    // Long-press sobre la cabecera de Search y soltar sobre Doing.
+    final gesture =
+        await tester.startGesture(tester.getCenter(find.text('Search')));
+    await tester.pump(const Duration(milliseconds: 160));
+    await gesture.moveTo(tester.getCenter(find.text('Doing')));
+    await tester.pump();
+    await gesture.up();
+    await tester.pumpAndSettle();
+
+    // Orden esperado: TODO, Doing, Search, Done.
+    final todoX = tester.getTopLeft(find.text('TODO')).dx;
+    final doingX = tester.getTopLeft(find.text('Doing')).dx;
+    final searchX = tester.getTopLeft(find.text('Search')).dx;
+    final doneX = tester.getTopLeft(find.text('Done')).dx;
+    expect(todoX, lessThan(doingX));
+    expect(doingX, lessThan(searchX));
+    expect(searchX, lessThan(doneX));
+  });
+
+  testWidgets('el drag de tareas sigue funcionando tras reordenar columnas',
+      (tester) async {
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    // Mover Search al final para comprobar que todo sigue en su sitio.
+    final gesture =
+        await tester.startGesture(tester.getCenter(find.text('Search')));
+    await tester.pump(const Duration(milliseconds: 160));
+    await gesture.moveTo(tester.getCenter(find.text('Done')));
+    await tester.pump();
+    await gesture.up();
+    await tester.pumpAndSettle();
+
+    // Crear una tarea en la primera columna (ahora TODO).
+    await tester.tap(find.text('+ Añadir tarea').first);
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'Preparar café');
+    await tester.tap(find.text('Confirmar'));
+    await tester.pumpAndSettle();
+
+    // Arrastrar la tarjeta hasta la columna Doing.
+    final drag = await tester.startGesture(
+      tester.getCenter(find.text('Preparar café')),
+    );
+    await tester.pump(const Duration(milliseconds: 160));
+    await drag.moveTo(tester.getCenter(find.text('Doing')));
+    await tester.pump();
+    await drag.up();
+    await tester.pumpAndSettle();
+
+    // La tarea debe verse ahora dentro de la columna Doing (entre sus vecinos).
+    final doingCenterX = tester.getCenter(find.text('Doing')).dx;
+    final doneCenterX = tester.getCenter(find.text('Done')).dx;
+    final taskCenterX = tester.getCenter(find.text('Preparar café')).dx;
+    expect(taskCenterX, greaterThan(doingCenterX));
+    expect(taskCenterX, lessThan(doneCenterX));
+  });
 }
