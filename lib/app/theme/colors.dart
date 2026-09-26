@@ -24,6 +24,12 @@ abstract final class AppColors {
   static const Color stageBg = Color(0xFFDADDD3);
   static const Color overviewBg = Color(0xFFC9CDBF);
 
+  /// Icono inactivo de la navegación inferior (mockup 07).
+  ///
+  /// Más apagado que [inkFaint] a propósito: convive con el icono activo en
+  /// pine y no debe competir con él.
+  static const Color navInactive = Color(0xFFACB2A5);
+
   // Columnas del kanban (ver mockup 02).
   static const Color columnGray = Color(0xFF9AA79E);
   static const Color columnGrayPale = Color(0xFFE4E9E3);
