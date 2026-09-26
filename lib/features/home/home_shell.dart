@@ -139,6 +139,7 @@ class _BottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      key: const Key('bottom-nav'),
       height: _height,
       padding: const EdgeInsets.symmetric(horizontal: _hPadding),
       decoration: const BoxDecoration(
@@ -150,6 +151,7 @@ class _BottomNav extends StatelessWidget {
         children: [
           for (var i = 0; i < tabs.length; i++)
             _NavItem(
+              key: ValueKey('nav-item-$i'),
               tab: tabs[i],
               active: i == currentIndex,
               iconSize: _iconSize,
@@ -167,6 +169,7 @@ class _BottomNav extends StatelessWidget {
 /// su pestaña está activa.
 class _NavItem extends StatelessWidget {
   const _NavItem({
+    super.key,
     required this.tab,
     required this.active,
     required this.size,
