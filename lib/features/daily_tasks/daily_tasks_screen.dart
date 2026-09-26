@@ -217,8 +217,10 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
                 children: [
                   Padding(
                     // Margen superior para que la fecha no quede pegada
-                    // al borde (en navegador el SafeArea no aporta aire).
-                    padding: const EdgeInsets.only(top: 12),
+                    // al borde (en navegador el SafeArea no aporta aire), y
+                    // lateral de 24 para alinear el título con el selector de
+                    // vista y con el tablero.
+                    padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
                     child: _buildHeader(context, l10n),
                   ),
                   const SizedBox(height: 18),
@@ -245,23 +247,14 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
   }
 
   Widget _buildHeader(BuildContext context, AppLocalizations l10n) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
+    // Sin flecha de retroceso: la pantalla ya no es una ruta encima del login,
+    // es una pestaña del shell.
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Espacio que ocupaba la flecha de retroceso para que el título
-        // conserve exactamente su posición.
-        const SizedBox(width: 48),
-        const SizedBox(width: 4),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(_formattedDate(context), style: AppTextStyles.eyebrow),
-              const SizedBox(height: 3),
-              Text(l10n.dailyTasksTitle, style: AppTextStyles.screenTitle),
-            ],
-          ),
-        ),
+        Text(_formattedDate(context), style: AppTextStyles.eyebrow),
+        const SizedBox(height: 3),
+        Text(l10n.dailyTasksTitle, style: AppTextStyles.screenTitle),
       ],
     );
   }

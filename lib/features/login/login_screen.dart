@@ -6,7 +6,7 @@ import '../../l10n/app_localizations.dart';
 import '../../widgets/brand_mark.dart';
 import '../../widgets/social_button.dart';
 import '../../widgets/underline_field.dart';
-import '../daily_tasks/daily_tasks_screen.dart';
+import '../home/home_shell.dart';
 import '../register/register_screen.dart';
 
 /// Pantalla de acceso (Login) de Flowly.
@@ -38,9 +38,9 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!mounted) return;
     final ownerId =
         (profile != null && profile.email.isNotEmpty) ? profile.email : typedEmail;
-    Navigator.of(context).push(
+    Navigator.of(context).pushReplacement(
       MaterialPageRoute<void>(
-        builder: (_) => DailyTasksScreen(ownerId: ownerId),
+        builder: (_) => HomeShell(ownerId: ownerId),
       ),
     );
   }

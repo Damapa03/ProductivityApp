@@ -399,10 +399,10 @@ void main() {
     final dateTop = tester.getTopLeft(find.text(dateText)).dy;
     expect(dateTop, 12.0);
 
-    // El título conserva la posición que tenía con la flecha (esquinas
-    // izquierdas ambos textos a 52 px: 48 de la flecha + 4 del hueco).
+    // El título queda a 24 px, el mismo margen que el selector de vista y el
+    // tablero (ya no hay flecha de retroceso que reserves hueco).
     final titleLeft = tester.getTopLeft(find.text('Tareas diarias')).dx;
-    expect(titleLeft, 52.0);
+    expect(titleLeft, 24.0);
   });
 
   testWidgets('el botón de columna es compacto y no lleva texto',
