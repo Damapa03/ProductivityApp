@@ -60,5 +60,15 @@
   "dialogDeleteTaskTitle": "Delete task",
   "dialogDeleteTaskBody": "Task \"{task}\" will be deleted. This cannot be undone.",
   "dialogTaskColumnLabel": "Column",
-  "dialogTaskNoColumns": "Add a column before creating tasks."
+  "dialogTaskNoColumns": "Add a column before creating tasks.",
+
+  "navTasks": "Tasks",
+  "navHabits": "Habits",
+  "navSchedule": "Schedule",
+  "navFocus": "Timer",
+  "navBlackList": "Black List",
+  "navProfile": "Profile",
+
+  "comingSoonTitle": "Coming soon",
+  "comingSoonBody": "This screen is not available yet."
 }

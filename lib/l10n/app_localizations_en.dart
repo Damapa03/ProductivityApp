@@ -170,4 +170,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dialogTaskNoColumns => 'Add a column before creating tasks.';
+
+  @override
+  String get navTasks => 'Tasks';
+
+  @override
+  String get navHabits => 'Habits';
+
+  @override
+  String get navSchedule => 'Schedule';
+
+  @override
+  String get navFocus => 'Timer';
+
+  @override
+  String get navBlackList => 'Black List';
+
+  @override
+  String get navProfile => 'Profile';
+
+  @override
+  String get comingSoonTitle => 'Coming soon';
+
+  @override
+  String get comingSoonBody => 'This screen is not available yet.';
 }

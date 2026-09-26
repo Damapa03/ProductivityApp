@@ -409,6 +409,54 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Añade una columna antes de crear tareas.'**
   String get dialogTaskNoColumns;
+
+  /// No description provided for @navTasks.
+  ///
+  /// In es, this message translates to:
+  /// **'Tareas'**
+  String get navTasks;
+
+  /// No description provided for @navHabits.
+  ///
+  /// In es, this message translates to:
+  /// **'Hábitos'**
+  String get navHabits;
+
+  /// No description provided for @navSchedule.
+  ///
+  /// In es, this message translates to:
+  /// **'Agenda'**
+  String get navSchedule;
+
+  /// No description provided for @navFocus.
+  ///
+  /// In es, this message translates to:
+  /// **'Timer'**
+  String get navFocus;
+
+  /// No description provided for @navBlackList.
+  ///
+  /// In es, this message translates to:
+  /// **'Black List'**
+  String get navBlackList;
+
+  /// No description provided for @navProfile.
+  ///
+  /// In es, this message translates to:
+  /// **'Perfil'**
+  String get navProfile;
+
+  /// No description provided for @comingSoonTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Próximamente'**
+  String get comingSoonTitle;
+
+  /// No description provided for @comingSoonBody.
+  ///
+  /// In es, this message translates to:
+  /// **'Esta pantalla todavía no está disponible.'**
+  String get comingSoonBody;
 }
 
 class _AppLocalizationsDelegate

@@ -77,5 +77,15 @@
     }
   },
   "dialogTaskColumnLabel": "Columna",
-  "dialogTaskNoColumns": "Añade una columna antes de crear tareas."
+  "dialogTaskNoColumns": "Añade una columna antes de crear tareas.",
+
+  "navTasks": "Tareas",
+  "navHabits": "Hábitos",
+  "navSchedule": "Agenda",
+  "navFocus": "Timer",
+  "navBlackList": "Black List",
+  "navProfile": "Perfil",
+
+  "comingSoonTitle": "Próximamente",
+  "comingSoonBody": "Esta pantalla todavía no está disponible."
 }
