@@ -36,7 +36,6 @@ class _DailyScheduleScreenState extends State<DailyScheduleScreen> {
   void initState() {
     super.initState();
     _load();
-    _scrollToCurrentHour();
   }
 
   @override
@@ -53,6 +52,9 @@ class _DailyScheduleScreenState extends State<DailyScheduleScreen> {
     }
     if (!mounted) return;
     setState(() => _schedule = schedule);
+    // La línea de tiempo se crea en el siguiente frame (cuando el horario ya
+    // está cargado): ahí sí hay lienzo sobre el que desplazarse.
+    _scrollToCurrentHour();
   }
 
   Future<void> _persist(DailySchedule next) async {
