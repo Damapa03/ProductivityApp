@@ -53,7 +53,7 @@ class _HomeShellState extends State<HomeShell> {
       _NavTab(
         label: l10n.navSchedule,
         icon: const TimeBlocksIcon(),
-        screen: (context) => const DailyScheduleScreen(),
+        screen: (context) => DailyScheduleScreen(ownerId: widget.ownerId),
       ),
       _NavTab(
         label: l10n.navFocus,
