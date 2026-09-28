@@ -8,6 +8,7 @@ import '../../l10n/app_localizations.dart';
 import '../../models/kanban_board.dart';
 import '../../models/kanban_column.dart';
 import '../../models/kanban_task.dart';
+import '../../widgets/segmented_control.dart';
 import 'add_task_fab.dart';
 import 'all_tasks_view.dart';
 import 'daily_tasks_dialogs.dart';
@@ -320,61 +321,10 @@ class _ViewSwitcher extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 24),
-      padding: const EdgeInsets.all(3),
-      decoration: BoxDecoration(
-        color: AppColors.cardBg,
-        border: Border.all(color: AppColors.line),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        children: [
-          _buildOption(
-            context,
-            label: l10n.dailyTasksViewByStatus,
-            active: !showAllTasks,
-            onTap: () => onChanged(false),
-          ),
-          _buildOption(
-            context,
-            label: l10n.dailyTasksViewAll,
-            active: showAllTasks,
-            onTap: () => onChanged(true),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildOption(
-    BuildContext context, {
-    required String label,
-    required bool active,
-    required VoidCallback onTap,
-  }) {
-    return Expanded(
-      child: InkWell(
-        // Tocar la opción activa es un no-op.
-        onTap: active ? null : onTap,
-        borderRadius: BorderRadius.circular(6),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 140),
-          curve: Curves.easeOut,
-          padding: const EdgeInsets.symmetric(vertical: 9),
-          decoration: BoxDecoration(
-            color: active ? AppColors.pineDeep : Colors.transparent,
-            borderRadius: BorderRadius.circular(6),
-          ),
-          child: Text(
-            label,
-            textAlign: TextAlign.center,
-            style: AppTextStyles.segmented.copyWith(
-              color: active ? const Color(0xFFF3F4EF) : AppColors.inkSoft,
-            ),
-          ),
-        ),
-      ),
+    return SegmentedControl(
+      options: [l10n.dailyTasksViewByStatus, l10n.dailyTasksViewAll],
+      activeIndex: showAllTasks ? 1 : 0,
+      onSelected: (i) => onChanged(i == 1),
     );
   }
 }
