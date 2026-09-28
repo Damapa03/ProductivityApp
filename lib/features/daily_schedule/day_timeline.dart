@@ -58,6 +58,26 @@ class DayTimeline extends StatelessWidget {
     // Agenda (que vive en un IndexedStack) la pantalla se reconstruye y la
     // marca de la hora actual se renueva sin necesidad de un temporizador.
     final now = DateTime.now();
+    // Franjas con el mismo intervalo exacto (mismo inicio y fin): se reparten
+    // el ancho en franjas verticales para que todas se vean. Las demás ocupan
+    // el ancho completo y el orden de la lista fija el z-order: la añadida
+    // después (más reciente) se dibuja encima de las anteriores con las que
+    // se solape.
+    final slotIndex = <String, int>{};
+    final slotCount = <String, int>{};
+    final byInterval = <String, List<ScheduleEvent>>{};
+    for (final event in events) {
+      final key =
+          '${event.start.microsecondsSinceEpoch}-${event.end.microsecondsSinceEpoch}';
+      byInterval.putIfAbsent(key, () => []).add(event);
+    }
+    for (final group in byInterval.values) {
+      for (var i = 0; i < group.length; i++) {
+        slotIndex[group[i].id] = i;
+        slotCount[group[i].id] = group.length;
+      }
+    }
+
     return Scrollbar(
       controller: controller,
       thumbVisibility: true,
@@ -67,30 +87,39 @@ class DayTimeline extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(24, 14, 24, 24),
         child: SizedBox(
           height: totalHeight,
-          child: Stack(
-            children: [
-              // Capa base: filas de hora; cada pista abre la creación.
-              Column(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              // Ancho disponible para las franjas (sin la columna de horas).
+              final trackWidth = constraints.maxWidth - hourLabelWidth;
+              return Stack(
                 children: [
-                  for (var h = 0; h < hoursCount; h++)
-                    _HourRow(
-                      hour: h,
-                      height: hourHeight,
-                      labelWidth: hourLabelWidth,
-                      onTap: onCreateEvent,
+                  // Capa base: filas de hora; cada pista abre la creación.
+                  Column(
+                    children: [
+                      for (var h = 0; h < hoursCount; h++)
+                        _HourRow(
+                          hour: h,
+                          height: hourHeight,
+                          labelWidth: hourLabelWidth,
+                          onTap: onCreateEvent,
+                        ),
+                    ],
+                  ),
+                  // Capa de franjas posicionadas sobre la cuadrícula.
+                  for (var i = 0; i < events.length; i++)
+                    _EventBlock(
+                      event: events[i],
+                      paletteIndex: i,
+                      trackWidth: trackWidth,
+                      slotIndex: slotIndex[events[i].id] ?? 0,
+                      slotCount: slotCount[events[i].id] ?? 1,
+                      onTap: () => onTapEvent(events[i]),
                     ),
+                  // Marca de la hora actual, encima de las franjas.
+                  _NowLine(now: now),
                 ],
-              ),
-              // Capa de franjas posicionadas sobre la cuadrícula.
-              for (var i = 0; i < events.length; i++)
-                _EventBlock(
-                  event: events[i],
-                  paletteIndex: i,
-                  onTap: () => onTapEvent(events[i]),
-                ),
-              // Marca de la hora actual, encima de las franjas.
-              _NowLine(now: now),
-            ],
+              );
+            },
           ),
         ),
       ),
@@ -181,6 +210,9 @@ class _EventBlock extends StatelessWidget {
   const _EventBlock({
     required this.event,
     required this.paletteIndex,
+    required this.trackWidth,
+    required this.slotIndex,
+    required this.slotCount,
     required this.onTap,
   });
 
@@ -188,6 +220,16 @@ class _EventBlock extends StatelessWidget {
 
   /// Índice en [_eventPalettes] para elegir color y texto del bloque.
   final int paletteIndex;
+
+  /// Ancho total disponible para las franjas (contenido menos etiquetas).
+  final double trackWidth;
+
+  /// Posición dentro de las franjas con el mismo intervalo exacto.
+  final int slotIndex;
+
+  /// Número de franjas que comparten el mismo intervalo exacto.
+  final int slotCount;
+
   final VoidCallback onTap;
 
   @override
@@ -197,14 +239,19 @@ class _EventBlock extends StatelessWidget {
     final maxHeight = DayTimeline.totalHeight - top;
     final durationHeight = event.duration.inSeconds / 3600 * DayTimeline.hourHeight;
     final height = durationHeight.clamp(0.0, maxHeight);
+    // Reparto en franjas verticales cuando varias coinciden en la misma hora;
+    // en caso contrario la franja ocupa todo el ancho de la pista.
+    final slotWidth = trackWidth / slotCount;
+    final left = DayTimeline.hourLabelWidth + (slotIndex * slotWidth);
     final locale = Localizations.localeOf(context).toLanguageTag();
     final start = DateFormat.Hm(locale).format(event.start);
     final end = DateFormat.Hm(locale).format(event.end);
 
     return Positioned(
-      left: DayTimeline.hourLabelWidth,
+      key: ValueKey('event-block-${event.id}'),
+      left: left,
       top: top,
-      right: 0,
+      width: slotWidth,
       height: height,
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
