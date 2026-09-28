@@ -40,6 +40,8 @@
   "dailyTasksViewByStatus": "By status",
   "dailyTasksViewAll": "All tasks",
 
+  "scheduleTitle": "Today's plan",
+
   "columnRename": "Rename",
   "columnDelete": "Delete",
 

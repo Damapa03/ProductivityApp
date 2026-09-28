@@ -296,6 +296,12 @@ abstract class AppLocalizations {
   /// **'Todas las tareas'**
   String get dailyTasksViewAll;
 
+  /// No description provided for @scheduleTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Plan de hoy'**
+  String get scheduleTitle;
+
   /// No description provided for @columnRename.
   ///
   /// In es, this message translates to:

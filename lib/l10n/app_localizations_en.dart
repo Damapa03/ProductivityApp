@@ -111,6 +111,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dailyTasksViewAll => 'All tasks';
 
   @override
+  String get scheduleTitle => 'Today\'s plan';
+
+  @override
   String get columnRename => 'Rename';
 
   @override
