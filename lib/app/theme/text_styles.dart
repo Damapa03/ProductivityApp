@@ -164,4 +164,13 @@ static const TextStyle fieldPlaceholder = TextStyle(
     height: 1.2,
     color: AppColors.inkSoft,
   );
+
+  /// Etiqueta de hora de la línea de tiempo de agenda (mockup 04).
+  static const TextStyle hourLabel = TextStyle(
+    fontFamily: AppFonts.body,
+    fontWeight: FontWeight.w400,
+    fontSize: 11,
+    height: 1,
+    color: AppColors.inkFaint,
+  );
 }
