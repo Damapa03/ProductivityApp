@@ -173,4 +173,24 @@ static const TextStyle fieldPlaceholder = TextStyle(
     height: 1,
     color: AppColors.inkFaint,
   );
+
+  /// Nombre de una franja en la línea de tiempo (mockup 04).
+  ///
+  /// El color de texto lo fija la paleta del bloque.
+  static const TextStyle eventName = TextStyle(
+    fontFamily: AppFonts.body,
+    fontWeight: FontWeight.w600,
+    fontSize: 12.5,
+    height: 1.25,
+    color: AppColors.ink,
+  );
+
+  /// Franja horaria «inicio – fin» de un bloque de la línea de tiempo.
+  static const TextStyle eventTime = TextStyle(
+    fontFamily: AppFonts.body,
+    fontWeight: FontWeight.w400,
+    fontSize: 10.5,
+    height: 1.2,
+    color: AppColors.ink,
+  );
 }
