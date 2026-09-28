@@ -3,14 +3,15 @@ import 'package:flutter/material.dart';
 import '../../app/theme/colors.dart';
 import '../../l10n/app_localizations.dart';
 import '../../widgets/time_blocks_icon.dart';
+import '../daily_schedule/daily_schedule_screen.dart';
 import '../daily_tasks/daily_tasks_screen.dart';
 import 'coming_soon_screen.dart';
 
 /// Contenedor raíz tras el acceso: aloja las pantallas y la navegación
 /// inferior (ver mockup 07).
 ///
-/// Solo «Tareas» está implementada; el resto de pestañas muestran un marcador
-/// de posición hasta que tengan pantalla propia.
+/// «Tareas» y «Agenda» tienen pantalla propia; el resto de pestañas muestran
+/// un marcador de posición hasta que tengan pantalla propia.
 class HomeShell extends StatefulWidget {
   const HomeShell({super.key, required this.ownerId});
 
@@ -52,8 +53,7 @@ class _HomeShellState extends State<HomeShell> {
       _NavTab(
         label: l10n.navSchedule,
         icon: const TimeBlocksIcon(),
-        screen: (context) =>
-            pending(l10n.navSchedule, const TimeBlocksIcon(size: 40)),
+        screen: (context) => const DailyScheduleScreen(),
       ),
       _NavTab(
         label: l10n.navFocus,
