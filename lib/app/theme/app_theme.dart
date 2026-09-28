@@ -61,6 +61,14 @@ abstract final class AppTheme {
         thickness: 1,
         space: 20,
       ),
+      // La cabecera del selector de hora (hora : minutos) hereda por defecto
+      // `onPrimaryContainer`, que en Flowly es `pinePale`: demasiado clara y
+      // casi invisible sobre el fondo del diálogo. Se fuerza un tono oscuro
+      // para que la hora y los minutos elegidos se lean bien.
+      timePickerTheme: TimePickerThemeData(
+        hourMinuteTextColor: AppColors.ink,
+        timeSelectorSeparatorColor: const WidgetStatePropertyAll(AppColors.inkSoft),
+      ),
     );
   }
 }
