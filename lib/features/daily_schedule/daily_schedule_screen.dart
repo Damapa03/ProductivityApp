@@ -18,10 +18,20 @@ import 'schedule_dialogs.dart';
 /// crea una franja horaria (tarea de agenda, independiente del kanban) y al
 /// tocar una franja se ofrece editarla o eliminarla.
 class DailyScheduleScreen extends StatefulWidget {
-  const DailyScheduleScreen({super.key, required this.ownerId});
+  const DailyScheduleScreen({
+    super.key,
+    required this.ownerId,
+    this.entryTick = 0,
+  });
 
   /// Email del perfil con el que se asocia la persistencia del horario.
   final String ownerId;
+
+  /// Marca de entrada a la pantalla: el `HomeShell` la incrementa cada vez que
+  /// se selecciona la pestaña Agenda, de modo que el scroll de la línea de
+  /// tiempo reenfoca la hora actual en cada visita (el IndexedStack conserva
+  /// la posición entre visitas).
+  final int entryTick;
 
   @override
   State<DailyScheduleScreen> createState() => _DailyScheduleScreenState();
@@ -36,6 +46,16 @@ class _DailyScheduleScreenState extends State<DailyScheduleScreen> {
   void initState() {
     super.initState();
     _load();
+  }
+
+  @override
+  void didUpdateWidget(covariant DailyScheduleScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Nueva entrada a la pestaña Agenda: la línea de tiempo vuelve a enfocar
+    // la hora actual (el IndexedStack conserva la posición entre visitas).
+    if (widget.entryTick != oldWidget.entryTick) {
+      _scrollToCurrentHour();
+    }
   }
 
   @override

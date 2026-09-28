@@ -18,6 +18,9 @@ class HomeShell extends StatefulWidget {
   /// Email del perfil con el que se asocia la persistencia del tablero.
   final String ownerId;
 
+  /// Índice de la pestaña Agenda en la navegación inferior.
+  static const int scheduleTabIndex = 2;
+
   @override
   State<HomeShell> createState() => _HomeShellState();
 }
@@ -26,9 +29,16 @@ class _HomeShellState extends State<HomeShell> {
   /// Pestaña activa; por defecto «Tareas».
   int _index = 0;
 
+  /// Marca de entradas a la pestaña Agenda: cambia cada vez que se selecciona
+  /// para que la línea de tiempo vuelva a enfocar la hora actual sin
+  /// reconstruir el estado de la pantalla (ver `entryTick` de la pantalla).
+  int _scheduleEntryTick = 0;
+
   void _select(int index) {
     // Tocar la pestaña ya activa es un no-op.
     if (index == _index) return;
+    // Cada entrada a Agenda incrementa la marca de reenfoque del scroll.
+    if (index == HomeShell.scheduleTabIndex) _scheduleEntryTick++;
     setState(() => _index = index);
   }
 
@@ -53,7 +63,12 @@ class _HomeShellState extends State<HomeShell> {
       _NavTab(
         label: l10n.navSchedule,
         icon: const TimeBlocksIcon(),
-        screen: (context) => DailyScheduleScreen(ownerId: widget.ownerId),
+        // `entryTick` reenfoca la línea de tiempo en la hora actual en cada
+        // entrada a la pestaña Agenda.
+        screen: (context) => DailyScheduleScreen(
+          ownerId: widget.ownerId,
+          entryTick: _scheduleEntryTick,
+        ),
       ),
       _NavTab(
         label: l10n.navFocus,
