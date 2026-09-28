@@ -10,9 +10,11 @@ import '../../models/schedule_event.dart';
 /// Cada hora ocupa una fila de 56 px con su etiqueta (formato 24 h) a la
 /// izquierda. Tocar un hueco abre la creación de una franja ([onCreateEvent]),
 /// con el minuto deducido de la posición vertical del toque. Las franjas se
-/// dibujan encima, posicionadas por su hora de inicio y duración, y al tocarlas
-/// se notifica [onTapEvent]. Una línea horizontal marca la hora actual y se
-/// recalcula en cada `build` (al volver a entrar en la pantalla).
+/// dibujan encima, posicionadas por su hora de inicio y duración: las que
+/// contienen a otras quedan al fondo y las contenidas se pintan encima
+/// (orden por contención, independiente del orden de creación). Al tocar una
+/// franja se notifica [onTapEvent]. Una línea horizontal marca la hora actual
+/// y se recalcula en cada `build` (al volver a entrar en la pantalla).
 class DayTimeline extends StatelessWidget {
   const DayTimeline({
     super.key,
@@ -58,15 +60,22 @@ class DayTimeline extends StatelessWidget {
     // Agenda (que vive en un IndexedStack) la pantalla se reconstruye y la
     // marca de la hora actual se renueva sin necesidad de un temporizador.
     final now = DateTime.now();
-    // Franjas con el mismo intervalo exacto (mismo inicio y fin): se reparten
-    // el ancho en franjas verticales para que todas se vean. Las demás ocupan
-    // el ancho completo y el orden de la lista fija el z-order: la añadida
-    // después (más reciente) se dibuja encima de las anteriores con las que
-    // se solape.
+    // Orden de pintado por contención: si una franja contiene a otra (empieza
+    // antes o a la misma hora y termina después o a la misma hora), se dibuja
+    // detrás de ella. El orden se deduce solo de los intervalos (inicio asc,
+    // fin desc), por lo que el apilado no depende del orden de creación o
+    // edición. Las franjas con el mismo intervalo exacto comparten clave y se
+    // reparten el ancho en franjas verticales (ver _EventBlock), sin
+    // superponerse.
+    final ordered = [...events]..sort((a, b) {
+      final byStart = a.start.compareTo(b.start);
+      if (byStart != 0) return byStart;
+      return b.end.compareTo(a.end);
+    });
     final slotIndex = <String, int>{};
     final slotCount = <String, int>{};
     final byInterval = <String, List<ScheduleEvent>>{};
-    for (final event in events) {
+    for (final event in ordered) {
       final key =
           '${event.start.microsecondsSinceEpoch}-${event.end.microsecondsSinceEpoch}';
       byInterval.putIfAbsent(key, () => []).add(event);
@@ -105,15 +114,16 @@ class DayTimeline extends StatelessWidget {
                         ),
                     ],
                   ),
-                  // Capa de franjas posicionadas sobre la cuadrícula.
-                  for (var i = 0; i < events.length; i++)
+                  // Capa de franjas, en orden de contención: las que contienen
+                  // a otras quedan al fondo y las contenidas, encima.
+                  for (var i = 0; i < ordered.length; i++)
                     _EventBlock(
-                      event: events[i],
+                      event: ordered[i],
                       paletteIndex: i,
                       trackWidth: trackWidth,
-                      slotIndex: slotIndex[events[i].id] ?? 0,
-                      slotCount: slotCount[events[i].id] ?? 1,
-                      onTap: () => onTapEvent(events[i]),
+                      slotIndex: slotIndex[ordered[i].id] ?? 0,
+                      slotCount: slotCount[ordered[i].id] ?? 1,
+                      onTap: () => onTapEvent(ordered[i]),
                     ),
                   // Marca de la hora actual, encima de las franjas.
                   _NowLine(now: now),
