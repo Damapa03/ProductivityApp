@@ -47,6 +47,14 @@
   "dailyTasksViewAll": "Todas las tareas",
 
   "scheduleTitle": "Plan de hoy",
+  "scheduleViewDay": "Día",
+  "scheduleViewWeek": "Semana",
+  "scheduleCreateEventTitle": "Nueva tarea",
+  "scheduleEventNameLabel": "Tarea",
+  "scheduleEventNamePlaceholder": "Qué vas a hacer en esta franja",
+  "scheduleStartLabel": "Inicio",
+  "scheduleEndLabel": "Fin",
+  "scheduleInvalidRange": "La hora de fin debe ser posterior al inicio.",
 
   "columnRename": "Renombrar",
   "columnDelete": "Eliminar",

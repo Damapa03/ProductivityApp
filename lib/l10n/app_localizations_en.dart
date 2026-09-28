@@ -114,6 +114,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get scheduleTitle => 'Today\'s plan';
 
   @override
+  String get scheduleViewDay => 'Day';
+
+  @override
+  String get scheduleViewWeek => 'Week';
+
+  @override
+  String get scheduleCreateEventTitle => 'New task';
+
+  @override
+  String get scheduleEventNameLabel => 'Task';
+
+  @override
+  String get scheduleEventNamePlaceholder =>
+      'What will you do in this time slot';
+
+  @override
+  String get scheduleStartLabel => 'Start';
+
+  @override
+  String get scheduleEndLabel => 'End';
+
+  @override
+  String get scheduleInvalidRange => 'End time must be later than start.';
+
+  @override
   String get columnRename => 'Rename';
 
   @override

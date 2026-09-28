@@ -302,6 +302,54 @@ abstract class AppLocalizations {
   /// **'Plan de hoy'**
   String get scheduleTitle;
 
+  /// No description provided for @scheduleViewDay.
+  ///
+  /// In es, this message translates to:
+  /// **'Día'**
+  String get scheduleViewDay;
+
+  /// No description provided for @scheduleViewWeek.
+  ///
+  /// In es, this message translates to:
+  /// **'Semana'**
+  String get scheduleViewWeek;
+
+  /// No description provided for @scheduleCreateEventTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Nueva tarea'**
+  String get scheduleCreateEventTitle;
+
+  /// No description provided for @scheduleEventNameLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Tarea'**
+  String get scheduleEventNameLabel;
+
+  /// No description provided for @scheduleEventNamePlaceholder.
+  ///
+  /// In es, this message translates to:
+  /// **'Qué vas a hacer en esta franja'**
+  String get scheduleEventNamePlaceholder;
+
+  /// No description provided for @scheduleStartLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Inicio'**
+  String get scheduleStartLabel;
+
+  /// No description provided for @scheduleEndLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Fin'**
+  String get scheduleEndLabel;
+
+  /// No description provided for @scheduleInvalidRange.
+  ///
+  /// In es, this message translates to:
+  /// **'La hora de fin debe ser posterior al inicio.'**
+  String get scheduleInvalidRange;
+
   /// No description provided for @columnRename.
   ///
   /// In es, this message translates to:

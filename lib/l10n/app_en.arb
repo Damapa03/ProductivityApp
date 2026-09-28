@@ -41,6 +41,14 @@
   "dailyTasksViewAll": "All tasks",
 
   "scheduleTitle": "Today's plan",
+  "scheduleViewDay": "Day",
+  "scheduleViewWeek": "Week",
+  "scheduleCreateEventTitle": "New task",
+  "scheduleEventNameLabel": "Task",
+  "scheduleEventNamePlaceholder": "What will you do in this time slot",
+  "scheduleStartLabel": "Start",
+  "scheduleEndLabel": "End",
+  "scheduleInvalidRange": "End time must be later than start.",
 
   "columnRename": "Rename",
   "columnDelete": "Delete",
