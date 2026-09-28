@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart';
 import 'package:productyivity_app/app/theme/colors.dart';
+import 'package:productyivity_app/data/schedule_repository.dart';
 import 'package:productyivity_app/features/daily_schedule/daily_schedule_screen.dart';
 import 'package:productyivity_app/features/daily_schedule/day_timeline.dart';
 import 'package:productyivity_app/l10n/app_localizations.dart';
+import 'package:productyivity_app/models/daily_schedule.dart';
+import 'package:productyivity_app/models/schedule_event.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Widget _harness() {
@@ -182,5 +185,124 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Gym'), findsOneWidget);
+  });
+
+  testWidgets('muestra la línea de la hora actual', (tester) async {
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    final line = tester.widget<Positioned>(find.byKey(const Key('now-line')));
+    final now = DateTime.now();
+    final expected = DayTimeline.offsetFor(now).clamp(0.0, DayTimeline.totalHeight);
+    expect(line.height, 2);
+    expect(line.top, closeTo(expected, 1.0));
+  });
+
+  testWidgets(
+    'las franjas de la misma hora se reparten el ancho en franjas verticales',
+    (tester) async {
+      final now = DateTime.now();
+      final day = DateTime(now.year, now.month, now.day);
+      final repo = LocalScheduleRepository();
+      await repo.save(
+        'ana@flowly.com',
+        DailySchedule(ownerId: 'ana@flowly.com', events: [
+          ScheduleEvent(
+            id: 'a',
+            title: 'Tarea A',
+            start: day.add(const Duration(hours: 10)),
+            end: day.add(const Duration(hours: 11)),
+          ),
+          ScheduleEvent(
+            id: 'b',
+            title: 'Tarea B',
+            start: day.add(const Duration(hours: 10)),
+            end: day.add(const Duration(hours: 11)),
+          ),
+        ]),
+      );
+
+      await tester.pumpWidget(_harness());
+      await tester.pumpAndSettle();
+
+      expect(find.text('Tarea A'), findsOneWidget);
+      expect(find.text('Tarea B'), findsOneWidget);
+
+      final a = tester.widget<Positioned>(find.byKey(const Key('event-block-a')));
+      final b = tester.widget<Positioned>(find.byKey(const Key('event-block-b')));
+      // Mismo intervalo exacto: misma posición vertical, misma altura y el
+      // ancho repartido a mitades compartiendo la misma banda.
+      expect(a.top, b.top);
+      expect(a.height, b.height);
+      expect(a.width!, closeTo(b.width!, 0.001));
+      expect(b.left, closeTo(a.left! + a.width!, 0.001));
+      expect(a.width, lessThan(600));
+    },
+  );
+
+  testWidgets('la franja añadida después se dibuja encima al solaparse', (
+    tester,
+  ) async {
+    final now = DateTime.now();
+    final day = DateTime(now.year, now.month, now.day);
+    final repo = LocalScheduleRepository();
+    await repo.save(
+      'ana@flowly.com',
+      DailySchedule(ownerId: 'ana@flowly.com', events: [
+        ScheduleEvent(
+          id: 'larga',
+          title: 'Bloque largo',
+          start: day.add(const Duration(hours: 5)),
+          end: day.add(const Duration(hours: 9)),
+        ),
+        ScheduleEvent(
+          id: 'corta',
+          title: 'Reunión corta',
+          start: day.add(const Duration(hours: 6)),
+          end: day.add(const Duration(hours: 7)),
+        ),
+      ]),
+    );
+
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    expect(find.text('Bloque largo'), findsOneWidget);
+    expect(find.text('Reunión corta'), findsOneWidget);
+
+    final larga = tester.widget<Positioned>(
+      find.byKey(const Key('event-block-larga')),
+    );
+    final corta = tester.widget<Positioned>(
+      find.byKey(const Key('event-block-corta')),
+    );
+    // No coinciden exactamente en hora: ambas ocupan el ancho completo.
+    expect(larga.left, corta.left);
+    expect(larga.width, corta.width);
+    // La corta (6–7) cae dentro del tramo de la larga (5–9)…
+    expect(corta.top!, greaterThan(larga.top!));
+    expect(
+      corta.top! + corta.height!,
+      lessThanOrEqualTo(larga.top! + larga.height!),
+    );
+    // …y se dibuja después en la pila del Stack (por encima). El orden de los
+    // `Positioned` dentro del árbol equivale al orden de pintado del Stack.
+    final timelineStack = find.ancestor(
+      of: find.byKey(const Key('event-block-larga')),
+      matching: find.byType(Stack),
+    );
+    final positioned = find.descendant(
+      of: timelineStack,
+      matching: find.byType(Positioned),
+    );
+    int blockIndex(String id) {
+      final elements = positioned.evaluate().toList();
+      return elements.indexWhere(
+        (element) =>
+            (element.widget as Positioned).key == ValueKey('event-block-$id'),
+      );
+    }
+
+    expect(blockIndex('corta'), greaterThan(blockIndex('larga')));
   });
 }
