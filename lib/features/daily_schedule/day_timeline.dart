@@ -11,7 +11,8 @@ import '../../models/schedule_event.dart';
 /// izquierda. Tocar un hueco abre la creación de una franja ([onCreateEvent]),
 /// con el minuto deducido de la posición vertical del toque. Las franjas se
 /// dibujan encima, posicionadas por su hora de inicio y duración, y al tocarlas
-/// se notifica [onTapEvent].
+/// se notifica [onTapEvent]. Una línea horizontal marca la hora actual y se
+/// recalcula en cada `build` (al volver a entrar en la pantalla).
 class DayTimeline extends StatelessWidget {
   const DayTimeline({
     super.key,
@@ -53,6 +54,10 @@ class DayTimeline extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Hora capturada en cada reconstrucción: al volver a entrar en la pestaña
+    // Agenda (que vive en un IndexedStack) la pantalla se reconstruye y la
+    // marca de la hora actual se renueva sin necesidad de un temporizador.
+    final now = DateTime.now();
     return Scrollbar(
       controller: controller,
       thumbVisibility: true,
@@ -83,6 +88,8 @@ class DayTimeline extends StatelessWidget {
                   paletteIndex: i,
                   onTap: () => onTapEvent(events[i]),
                 ),
+              // Marca de la hora actual, encima de las franjas.
+              _NowLine(now: now),
             ],
           ),
         ),
@@ -230,6 +237,56 @@ class _EventBlock extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Línea horizontal que marca la hora actual (el `--now` del mockup 04).
+///
+/// Dibuja una línea de 2 px en rosa con un punto en su arranque. Ignora los
+/// toques para no bloquear la creación o edición de franjas. La hora llega
+/// recalculada desde el `build` de la línea de tiempo ([DayTimeline.build]).
+class _NowLine extends StatelessWidget {
+  const _NowLine({required this.now});
+
+  /// Instante capturado al reconstruir la pantalla.
+  final DateTime now;
+
+  @override
+  Widget build(BuildContext context) {
+    final top = DayTimeline.offsetFor(now).clamp(0.0, DayTimeline.totalHeight);
+    return Positioned(
+      key: const Key('now-line'),
+      left: DayTimeline.hourLabelWidth,
+      right: 0,
+      top: top,
+      height: 2,
+      child: IgnorePointer(
+        child: Stack(
+          children: [
+            // Línea de 2 px a todo lo ancho.
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Container(height: 2, color: AppColors.rose),
+            ),
+            // Punto de 8 px centrado sobre el arranque de la línea.
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Transform.translate(
+                offset: const Offset(-4, 0),
+                child: Container(
+                  width: 8,
+                  height: 8,
+                  decoration: const BoxDecoration(
+                    color: AppColors.rose,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
