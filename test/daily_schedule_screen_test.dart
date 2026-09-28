@@ -34,6 +34,30 @@ Future<void> _createEvent(WidgetTester tester, String title) async {
   await tester.pumpAndSettle();
 }
 
+/// Bloque (Positioned) de la franja con [id] en la línea de tiempo.
+Positioned _block(WidgetTester tester, String id) => tester.widget<Positioned>(
+  find.byKey(ValueKey('event-block-$id')),
+);
+
+/// Posición del bloque de la franja [id] entre los `Positioned` del Stack de
+/// la línea de tiempo: el orden equivale al orden de pintado (más tarde =
+/// encima).
+int _blockIndex(WidgetTester tester, String id) {
+  final timelineStack = find.ancestor(
+    of: find.byKey(ValueKey('event-block-$id')),
+    matching: find.byType(Stack),
+  );
+  final positioned = find.descendant(
+    of: timelineStack,
+    matching: find.byType(Positioned),
+  );
+  final elements = positioned.evaluate().toList();
+  return elements.indexWhere(
+    (element) =>
+        (element.widget as Positioned).key == ValueKey('event-block-$id'),
+  );
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -240,26 +264,28 @@ void main() {
     },
   );
 
-  testWidgets('la franja añadida después se dibuja encima al solaparse', (
+  testWidgets('la franja contenida se dibuja encima aunque se cree primero', (
     tester,
   ) async {
     final now = DateTime.now();
     final day = DateTime(now.year, now.month, now.day);
     final repo = LocalScheduleRepository();
+    // Creadas en orden inverso al de pintado: la contenida (6–7) antes que la
+    // que la contiene (5–9). El apilado no debe depender del orden.
     await repo.save(
       'ana@flowly.com',
       DailySchedule(ownerId: 'ana@flowly.com', events: [
-        ScheduleEvent(
-          id: 'larga',
-          title: 'Bloque largo',
-          start: day.add(const Duration(hours: 5)),
-          end: day.add(const Duration(hours: 9)),
-        ),
         ScheduleEvent(
           id: 'corta',
           title: 'Reunión corta',
           start: day.add(const Duration(hours: 6)),
           end: day.add(const Duration(hours: 7)),
+        ),
+        ScheduleEvent(
+          id: 'larga',
+          title: 'Bloque largo',
+          start: day.add(const Duration(hours: 5)),
+          end: day.add(const Duration(hours: 9)),
         ),
       ]),
     );
@@ -270,12 +296,8 @@ void main() {
     expect(find.text('Bloque largo'), findsOneWidget);
     expect(find.text('Reunión corta'), findsOneWidget);
 
-    final larga = tester.widget<Positioned>(
-      find.byKey(const Key('event-block-larga')),
-    );
-    final corta = tester.widget<Positioned>(
-      find.byKey(const Key('event-block-corta')),
-    );
+    final larga = _block(tester, 'larga');
+    final corta = _block(tester, 'corta');
     // No coinciden exactamente en hora: ambas ocupan el ancho completo.
     expect(larga.left, corta.left);
     expect(larga.width, corta.width);
@@ -285,24 +307,66 @@ void main() {
       corta.top! + corta.height!,
       lessThanOrEqualTo(larga.top! + larga.height!),
     );
-    // …y se dibuja después en la pila del Stack (por encima). El orden de los
-    // `Positioned` dentro del árbol equivale al orden de pintado del Stack.
-    final timelineStack = find.ancestor(
-      of: find.byKey(const Key('event-block-larga')),
-      matching: find.byType(Stack),
-    );
-    final positioned = find.descendant(
-      of: timelineStack,
-      matching: find.byType(Positioned),
-    );
-    int blockIndex(String id) {
-      final elements = positioned.evaluate().toList();
-      return elements.indexWhere(
-        (element) =>
-            (element.widget as Positioned).key == ValueKey('event-block-$id'),
-      );
-    }
+    // …y aunque se creó antes, se dibuja después (por encima).
+    expect(_blockIndex(tester, 'corta'), greaterThan(_blockIndex(tester, 'larga')));
+  });
 
-    expect(blockIndex('corta'), greaterThan(blockIndex('larga')));
+  testWidgets('el anidamiento se apila por contención sin importar el orden', (
+    tester,
+  ) async {
+    final now = DateTime.now();
+    final day = DateTime(now.year, now.month, now.day);
+    final repo = LocalScheduleRepository();
+    // Creadas desordenadas: tarea2 (5–8), tarea1 (4–9) y tarea3 (6–7).
+    await repo.save(
+      'ana@flowly.com',
+      DailySchedule(ownerId: 'ana@flowly.com', events: [
+        ScheduleEvent(
+          id: 'tarea2',
+          title: 'Tarea 2',
+          start: day.add(const Duration(hours: 5)),
+          end: day.add(const Duration(hours: 8)),
+        ),
+        ScheduleEvent(
+          id: 'tarea1',
+          title: 'Tarea 1',
+          start: day.add(const Duration(hours: 4)),
+          end: day.add(const Duration(hours: 9)),
+        ),
+        ScheduleEvent(
+          id: 'tarea3',
+          title: 'Tarea 3',
+          start: day.add(const Duration(hours: 6)),
+          end: day.add(const Duration(hours: 7)),
+        ),
+      ]),
+    );
+
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    expect(find.text('Tarea 1'), findsOneWidget);
+    expect(find.text('Tarea 2'), findsOneWidget);
+    expect(find.text('Tarea 3'), findsOneWidget);
+
+    final t1 = _block(tester, 'tarea1');
+    final t2 = _block(tester, 'tarea2');
+    final t3 = _block(tester, 'tarea3');
+    // Ninguna coincide exactamente en hora: ancho completo para las tres.
+    expect(t1.width, t2.width);
+    expect(t2.width, t3.width);
+    expect(t1.left, t2.left);
+    expect(t2.left, t3.left);
+    // Cada interior queda dentro del tramo de la que lo contiene.
+    bool inside(Positioned inner, Positioned outer) =>
+        inner.top! >= outer.top! &&
+        inner.top! + inner.height! <= outer.top! + outer.height!;
+    expect(inside(t2, t1), isTrue, reason: 'tarea2 debe estar dentro de tarea1');
+    expect(inside(t3, t1), isTrue, reason: 'tarea3 debe estar dentro de tarea1');
+    expect(inside(t3, t2), isTrue, reason: 'tarea3 debe estar dentro de tarea2');
+    // Orden de pintado: tarea1 al fondo, tarea2 delante y tarea3 encima de las
+    // dos anteriores, independientemente del orden de creación.
+    expect(_blockIndex(tester, 'tarea1'), lessThan(_blockIndex(tester, 'tarea2')));
+    expect(_blockIndex(tester, 'tarea2'), lessThan(_blockIndex(tester, 'tarea3')));
   });
 }

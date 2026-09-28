@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:productyivity_app/app/theme/colors.dart';
+import 'package:productyivity_app/features/daily_schedule/day_timeline.dart';
 import 'package:productyivity_app/features/home/home_shell.dart';
 import 'package:productyivity_app/l10n/app_localizations.dart';
 import 'package:productyivity_app/widgets/time_blocks_icon.dart';
@@ -209,6 +210,51 @@ void main() {
     // La vista de lista sigue activa: el IndexedStack no la ha reconstruido.
     expect(find.text('Todas las tareas'), findsOneWidget);
     expect(find.text('Search'), findsNothing);
+  });
+
+  testWidgets('cada entrada en Agenda reenfoca el scroll en la hora actual', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    ScrollPosition agendaScroll() => tester
+        .state<ScrollableState>(
+          find.descendant(
+            of: find.byType(DayTimeline),
+            matching: find.byType(Scrollable),
+          ),
+        )
+        .position;
+
+    // Objetivo de la hora actual con las 2 h superiores de contexto, limitado
+    // al recorrido del scroll.
+    double currentHourTarget(ScrollPosition position) {
+      final now = DateTime.now();
+      final raw = (now.hour - 2) * DayTimeline.hourHeight;
+      return raw
+          .clamp(position.minScrollExtent, position.maxScrollExtent)
+          .toDouble();
+    }
+
+    // Primera entrada a Agenda: el scroll enfoca la hora actual.
+    await tester.tap(_item(2));
+    await tester.pumpAndSettle();
+    expect(agendaScroll().pixels, currentHourTarget(agendaScroll()));
+
+    // Se aleja el scroll manualmente hasta el final del recorrido.
+    final moved = agendaScroll();
+    moved.jumpTo(moved.maxScrollExtent);
+    await tester.pump();
+    expect(agendaScroll().pixels, moved.maxScrollExtent);
+
+    // Se sale y se vuelve a entrar: el scroll reenfoca la hora actual.
+    await tester.tap(_item(0));
+    await tester.pumpAndSettle();
+    await tester.tap(_item(2));
+    await tester.pumpAndSettle();
+
+    expect(agendaScroll().pixels, currentHourTarget(agendaScroll()));
   });
 
   testWidgets('tocar la pestaña ya activa es un no-op', (tester) async {
