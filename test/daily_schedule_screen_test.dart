@@ -5,6 +5,7 @@ import 'package:productyivity_app/app/theme/colors.dart';
 import 'package:productyivity_app/data/schedule_repository.dart';
 import 'package:productyivity_app/features/daily_schedule/daily_schedule_screen.dart';
 import 'package:productyivity_app/features/daily_schedule/day_timeline.dart';
+import 'package:productyivity_app/features/daily_schedule/week_timeline.dart';
 import 'package:productyivity_app/l10n/app_localizations.dart';
 import 'package:productyivity_app/models/daily_schedule.dart';
 import 'package:productyivity_app/models/schedule_event.dart';
@@ -38,6 +39,54 @@ Future<void> _createEvent(WidgetTester tester, String title) async {
 Positioned _block(WidgetTester tester, String id) => tester.widget<Positioned>(
   find.byKey(ValueKey('event-block-$id')),
 );
+
+/// Deja la pantalla en la vista semanal.
+Future<void> _showWeekView(WidgetTester tester) async {
+  await tester.tap(find.text('Semana'));
+  await tester.pumpAndSettle();
+}
+
+/// Superficie alta para que la rejilla entera quepa sin desplazarse: así las
+/// columnas y las filas siempre están en la misma posición, sea cual sea la
+/// hora a la que se ejecuten los tests.
+void _useTallSurface(WidgetTester tester) {
+  tester.view.physicalSize = const Size(900, 1400);
+  tester.view.devicePixelRatio = 1.0;
+  addTearDown(tester.view.resetPhysicalSize);
+  addTearDown(tester.view.resetDevicePixelRatio);
+}
+
+/// Toca la celda del día [dayIndex] (lunes = 0) en la fila de la hora [hour].
+Future<void> _tapWeekCell(
+  WidgetTester tester,
+  int dayIndex,
+  int hour, {
+  double offsetInHour = 2,
+}) async {
+  final column = find.byKey(WeekTimeline.dayColumnKey(dayIndex));
+  await tester.tapAt(
+    tester.getTopLeft(column) +
+        Offset(
+          WeekTimeline.dayWidth / 2,
+          WeekTimeline.hourHeight * hour + offsetInHour,
+        ),
+  );
+  await tester.pumpAndSettle();
+}
+
+/// Crea una franja en la rejilla semanal, en la celda indicada.
+Future<void> _createWeekEvent(
+  WidgetTester tester,
+  int dayIndex,
+  int hour,
+  String title,
+) async {
+  await _tapWeekCell(tester, dayIndex, hour);
+  await tester.enterText(find.byType(TextField), title);
+  await tester.tap(find.text('Confirmar'));
+  await tester.pumpAndSettle();
+  expect(find.text(title), findsOneWidget);
+}
 
 /// Posición del bloque de la franja [id] entre los `Positioned` del Stack de
 /// la línea de tiempo: el orden equivale al orden de pintado (más tarde =
@@ -108,7 +157,7 @@ void main() {
     expect(position.pixels, expected);
   });
 
-  testWidgets('el selector muestra Día y Semana y Semana no cambia la vista', (
+  testWidgets('el selector muestra Día y Semana y conmuta entre las vistas', (
     tester,
   ) async {
     await tester.pumpWidget(_harness());
@@ -121,14 +170,181 @@ void main() {
         tester.widget<Text>(find.text(label)).style!.color!;
     expect(textColor('Día'), const Color(0xFFF3F4EF));
     expect(textColor('Semana'), AppColors.inkSoft);
+    expect(find.byType(DayTimeline), findsOneWidget);
 
-    // «Semana» está presente pero sin funcionalidad: tocarla no cambia nada.
-    await tester.tap(find.text('Semana'));
+    // «Semana» cambia a la rejilla de los siete días.
+    await _showWeekView(tester);
+    expect(textColor('Semana'), const Color(0xFFF3F4EF));
+    expect(textColor('Día'), AppColors.inkSoft);
+    expect(find.byType(WeekTimeline), findsOneWidget);
+    expect(find.byType(DayTimeline), findsNothing);
+
+    // Y «Día» vuelve a la línea de tiempo de hoy.
+    await tester.tap(find.text('Día'));
+    await tester.pumpAndSettle();
+    expect(find.byType(DayTimeline), findsOneWidget);
+    expect(find.byType(WeekTimeline), findsNothing);
+    expect(find.text('Plan de hoy'), findsOneWidget);
+  });
+
+  testWidgets('en modo Semana el título pasa a «Esta semana» con el rango', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_harness());
     await tester.pumpAndSettle();
 
-    expect(textColor('Día'), const Color(0xFFF3F4EF));
+    final now = DateTime.now();
+    final formatted = DateFormat('EEEE, d MMMM', 'es').format(now);
+    final dateText = formatted[0].toUpperCase() + formatted.substring(1);
+
+    await _showWeekView(tester);
+    expect(find.text('Esta semana'), findsOneWidget);
+    expect(find.text('Plan de hoy'), findsNothing);
+    // La línea de arriba deja de ser la fecha de hoy y pasa a ser el rango de
+    // la semana: los dos días, del lunes al domingo.
+    expect(find.text(dateText), findsNothing);
+    final weekStart = WeekTimeline.startOfWeek(now);
+    final lastDay = weekStart.add(const Duration(days: WeekTimeline.daysCount - 1));
+    expect(
+      find.textContaining(RegExp('^\\D*${weekStart.day}\\D*${lastDay.day}\\D*\$')),
+      findsOneWidget,
+    );
+
+    // Al volver a «Día» reaparecen el título y la fecha de hoy.
+    await tester.tap(find.text('Día'));
+    await tester.pumpAndSettle();
     expect(find.text('Plan de hoy'), findsOneWidget);
-    expect(find.text('Próximamente'), findsNothing);
+    expect(find.text(dateText), findsOneWidget);
+  });
+
+  testWidgets('la rejilla semanal coloca cada franja en el día que empieza', (
+    tester,
+  ) async {
+    _useTallSurface(tester);
+    final weekStart = WeekTimeline.startOfWeek(DateTime.now());
+    final repo = LocalScheduleRepository();
+    await repo.save(
+      'ana@flowly.com',
+      DailySchedule(ownerId: 'ana@flowly.com', events: [
+        // Lunes, miércoles y domingo de esta semana.
+        for (final (id, day) in [('lunes', 0), ('miercoles', 2), ('domingo', 6)])
+          ScheduleEvent(
+            id: id,
+            title: 'Tarea $id',
+            start: weekStart.add(Duration(days: day, hours: 9)),
+            end: weekStart.add(Duration(days: day, hours: 10)),
+          ),
+        // Lunes siguiente: fuera de la semana, no se dibuja.
+        ScheduleEvent(
+          id: 'fuera',
+          title: 'Tarea fuera',
+          start: weekStart.add(const Duration(days: 7, hours: 9)),
+          end: weekStart.add(const Duration(days: 7, hours: 10)),
+        ),
+      ]),
+    );
+
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+    await _showWeekView(tester);
+
+    expect(find.text('Tarea fuera'), findsNothing);
+    // Columna del día = etiquetas de hora + día × ancho, más el margen.
+    for (final (id, day) in [
+      ('lunes', 0),
+      ('miercoles', 2),
+      ('domingo', 6),
+    ]) {
+      expect(find.text('Tarea $id'), findsOneWidget);
+      expect(
+        _block(tester, id).left,
+        WeekTimeline.hourLabelWidth +
+            day * WeekTimeline.dayWidth +
+            WeekTimeline.blockInset,
+        reason: '$id debería estar en la columna del día $day',
+      );
+      // Altura de una hora en la fila de las 09:00.
+      expect(_block(tester, id).top, WeekTimeline.hourHeight * 9);
+    }
+  });
+
+  testWidgets('crea una franja en el día que se toca en la rejilla semanal', (
+    tester,
+  ) async {
+    _useTallSurface(tester);
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+    await _showWeekView(tester);
+
+    // Miércoles (índice 2) a las 08:00.
+    await _tapWeekCell(tester, 2, 8);
+    expect(find.text('Nueva tarea'), findsOneWidget);
+
+    await tester.enterText(find.byType(TextField), 'Revisión');
+    await tester.tap(find.text('Confirmar'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Revisión'), findsOneWidget);
+
+    // Se guarda con la fecha del miércoles, no la de hoy.
+    final wednesday = WeekTimeline.startOfWeek(DateTime.now())
+        .add(const Duration(days: 2));
+    final schedule = await LocalScheduleRepository().load('ana@flowly.com');
+    final event = schedule!.events.single;
+    expect(event.start, DateTime(wednesday.year, wednesday.month, wednesday.day, 8));
+    expect(event.end, event.start.add(const Duration(hours: 1)));
+
+    // Y en la vista de un día no aparece, porque es de otro día.
+    await tester.tap(find.text('Día'));
+    await tester.pumpAndSettle();
+    expect(find.text('Revisión'), findsNothing);
+  });
+
+  testWidgets('edita una franja desde su bloque en la rejilla semanal', (
+    tester,
+  ) async {
+    _useTallSurface(tester);
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+    await _showWeekView(tester);
+
+    await _createWeekEvent(tester, 1, 9, 'Gym');
+
+    await tester.tap(find.text('Gym'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Editar'));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextField), 'Gym 2');
+    await tester.tap(find.text('Confirmar'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Gym 2'), findsOneWidget);
+    expect(find.text('Gym'), findsNothing);
+  });
+
+  testWidgets('elimina una franja desde su bloque en la rejilla semanal', (
+    tester,
+  ) async {
+    _useTallSurface(tester);
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+    await _showWeekView(tester);
+
+    await _createWeekEvent(tester, 3, 9, 'Standup');
+
+    await tester.tap(find.text('Standup'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Eliminar'));
+    await tester.pumpAndSettle();
+    expect(find.text('Eliminar tarea'), findsOneWidget);
+
+    await tester.tap(find.text('Confirmar'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Standup'), findsNothing);
+    final schedule = await LocalScheduleRepository().load('ana@flowly.com');
+    expect(schedule!.events, isEmpty);
   });
 
   testWidgets('tocar la línea de tiempo abre el diálogo y crea una franja', (

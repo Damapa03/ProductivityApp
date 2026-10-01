@@ -13,13 +13,23 @@ import '../app/theme/text_styles.dart';
 /// No lleva flecha de retroceso: la pantalla ya no es una ruta encima del
 /// login, es una pestaña del shell.
 class ScreenHeader extends StatelessWidget {
-  const ScreenHeader({super.key, required this.title, this.date});
+  const ScreenHeader({
+    super.key,
+    required this.title,
+    this.date,
+    this.eyebrow,
+  });
 
   /// Nombre de la pantalla, p. ej. «Tareas diarias».
   final String title;
 
   /// Día que se muestra. Por defecto, hoy (útil en tests para fijar la fecha).
   final DateTime? date;
+
+  /// Texto de la línea de arriba. Por defecto, la fecha de [date] (o la de
+  /// hoy); la vista semanal de la agenda lo sustituye por el rango de días que
+  /// muestra («28 sept – 4 oct»).
+  final String? eyebrow;
 
   /// Margen de la cabecera: 12 arriba —para que la fecha no quede pegada al
   /// borde, ya que en navegador el `SafeArea` no aporta aire— y 24 a los lados,
@@ -39,7 +49,10 @@ class ScreenHeader extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(_formattedDate(context), style: AppTextStyles.eyebrow),
+          Text(
+            eyebrow ?? _formattedDate(context),
+            style: AppTextStyles.eyebrow,
+          ),
           const SizedBox(height: titleSpacing),
           Text(title, style: AppTextStyles.screenTitle),
           const SizedBox(height: bottomSpacing),
