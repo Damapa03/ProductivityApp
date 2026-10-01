@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../app/theme/colors.dart';
 import '../../l10n/app_localizations.dart';
 import '../../widgets/time_blocks_icon.dart';
+import '../black_list/black_list_screen.dart';
 import '../daily_schedule/daily_schedule_screen.dart';
 import '../daily_tasks/daily_tasks_screen.dart';
 import 'coming_soon_screen.dart';
@@ -79,8 +80,7 @@ class _HomeShellState extends State<HomeShell> {
       _NavTab(
         label: l10n.navBlackList,
         icon: const Icon(Icons.description_outlined),
-        screen: (context) =>
-            pending(l10n.navBlackList, const Icon(Icons.description_outlined)),
+        screen: (context) => BlackListScreen(ownerId: widget.ownerId),
       ),
       _NavTab(
         label: l10n.navProfile,

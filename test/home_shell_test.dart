@@ -135,7 +135,6 @@ void main() {
     const pending = [
       (1, 'Hábitos'),
       (3, 'Timer'),
-      (4, 'Black List'),
       (5, 'Perfil'),
     ];
 
@@ -186,6 +185,23 @@ void main() {
     expect(find.text('Próximamente'), findsNothing);
     // El icono de Agenda solo aparece en el nav (a 20 px): ya no hay marcador.
     final icons = find.byType(TimeBlocksIcon);
+    expect(icons, findsOneWidget);
+    expect(tester.getSize(icons).height, 20.0);
+  });
+
+  testWidgets('la pestaña Lista negra muestra su pantalla', (tester) async {
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    await tester.tap(_item(4));
+    await tester.pumpAndSettle();
+
+    expect(_activeIndex(tester), 4);
+    expect(find.text('Lista negra'), findsOneWidget);
+    expect(find.text('Próximamente'), findsNothing);
+    // El icono de Black List solo aparece en el nav (a 20 px): ya no hay
+    // marcador.
+    final icons = find.byIcon(Icons.description_outlined);
     expect(icons, findsOneWidget);
     expect(tester.getSize(icons).height, 20.0);
   });
@@ -280,7 +296,7 @@ void main() {
       'Hábitos',
       'Agenda',
       'Timer',
-      'Black List',
+      'Lista negra',
       'Perfil',
     ]) {
       expect(find.bySemanticsLabel(name), findsOneWidget);
