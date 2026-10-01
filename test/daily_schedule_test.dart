@@ -85,6 +85,62 @@ void main() {
     });
   });
 
+  group('eventsBetween cruza el cambio de año', () {
+    // Semana del lunes 28 de diciembre de 2026 al domingo 3 de enero de 2027.
+    final schedule = DailySchedule.empty('ana@flowly.com').copyWith(
+      events: [
+        ScheduleEvent(
+          id: 'lunes',
+          title: 'Lunes 28',
+          start: DateTime(2026, 12, 28, 23, 30),
+          end: DateTime(2026, 12, 29),
+        ),
+        ScheduleEvent(
+          id: 'jueves',
+          title: 'Jueves 31',
+          start: DateTime(2026, 12, 31, 22),
+          end: DateTime(2027, 1, 1, 1),
+        ),
+        ScheduleEvent(
+          id: 'domingo',
+          title: 'Domingo 3',
+          start: DateTime(2027, 1, 3),
+          end: DateTime(2027, 1, 3, 1),
+        ),
+        ScheduleEvent(
+          id: 'fuera',
+          title: 'Lunes 4',
+          start: DateTime(2027, 1, 4),
+          end: DateTime(2027, 1, 4, 1),
+        ),
+      ],
+    );
+    final from = DateTime(2026, 12, 28);
+    final to = DateTime(2027, 1, 4);
+
+    test('incluye las franjas de los dos años de la semana', () {
+      expect(
+        schedule.eventsBetween(from, to).map((e) => e.title).toList(),
+        ['Lunes 28', 'Jueves 31', 'Domingo 3'],
+      );
+    });
+
+    test('la franja de madrugada del 31 sigue siendo del año viejo', () {
+      // Empieza el 31 a las 22:00 y termina ya en 2027: se filtra por el
+      // inicio, así que pertenece a la semana en la que empezó.
+      final event = schedule.eventsBetween(from, to).firstWhere(
+        (e) => e.id == 'jueves',
+      );
+      expect(event.start.year, 2026);
+      expect(event.end.year, 2027);
+    });
+
+    test('el lunes siguiente al cambio de año queda fuera', () {
+      final titles = schedule.eventsBetween(from, to).map((e) => e.title);
+      expect(titles, isNot(contains('Lunes 4')));
+    });
+  });
+
   test('duration calcula el intervalo de la franja', () {
     final event = ScheduleEvent(
       id: 'e1',

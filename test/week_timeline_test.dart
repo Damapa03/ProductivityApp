@@ -369,6 +369,24 @@ void main() {
         DateTime(2026, 9, 28),
       );
     });
+
+    test('la primera semana del año empieza en diciembre del año anterior', () {
+      // El 1 de enero de 2027 es viernes: su semana empieza el lunes 28 de
+      // diciembre de 2026.
+      expect(
+        WeekTimeline.startOfWeek(DateTime(2027, 1, 1, 9)),
+        DateTime(2026, 12, 28),
+      );
+    });
+
+    test('la última semana del año termina en enero del año siguiente', () {
+      final weekStart = WeekTimeline.startOfWeek(DateTime(2026, 12, 31));
+      expect(weekStart, DateTime(2026, 12, 28));
+      expect(
+        weekStart.add(const Duration(days: WeekTimeline.daysCount - 1)),
+        DateTime(2027, 1, 3),
+      );
+    });
   });
 
   group('WeekTimeline.rangeLabel', () {
@@ -400,6 +418,11 @@ void main() {
     testWidgets('repite el mes cuando la semana lo cruza', (tester) async {
       // Del lunes 28 de septiembre al domingo 4 de octubre.
       expect(await label(tester, DateTime(2026, 9, 28)), '28 sept – 4 oct');
+    });
+
+    testWidgets('el rango también funciona al cruzar el año', (tester) async {
+      // Del lunes 28 de diciembre de 2026 al domingo 3 de enero de 2027.
+      expect(await label(tester, DateTime(2026, 12, 28)), '28 dic – 3 ene');
     });
   });
 }

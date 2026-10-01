@@ -35,6 +35,22 @@ Future<void> _createEvent(WidgetTester tester, String title) async {
   await tester.pumpAndSettle();
 }
 
+/// Identificador de la única franja dibujada, para localizar su bloque sin
+/// depender del formato del id que genera la pantalla.
+String _onlyBlockId(WidgetTester tester) {
+  final ids = find
+      .byWidgetPredicate(
+        (widget) =>
+            widget.key is ValueKey<String> &&
+            (widget.key! as ValueKey<String>).value.startsWith('event-block-'),
+      )
+      .evaluate()
+      .map((element) => (element.widget.key! as ValueKey<String>).value)
+      .toList();
+  expect(ids, hasLength(1), reason: 'se esperaba un único bloque de franja');
+  return ids.single.substring('event-block-'.length);
+}
+
 /// Bloque (Positioned) de la franja con [id] en la línea de tiempo.
 Positioned _block(WidgetTester tester, String id) => tester.widget<Positioned>(
   find.byKey(ValueKey('event-block-$id')),
@@ -345,6 +361,93 @@ void main() {
     expect(find.text('Standup'), findsNothing);
     final schedule = await LocalScheduleRepository().load('ana@flowly.com');
     expect(schedule!.events, isEmpty);
+  });
+
+  testWidgets('una franja creada en Día se ve en la columna de hoy de Semana', (
+    tester,
+  ) async {
+    _useTallSurface(tester);
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    // Se crea en la vista de un día, sobre hoy.
+    await _createEvent(tester, 'Informe');
+    expect(find.text('Informe'), findsOneWidget);
+
+    await _showWeekView(tester);
+
+    // La misma franja aparece en la rejilla, en la columna de hoy.
+    expect(find.text('Informe'), findsOneWidget);
+    final todayIndex = DateTime.now().weekday - DateTime.monday;
+    expect(
+      _block(tester, _onlyBlockId(tester)).left,
+      WeekTimeline.hourLabelWidth +
+          todayIndex * WeekTimeline.dayWidth +
+          WeekTimeline.blockInset,
+    );
+  });
+
+  testWidgets('una franja de otro día se ve en Semana pero no en el plan de hoy', (
+    tester,
+  ) async {
+    _useTallSurface(tester);
+    // Viernes de la semana en curso, a las 11:00.
+    final friday = WeekTimeline.startOfWeek(DateTime.now())
+        .add(const Duration(days: 4));
+    await LocalScheduleRepository().save(
+      'ana@flowly.com',
+      DailySchedule(ownerId: 'ana@flowly.com', events: [
+        ScheduleEvent(
+          id: 'viernes',
+          title: 'Demo',
+          start: DateTime(friday.year, friday.month, friday.day, 11),
+          end: DateTime(friday.year, friday.month, friday.day, 12),
+        ),
+      ]),
+    );
+
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+    await _showWeekView(tester);
+
+    // En la rejilla aparece en la columna del viernes.
+    expect(find.text('Demo'), findsOneWidget);
+    expect(
+      _block(tester, 'viernes').left,
+      WeekTimeline.hourLabelWidth +
+          4 * WeekTimeline.dayWidth +
+          WeekTimeline.blockInset,
+    );
+
+    // El plan de hoy solo muestra las franjas de hoy.
+    await tester.tap(find.text('Día'));
+    await tester.pumpAndSettle();
+    final today = DateTime.now();
+    final isToday = today.year == friday.year &&
+        today.month == friday.month &&
+        today.day == friday.day;
+    expect(find.text('Demo'), isToday ? findsOneWidget : findsNothing);
+  });
+
+  testWidgets('editar en Semana se refleja al volver a Día', (tester) async {
+    _useTallSurface(tester);
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+    await _showWeekView(tester);
+
+    await _createWeekEvent(tester, 0, 8, 'Borrador');
+
+    await tester.tap(find.text('Borrador'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Editar'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'Revisado');
+    await tester.tap(find.text('Confirmar'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Revisado'), findsOneWidget);
+    final schedule = await LocalScheduleRepository().load('ana@flowly.com');
+    expect(schedule!.events.single.title, 'Revisado');
   });
 
   testWidgets('tocar la línea de tiempo abre el diálogo y crea una franja', (
