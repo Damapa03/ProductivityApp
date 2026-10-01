@@ -55,6 +55,7 @@
   "scheduleEventNamePlaceholder": "Qué vas a hacer en esta franja",
   "scheduleStartLabel": "Inicio",
   "scheduleEndLabel": "Fin",
+  "scheduleDayLabel": "Día",
   "scheduleInvalidRange": "La hora de fin debe ser posterior al inicio.",
 
   "columnRename": "Renombrar",

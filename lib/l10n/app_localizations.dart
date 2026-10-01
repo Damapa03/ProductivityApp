@@ -350,6 +350,12 @@ abstract class AppLocalizations {
   /// **'Fin'**
   String get scheduleEndLabel;
 
+  /// No description provided for @scheduleDayLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Día'**
+  String get scheduleDayLabel;
+
   /// No description provided for @scheduleInvalidRange.
   ///
   /// In es, this message translates to:

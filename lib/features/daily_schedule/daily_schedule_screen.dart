@@ -92,11 +92,27 @@ class _DailyScheduleScreenState extends State<DailyScheduleScreen> {
 
   String _newId() => DateTime.now().microsecondsSinceEpoch.toString();
 
+  /// Los siete días de la semana visible, para que el diálogo permita elegir
+  /// el día. Solo tiene sentido en la vista semanal: en el plan del día el
+  /// día lo fija el hueco tocado y no hay nada que escoger.
+  List<DateTime>? get _selectableDays {
+    if (!_showWeek) return null;
+    final monday = WeekTimeline.startOfWeek(DateTime.now());
+    return [
+      for (var day = 0; day < WeekTimeline.daysCount; day++)
+        monday.add(Duration(days: day)),
+    ];
+  }
+
   /// Crea una franja con inicio en [start] (hora del hueco tocado).
   Future<void> _createEvent(DateTime start) async {
     final schedule = _schedule;
     if (schedule == null) return;
-    final draft = await showScheduleEventDialog(context, defaultStart: start);
+    final draft = await showScheduleEventDialog(
+      context,
+      defaultStart: start,
+      selectableDays: _selectableDays,
+    );
     if (draft == null || !mounted) return;
     final event = ScheduleEvent(
       id: _newId(),
@@ -126,6 +142,7 @@ class _DailyScheduleScreenState extends State<DailyScheduleScreen> {
       context,
       defaultStart: event.start,
       initial: event,
+      selectableDays: _selectableDays,
     );
     if (draft == null || !mounted) return;
     final updated = event.copyWith(

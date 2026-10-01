@@ -139,6 +139,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get scheduleEndLabel => 'End';
 
   @override
+  String get scheduleDayLabel => 'Day';
+
+  @override
   String get scheduleInvalidRange => 'End time must be later than start.';
 
   @override

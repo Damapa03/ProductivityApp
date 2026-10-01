@@ -323,6 +323,125 @@ void main() {
     expect(find.text('Revisión'), findsNothing);
   });
 
+  testWidgets('el selector de día solo aparece en la vista semanal', (
+    tester,
+  ) async {
+    _useTallSurface(tester);
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    // En el plan del día no hay nada que escoger: el día lo fija el hueco.
+    final todayHour = DateTime.now().hour;
+    await tester.tapAt(
+      tester.getTopLeft(find.byType(DayTimeline)) +
+          Offset(200, DayTimeline.hourHeight * todayHour + 2),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Nueva tarea'), findsOneWidget);
+    expect(find.byKey(const ValueKey('schedule-day-chip-0')), findsNothing);
+
+    await tester.tap(find.text('Cancelar'));
+    await tester.pumpAndSettle();
+
+    // En la rejilla semanal sí aparece, con los siete días.
+    await _showWeekView(tester);
+    await _tapWeekCell(tester, 0, 9);
+    expect(find.byKey(const ValueKey('schedule-day-chip-0')), findsOneWidget);
+    expect(find.byKey(const ValueKey('schedule-day-chip-6')), findsOneWidget);
+    // Los chips llevan la sigla y el número de cada día, como la cabecera.
+    expect(find.text('LUN'), findsOneWidget);
+    expect(find.text('DOM'), findsOneWidget);
+  });
+
+  testWidgets('crear en la semana permite elegir otro día y lo guarda', (
+    tester,
+  ) async {
+    _useTallSurface(tester);
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+    await _showWeekView(tester);
+
+    // Se abre en el lunes (índice 0) a las 09:00 y se pasa al jueves.
+    await _tapWeekCell(tester, 0, 9);
+    await tester.enterText(find.byType(TextField), 'Citas');
+    await tester.tap(find.byKey(const ValueKey('schedule-day-chip-3')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Confirmar'));
+    await tester.pumpAndSettle();
+
+    final thursday = WeekTimeline.startOfWeek(DateTime.now())
+        .add(const Duration(days: 3));
+    final schedule = await LocalScheduleRepository().load('ana@flowly.com');
+    final event = schedule!.events.single;
+    // Conserva la hora del hueco tocado, solo cambia el día.
+    expect(event.start, DateTime(thursday.year, thursday.month, thursday.day, 9));
+    expect(event.end, event.start.add(const Duration(hours: 1)));
+
+    // Y el bloque se dibuja en la columna del jueves.
+    expect(
+      _block(tester, event.id).left,
+      WeekTimeline.hourLabelWidth +
+          3 * _weekDayWidth(tester) +
+          WeekTimeline.blockInset,
+    );
+  });
+
+  testWidgets('elegir día en un duplicado mueve también la hora de fin', (
+    tester,
+  ) async {
+    _useTallSurface(tester);
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+    await _showWeekView(tester);
+
+    // 09:00–10:00 en el lunes, movido al sábado: conserva hora y duración.
+    await _tapWeekCell(tester, 0, 9);
+    await tester.enterText(find.byType(TextField), 'Mercado');
+    await tester.tap(find.byKey(const ValueKey('schedule-day-chip-5')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Confirmar'));
+    await tester.pumpAndSettle();
+
+    final saturday = WeekTimeline.startOfWeek(DateTime.now())
+        .add(const Duration(days: 5));
+    final schedule = await LocalScheduleRepository().load('ana@flowly.com');
+    final event = schedule!.events.single;
+    expect(event.start, DateTime(saturday.year, saturday.month, saturday.day, 9));
+    expect(event.end, DateTime(saturday.year, saturday.month, saturday.day, 10));
+  });
+
+  testWidgets('editar desde la semana permite mover la franja a otro día', (
+    tester,
+  ) async {
+    _useTallSurface(tester);
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+    await _showWeekView(tester);
+
+    await _createWeekEvent(tester, 1, 14, 'Lectura');
+
+    await tester.tap(find.text('Lectura'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Editar'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('schedule-day-chip-4')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Confirmar'));
+    await tester.pumpAndSettle();
+
+    final friday = WeekTimeline.startOfWeek(DateTime.now())
+        .add(const Duration(days: 4));
+    final schedule = await LocalScheduleRepository().load('ana@flowly.com');
+    final event = schedule!.events.single;
+    expect(event.start, DateTime(friday.year, friday.month, friday.day, 14));
+    expect(
+      _block(tester, event.id).left,
+      WeekTimeline.hourLabelWidth +
+          4 * _weekDayWidth(tester) +
+          WeekTimeline.blockInset,
+    );
+  });
+
   testWidgets('edita una franja desde su bloque en la rejilla semanal', (
     tester,
   ) async {

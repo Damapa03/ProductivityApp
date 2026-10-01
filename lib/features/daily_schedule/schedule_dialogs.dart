@@ -37,15 +37,24 @@ enum ScheduleEventAction { edit, delete }
 ///
 /// Con [initial] pre-rellena el diálogo para editar; sin él, parte desde
 /// [defaultStart] con una duración de una hora. Devuelve `null` si se cancela.
+///
+/// [selectableDays] añade una fila de chips para elegir a qué día va la franja:
+/// solo la vista semanal lo pasa, con los siete días de la semana que está
+/// viendo, de modo que desde el plan del día el campo del día se sigue
+/// deduciendo del hueco tocado y no se puede cambiar.
 Future<ScheduleEventDraft?> showScheduleEventDialog(
   BuildContext context, {
   required DateTime defaultStart,
   ScheduleEvent? initial,
+  List<DateTime>? selectableDays,
 }) {
   return showDialog<ScheduleEventDraft>(
     context: context,
-    builder: (context) =>
-        _ScheduleEventDialog(defaultStart: defaultStart, initial: initial),
+    builder: (context) => _ScheduleEventDialog(
+      defaultStart: defaultStart,
+      initial: initial,
+      selectableDays: selectableDays,
+    ),
   );
 }
 
@@ -109,13 +118,21 @@ Future<bool> showDeleteScheduleEventDialog(
 }
 
 class _ScheduleEventDialog extends StatefulWidget {
-  const _ScheduleEventDialog({required this.defaultStart, this.initial});
+  const _ScheduleEventDialog({
+    required this.defaultStart,
+    this.initial,
+    this.selectableDays,
+  });
 
   /// Fecha base y hora por defecto para el inicio de la franja.
   final DateTime defaultStart;
 
   /// Franja a editar; `null` para crear una nueva.
   final ScheduleEvent? initial;
+
+  /// Días entre los que se puede elegir el de la franja. Si es `null` no se
+  /// muestra el selector y el día queda fijado por el hueco que se tocó.
+  final List<DateTime>? selectableDays;
 
   @override
   State<_ScheduleEventDialog> createState() => _ScheduleEventDialogState();
@@ -145,6 +162,28 @@ class _ScheduleEventDialogState extends State<_ScheduleEventDialog> {
   /// Hora de [time] aplicada sobre la fecha base de [day].
   DateTime _timeOn(DateTime day, TimeOfDay time) {
     return DateTime(day.year, day.month, day.day, time.hour, time.minute);
+  }
+
+  /// Lleva la franja a [day] conservando la hora de inicio y su duración.
+  ///
+  /// Se mueve el inicio a la misma hora del día elegido y el fin se recalcula
+  /// desde la duración previa. Así una franja 10:00–11:00 pasa al miércoles
+  /// siendo 10:00–11:00, y una que cruza medianoche mantiene su salto al día
+  /// siguiente en lugar de collapsing a una duración negativa.
+  void _selectDay(DateTime day) {
+    final duration = _end.difference(_start);
+    final start = DateTime(
+      day.year,
+      day.month,
+      day.day,
+      _start.hour,
+      _start.minute,
+    );
+    setState(() {
+      _start = start;
+      _end = start.add(duration);
+      _error = null;
+    });
   }
 
   Future<void> _pick({required bool isStart}) async {
@@ -220,6 +259,16 @@ class _ScheduleEventDialogState extends State<_ScheduleEventDialog> {
               ),
             ],
           ),
+          if (widget.selectableDays case final days?) ...[
+            const SizedBox(height: 14),
+            Text(l10n.scheduleDayLabel.toUpperCase(), style: AppTextStyles.fieldLabel),
+            const SizedBox(height: 6),
+            _DayChipRow(
+              days: days,
+              selected: _start,
+              onSelected: _selectDay,
+            ),
+          ],
           if (_error != null) ...[
             const SizedBox(height: 12),
             Text(_error!, style: AppTextStyles.fieldError),
@@ -240,6 +289,118 @@ class _ScheduleEventDialogState extends State<_ScheduleEventDialog> {
     );
   }
 }
+
+/// Fila de chips para elegir el día de la franja (solo vista semanal).
+///
+/// Replica el aspecto de la cabecera de la rejilla semanal: sigla encima y
+/// número debajo. El chip del día elegido se rellena con `pineDeep` y su texto
+/// pasa a claro, el mismo criterio que usa el conmutador Día / Semana; hoy se
+/// distingue con el tinte `pinePale` cuando no es el día elegido, para que se
+/// sepa de un vistazo dónde está el día actual.
+class _DayChipRow extends StatelessWidget {
+  const _DayChipRow({
+    required this.days,
+    required this.selected,
+    required this.onSelected,
+  });
+
+  /// Días ofrecidos, en orden.
+  final List<DateTime> days;
+
+  /// Día al que pertenece la franja ahora mismo.
+  final DateTime selected;
+
+  /// Notifica el día elegido.
+  final ValueChanged<DateTime> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final locale = Localizations.localeOf(context).toLanguageTag();
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    return Row(
+      children: [
+        for (final day in days) ...[
+          if (day != days.first) const SizedBox(width: 6),
+          Expanded(
+            child: _DayChip(
+              // Índice de posición, no el día: la clave es estable entre
+              // franja y franja.
+              key: ValueKey('schedule-day-chip-${days.indexOf(day)}'),
+              name: DateFormat.E(locale).format(day).toUpperCase(),
+              number: '${day.day}',
+              isSelected: _sameDay(day, selected),
+              isToday: _sameDay(day, today),
+              onTap: () => onSelected(day),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+/// Un chip de día: la sigla, el número y el toque.
+class _DayChip extends StatelessWidget {
+  const _DayChip({
+    super.key,
+    required this.name,
+    required this.number,
+    required this.isSelected,
+    required this.isToday,
+    required this.onTap,
+  });
+
+  final String name;
+  final String number;
+  final bool isSelected;
+  final bool isToday;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final background = isSelected
+        ? AppColors.pineDeep
+        : isToday
+        ? AppColors.pinePale
+        : Colors.transparent;
+    final foreground = isSelected ? const Color(0xFFF3F4EF) : AppColors.ink;
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        decoration: BoxDecoration(
+          color: background,
+          border: Border.all(
+            color: isSelected ? AppColors.pineDeep : AppColors.line,
+          ),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              name,
+              style: AppTextStyles.weekDayName.copyWith(color: foreground),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              number,
+              style: AppTextStyles.weekDayNumber.copyWith(color: foreground),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Si [a] y [b] caen en el mismo día, sin mirar la hora.
+bool _sameDay(DateTime a, DateTime b) =>
+    a.year == b.year && a.month == b.month && a.day == b.day;
 
 /// Campo de hora del diálogo: abre [showTimePicker] al tocarlo.
 class _TimeField extends StatelessWidget {

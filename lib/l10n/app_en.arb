@@ -49,6 +49,7 @@
   "scheduleEventNamePlaceholder": "What will you do in this time slot",
   "scheduleStartLabel": "Start",
   "scheduleEndLabel": "End",
+  "scheduleDayLabel": "Day",
   "scheduleInvalidRange": "End time must be later than start.",
 
   "columnRename": "Rename",
