@@ -47,6 +47,7 @@
   "dailyTasksViewAll": "Todas las tareas",
 
   "scheduleTitle": "Plan de hoy",
+  "scheduleWeekTitle": "Esta semana",
   "scheduleViewDay": "Día",
   "scheduleViewWeek": "Semana",
   "scheduleCreateEventTitle": "Nueva tarea",

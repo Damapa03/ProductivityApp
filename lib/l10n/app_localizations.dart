@@ -302,6 +302,12 @@ abstract class AppLocalizations {
   /// **'Plan de hoy'**
   String get scheduleTitle;
 
+  /// No description provided for @scheduleWeekTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Esta semana'**
+  String get scheduleWeekTitle;
+
   /// No description provided for @scheduleViewDay.
   ///
   /// In es, this message translates to:

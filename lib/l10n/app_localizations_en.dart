@@ -114,6 +114,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get scheduleTitle => 'Today\'s plan';
 
   @override
+  String get scheduleWeekTitle => 'This week';
+
+  @override
   String get scheduleViewDay => 'Day';
 
   @override
