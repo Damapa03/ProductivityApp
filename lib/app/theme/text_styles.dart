@@ -64,6 +64,24 @@ abstract final class AppTextStyles {
     color: AppColors.ink,
   );
 
+  /// Escritura libre de la lista negra (mockup 06): cada línea es un apunte.
+  static const TextStyle writingText = TextStyle(
+    fontFamily: AppFonts.body,
+    fontWeight: FontWeight.w400,
+    fontSize: 16,
+    height: 1.7,
+    color: AppColors.ink,
+  );
+
+  /// Placeholder del área de escritura de la lista negra.
+  static const TextStyle writingHint = TextStyle(
+    fontFamily: AppFonts.body,
+    fontWeight: FontWeight.w400,
+    fontSize: 16,
+    height: 1.7,
+    color: AppColors.inkFaint,
+  );
+
   /// Aviso de columna vacía.
   static const TextStyle emptyHint = TextStyle(
     fontFamily: AppFonts.body,
