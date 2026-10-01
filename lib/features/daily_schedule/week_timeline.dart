@@ -18,11 +18,13 @@ import 'schedule_painting.dart';
 /// etiquetas de hora se comparten con la vista diaria (ver
 /// `schedule_painting.dart`).
 ///
-/// La rejilla se desplaza en los dos ejes: horizontalmente para que quepan los
-/// siete días en pantallas estrechas (como el `.days-scroll` del mockup) y
-/// verticalmente por las 24 horas, con el [controller] que le pasa la pantalla
-/// para reenfocar la hora actual. La línea de la hora actual solo se dibuja en
-/// la columna de hoy.
+/// La rejilla ocupa todo el ancho disponible: las siete columnas se reparten
+/// el espacio a partes iguales, con un mínimo y un máximo por columna. Solo
+/// en pantallas más estrechas que ese mínimo se desplaza en horizontal; en
+/// pantallas anchas, donde las columnas topan con [maxDayWidth], se centra. El
+/// desplazamiento vertical recorre las 24 horas con el [controller] que le pasa
+/// la pantalla para reenfocar la hora actual. La línea de la hora actual solo
+/// se dibuja en la columna de hoy.
 class WeekTimeline extends StatelessWidget {
   const WeekTimeline({
     super.key,
@@ -61,11 +63,18 @@ class WeekTimeline extends StatelessWidget {
   /// Ancho de la columna de etiquetas de hora (mockup 04b): 38 px.
   static const double hourLabelWidth = 38;
 
-  /// Ancho de cada columna de día (mockup 04b): 56 px.
+  /// Ancho mínimo de una columna de día (mockup 04b): 46 px.
   ///
-  /// Con siete columnas no caben en un móvil, de ahí el desplazamiento
-  /// horizontal: 38 + 7 × 56 = 430 px de rejilla.
-  static const double dayWidth = 56;
+  /// Por debajo de este ancho el título de una franja deja de leerse, así que
+  /// en pantallas muy estrechas la rejilla se sale a scroll en vez de encoger
+  /// las columnas.
+  static const double minDayWidth = 46;
+
+  /// Ancho máximo de una columna de día.
+  ///
+  /// Impide que en una ventana de escritorio las columnas se estiren de más;
+  /// a partir de aquí la rejilla se centra y sobra papel a los lados.
+  static const double maxDayWidth = 120;
 
   /// Alto de la cabecera de días (sigla + número).
   static const double dayHeaderHeight = 36;
@@ -73,8 +82,20 @@ class WeekTimeline extends StatelessWidget {
   /// Alto total de las 24 horas.
   static double get totalHeight => hoursCount * hourHeight;
 
-  /// Ancho total de la rejilla, etiquetas de hora incluidas.
-  static double get gridWidth => hourLabelWidth + daysCount * dayWidth;
+  /// Ancho de cada columna de día para un ancho disponible [availableWidth].
+  ///
+  /// Reparte el sobrante a partes iguales entre los siete días y acota el
+  /// resultado a [minDayWidth]…[maxDayWidth]. Si lo que sale por el mínimo no
+  /// cabe, la rejilla se desplaza en horizontal; si sobra por el máximo, se
+  /// centra.
+  static double dayWidthFor(double availableWidth) {
+    final available = (availableWidth - hourLabelWidth) / daysCount;
+    return available.clamp(minDayWidth, maxDayWidth);
+  }
+
+  /// Ancho total de la rejilla con columnas de [dayWidth], hora incluida.
+  static double gridWidthFor(double dayWidth) =>
+      hourLabelWidth + daysCount * dayWidth;
 
   /// Margen interior de un bloque dentro de su columna.
   static const double blockInset = 2;
@@ -119,102 +140,121 @@ class WeekTimeline extends StatelessWidget {
     // renueva sin necesidad de un temporizador.
     final now = DateTime.now();
     final todayIndex = now.weekday - DateTime.monday;
-    // Paleta por franja, recorriendo el orden de pintado.
-    var paletteIndex = 0;
-    final blocks = <Widget>[];
-    for (var dayIndex = 0; dayIndex < daysCount; dayIndex++) {
-      final day = weekStart.add(Duration(days: dayIndex));
-      // Cada franja va a la columna del día en que empieza, el mismo criterio
-      // que usa la vista diaria: una franja de madrugada aparece en la columna
-      // de la noche en la que se abrió, no en la del día siguiente.
-      final dayEvents = events
-          .where(
-            (e) =>
-                e.start.year == day.year &&
-                e.start.month == day.month &&
-                e.start.day == day.day,
-          )
-          .toList();
-      // Las franjas que se pisan entre sí se reparten el ancho de la columna.
-      final columns = layoutDayColumns(dayEvents);
-      for (final event in dayEvents) {
-        final slot = columns[event.id] ?? (column: 0, columns: 1);
-        final slotWidth = (dayWidth - 2 * blockInset) / slot.columns;
-        blocks.add(
-          _WeekEventBlock(
-            event: event,
-            paletteIndex: paletteIndex,
-            left: hourLabelWidth +
-                dayIndex * dayWidth +
-                blockInset +
-                slot.column * slotWidth,
-            width: slotWidth - 1,
-            onTap: () => onTapEvent(event),
-          ),
-        );
-        paletteIndex++;
-      }
-    }
 
     return Scrollbar(
       controller: controller,
       thumbVisibility: true,
       child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-        child: SingleChildScrollView(
-          key: const Key('week-timeline'),
-          controller: controller,
-          child: SizedBox(
-            width: gridWidth,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
+        key: const Key('week-timeline'),
+        controller: controller,
+        padding: const EdgeInsets.fromLTRB(0, 8, 0, 24),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            // La rejilla ocupa todo el ancho disponible: las siete columnas
+            // reparten el sobrante a partes iguales.
+            final dayWidth = dayWidthFor(constraints.maxWidth);
+            final gridWidth = gridWidthFor(dayWidth);
+
+            // Paleta por franja, recorriendo el orden de pintado.
+            var paletteIndex = 0;
+            final blocks = <Widget>[];
+            for (var dayIndex = 0; dayIndex < daysCount; dayIndex++) {
+              final day = weekStart.add(Duration(days: dayIndex));
+              // Cada franja va a la columna del día en que empieza, el mismo
+              // criterio que usa la vista diaria: una franja de madrugada
+              // aparece en la columna de la noche en la que se abrió, no en la
+              // del día siguiente.
+              final dayEvents = events
+                  .where(
+                    (e) =>
+                        e.start.year == day.year &&
+                        e.start.month == day.month &&
+                        e.start.day == day.day,
+                  )
+                  .toList();
+              // Las franjas que se pisan entre sí se reparten el ancho de la
+              // columna.
+              final columns = layoutDayColumns(dayEvents);
+              for (final event in dayEvents) {
+                final slot = columns[event.id] ?? (column: 0, columns: 1);
+                final slotWidth = (dayWidth - 2 * blockInset) / slot.columns;
+                blocks.add(
+                  _WeekEventBlock(
+                    event: event,
+                    paletteIndex: paletteIndex,
+                    left: hourLabelWidth +
+                        dayIndex * dayWidth +
+                        blockInset +
+                        slot.column * slotWidth,
+                    width: slotWidth - 1,
+                    onTap: () => onTapEvent(event),
+                  ),
+                );
+                paletteIndex++;
+              }
+            }
+
+            return Center(
+              child: SizedBox(
+                width: gridWidth,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Hueco sobre las etiquetas de hora, a la altura de la
-                    // cabecera de días.
-                    const SizedBox(width: hourLabelWidth, height: dayHeaderHeight),
-                    for (var dayIndex = 0; dayIndex < daysCount; dayIndex++)
-                      _DayHeader(
-                        day: weekStart.add(Duration(days: dayIndex)),
-                        width: dayWidth,
-                        isToday: dayIndex == todayIndex,
-                      ),
-                  ],
-                ),
-                SizedBox(
-                  height: totalHeight,
-                  child: Stack(
-                    children: [
-                      // Capa base: las 24 horas de cada día; cada celda abre la
-                      // creación de una franja.
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                    Row(
+                      children: [
+                        // Hueco sobre las etiquetas de hora, a la altura de la
+                        // cabecera de días.
+                        const SizedBox(
+                          width: hourLabelWidth,
+                          height: dayHeaderHeight,
+                        ),
+                        for (var dayIndex = 0; dayIndex < daysCount; dayIndex++)
+                          _DayHeader(
+                            day: weekStart.add(Duration(days: dayIndex)),
+                            width: dayWidth,
+                            isToday: dayIndex == todayIndex,
+                          ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: totalHeight,
+                      child: Stack(
                         children: [
-                          const _HourLabelColumn(),
-                          for (var dayIndex = 0; dayIndex < daysCount; dayIndex++)
-                            _DayColumn(
-                              key: dayColumnKey(dayIndex),
-                              day: weekStart.add(Duration(days: dayIndex)),
-                              width: dayWidth,
-                              onTap: onCreateEvent,
-                            ),
+                          // Capa base: las 24 horas de cada día; cada celda
+                          // abre la creación de una franja.
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const _HourLabelColumn(),
+                              for (var dayIndex = 0;
+                                  dayIndex < daysCount;
+                                  dayIndex++)
+                                _DayColumn(
+                                  key: dayColumnKey(dayIndex),
+                                  day: weekStart.add(
+                                    Duration(days: dayIndex),
+                                  ),
+                                  width: dayWidth,
+                                  onTap: onCreateEvent,
+                                ),
+                            ],
+                          ),
+                          // Capa de franjas, encima de la rejilla.
+                          ...blocks,
+                          // Hora actual, solo en la columna de hoy.
+                          _NowLine(
+                            now: now,
+                            dayIndex: todayIndex,
+                            dayWidth: dayWidth,
+                          ),
                         ],
                       ),
-                      // Capa de franjas, encima de la rejilla.
-                      ...blocks,
-                      // Hora actual, solo en la columna de hoy.
-                      _NowLine(
-                        now: now,
-                        dayIndex: todayIndex,
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         ),
       ),
     );
@@ -494,7 +534,11 @@ class _WeekEventBlock extends StatelessWidget {
 /// toques para no bloquear la creación o edición de franjas. La hora llega
 /// recalculada desde el `build` de la rejilla.
 class _NowLine extends StatelessWidget {
-  const _NowLine({required this.now, required this.dayIndex});
+  const _NowLine({
+    required this.now,
+    required this.dayIndex,
+    required this.dayWidth,
+  });
 
   /// Instante capturado al reconstruir la pantalla.
   final DateTime now;
@@ -502,14 +546,17 @@ class _NowLine extends StatelessWidget {
   /// Columna del día actual, de lunes a domingo.
   final int dayIndex;
 
+  /// Ancho de una columna de día, ya calculado para la pantalla.
+  final double dayWidth;
+
   @override
   Widget build(BuildContext context) {
     final top = WeekTimeline.offsetFor(now).clamp(0.0, WeekTimeline.totalHeight);
     return Positioned(
       key: const Key('week-now-line'),
-      left: WeekTimeline.hourLabelWidth + dayIndex * WeekTimeline.dayWidth,
+      left: WeekTimeline.hourLabelWidth + dayIndex * dayWidth,
       top: top,
-      width: WeekTimeline.dayWidth,
+      width: dayWidth,
       height: 2,
       child: IgnorePointer(
         child: Stack(

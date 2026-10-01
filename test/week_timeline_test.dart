@@ -47,6 +47,15 @@ Widget _harness({
 Positioned _block(WidgetTester tester, String id) =>
     tester.widget<Positioned>(find.byKey(ValueKey('event-block-$id')));
 
+/// Ancho con el que se ha dibujado una columna de día.
+///
+/// La rejilla reparte el espacio disponible entre los siete días, así que el
+/// ancho no es una constante: los tests lo leen de la propia columna ya
+/// pintada en vez de fijarlo, y así siguen siendo válidos con cualquier
+/// superficie de prueba.
+double _dayWidth(WidgetTester tester) =>
+    tester.getSize(find.byKey(WeekTimeline.dayColumnKey(0))).width;
+
 /// Toca la celda de [dayIndex] (lunes = 0) en la fila de la hora [hour], con
 /// [offsetInHour] píxeles dentro de la fila.
 Future<void> _tapCell(
@@ -60,7 +69,7 @@ Future<void> _tapCell(
   await tester.tapAt(
     topLeft +
         Offset(
-          WeekTimeline.dayWidth / 2,
+          _dayWidth(tester) / 2,
           WeekTimeline.hourHeight * hour + offsetInHour,
         ),
   );
@@ -68,6 +77,64 @@ Future<void> _tapCell(
 }
 
 void main() {
+  group('WeekTimeline — reparto del ancho', () {
+    test('reparte el ancho disponible entre los siete días', () {
+      // Con hueco para las etiquetas de hora y sin topar con el máximo, las
+      // columnas comen exactamente el espacio sobrante.
+      expect(WeekTimeline.dayWidthFor(375), closeTo(48.14, 0.01));
+      expect(
+        WeekTimeline.gridWidthFor(WeekTimeline.dayWidthFor(375)),
+        closeTo(375, 0.01),
+      );
+    });
+
+    test('acota el ancho por los dos extremos', () {
+      // Pantalla estrecha: no baja del mínimo legible.
+      expect(WeekTimeline.dayWidthFor(200), WeekTimeline.minDayWidth);
+      // Pantalla muy ancha: no se estira de más y la rejilla se centra.
+      expect(WeekTimeline.dayWidthFor(2000), WeekTimeline.maxDayWidth);
+    });
+
+    testWidgets('la rejilla ocupa todo el ancho de la pantalla', (tester) async {
+      tester.view.physicalSize = const Size(390, 1200);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await tester.pumpWidget(_harness());
+      await tester.pumpAndSettle();
+
+      // Etiquetas de hora + siete columnas = ancho completo. Y un solo
+      // desplazamiento: el vertical de las 24 horas.
+      final lastColumn = find.byKey(WeekTimeline.dayColumnKey(6));
+      final gridRight = tester.getTopLeft(lastColumn).dx +
+          tester.getSize(lastColumn).width;
+      expect(gridRight, closeTo(390, 0.5));
+      expect(find.byType(SingleChildScrollView), findsOneWidget);
+    });
+
+    testWidgets('centra la rejilla cuando las columnas topan con el máximo', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(1600, 1200);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await tester.pumpWidget(_harness());
+      await tester.pumpAndSettle();
+
+      // Las columnas se quedan en 120 px y sobran papel a los lados.
+      expect(_dayWidth(tester), WeekTimeline.maxDayWidth);
+      final gridWidth = WeekTimeline.gridWidthFor(_dayWidth(tester));
+      expect(gridWidth, closeTo(878, 0.5));
+      // Centrada: el mismo margen a la izquierda que a la derecha.
+      final gridLeft = tester.getTopLeft(
+        find.byKey(WeekTimeline.dayColumnKey(0)),
+      ).dx -
+          WeekTimeline.hourLabelWidth;
+      expect(gridLeft, closeTo((1600 - gridWidth) / 2, 0.5));
+    });
+  });
+
   group('WeekTimeline — rejilla', () {
     testWidgets('dibuja los siete días con sigla y número', (tester) async {
       await tester.pumpWidget(_harness());
@@ -131,7 +198,7 @@ void main() {
       final todayIndex = DateTime.now().weekday - DateTime.monday;
       expect(
         line.left,
-        WeekTimeline.hourLabelWidth + todayIndex * WeekTimeline.dayWidth,
+        WeekTimeline.hourLabelWidth + todayIndex * _dayWidth(tester),
       );
     });
 
@@ -148,7 +215,8 @@ void main() {
       await tester.pumpAndSettle();
 
       double leftOf(String id) => _block(tester, id).left!;
-      final slotWidth = (WeekTimeline.dayWidth - 2 * WeekTimeline.blockInset);
+      final dayWidth = _dayWidth(tester);
+      final slotWidth = dayWidth - 2 * WeekTimeline.blockInset;
 
       // Columna del día: etiquetas de hora + día × ancho, más el margen.
       expect(
@@ -158,13 +226,13 @@ void main() {
       expect(
         leftOf('miercoles'),
         WeekTimeline.hourLabelWidth +
-            2 * WeekTimeline.dayWidth +
+            2 * dayWidth +
             WeekTimeline.blockInset,
       );
       expect(
         leftOf('domingo'),
         WeekTimeline.hourLabelWidth +
-            6 * WeekTimeline.dayWidth +
+            6 * dayWidth +
             WeekTimeline.blockInset,
       );
       // Sin solapes, cada bloque ocupa su columna entera menos el margen.
@@ -200,16 +268,18 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      final full = (WeekTimeline.dayWidth - 2 * WeekTimeline.blockInset) - 1;
-      // Dos subcolumnas: (56 − 4) / 2, menos el separador de 1 px.
-      final half = (WeekTimeline.dayWidth - 2 * WeekTimeline.blockInset) / 2 - 1;
+      final column = _dayWidth(tester) - 2 * WeekTimeline.blockInset;
+      final full = column - 1;
+      // Dos subcolumnas: la mitad del ancho útil de la columna, menos el
+      // separador de 1 px.
+      final half = column / 2 - 1;
 
       // Las dos que coinciden se reparten la columna; la otra va a lo ancho.
       expect(_block(tester, 'a').width, closeTo(half, 0.5));
       expect(_block(tester, 'b').width, closeTo(half, 0.5));
       // La segunda arranca una subcolumna más a la derecha (dejando 1 px de
       // separador).
-      final slotWidth = (WeekTimeline.dayWidth - 2 * WeekTimeline.blockInset) / 2;
+      final slotWidth = column / 2;
       expect(
         _block(tester, 'b').left,
         _block(tester, 'a').left! + slotWidth,

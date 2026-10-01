@@ -56,6 +56,13 @@ Positioned _block(WidgetTester tester, String id) => tester.widget<Positioned>(
   find.byKey(ValueKey('event-block-$id')),
 );
 
+/// Ancho con el que se ha dibujado una columna de día de la rejilla semanal.
+///
+/// Las columnas reparten el ancho disponible, así que los tests leen el ancho
+/// real de la columna pintada en lugar de asumir una constante.
+double _weekDayWidth(WidgetTester tester) =>
+    tester.getSize(find.byKey(WeekTimeline.dayColumnKey(0))).width;
+
 /// Deja la pantalla en la vista semanal.
 Future<void> _showWeekView(WidgetTester tester) async {
   await tester.tap(find.text('Semana'));
@@ -83,7 +90,7 @@ Future<void> _tapWeekCell(
   await tester.tapAt(
     tester.getTopLeft(column) +
         Offset(
-          WeekTimeline.dayWidth / 2,
+          tester.getSize(column).width / 2,
           WeekTimeline.hourHeight * hour + offsetInHour,
         ),
   );
@@ -275,7 +282,7 @@ void main() {
       expect(
         _block(tester, id).left,
         WeekTimeline.hourLabelWidth +
-            day * WeekTimeline.dayWidth +
+            day * _weekDayWidth(tester) +
             WeekTimeline.blockInset,
         reason: '$id debería estar en la columna del día $day',
       );
@@ -382,7 +389,7 @@ void main() {
     expect(
       _block(tester, _onlyBlockId(tester)).left,
       WeekTimeline.hourLabelWidth +
-          todayIndex * WeekTimeline.dayWidth +
+          todayIndex * _weekDayWidth(tester) +
           WeekTimeline.blockInset,
     );
   });
@@ -415,7 +422,7 @@ void main() {
     expect(
       _block(tester, 'viernes').left,
       WeekTimeline.hourLabelWidth +
-          4 * WeekTimeline.dayWidth +
+          4 * _weekDayWidth(tester) +
           WeekTimeline.blockInset,
     );
 
