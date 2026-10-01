@@ -28,7 +28,9 @@ import 'schedule_painting.dart';
 /// reenfocar la hora actual), así que siempre se sabe en qué día se está. Cada
 /// columna y cada cabecera llevan su línea vertical izquierda, que separa un
 /// día del siguiente. Ninguna columna lleva tinte de fondo, ni siquiera los días
-/// que ya han pasado: solo el de hoy se resalta en la cabecera.
+/// que ya han pasado: solo el de hoy se resalta en la cabecera. A la derecha
+/// queda un respiro de [rightGutter] para que la última columna no toque el
+/// borde de la pantalla.
 class WeekTimeline extends StatelessWidget {
   const WeekTimeline({
     super.key,
@@ -81,6 +83,14 @@ class WeekTimeline extends StatelessWidget {
   /// Alto total de las 24 horas.
   static double get totalHeight => hoursCount * hourHeight;
 
+  /// Respiro a la derecha de la rejilla, para que la última columna no quede
+  /// pegada al borde de la pantalla y su separador se lea suelto.
+  ///
+  /// Va incluido en el ancho de la rejilla, no como margen por fuera: así la
+  /// semana sigue estirándose hasta llenar la pantalla y el hueco se come el
+  /// sobrante repartido entre los siete días.
+  static const double rightGutter = 8;
+
   /// Ancho de cada columna de día para un ancho disponible [availableWidth].
   ///
   /// La rejilla se estira todo lo que pueda: los siete días se reparten a
@@ -88,7 +98,8 @@ class WeekTimeline extends StatelessWidget {
   /// semana ocupa la pantalla entera. [minDayWidth] es el suelo: por debajo la
   /// rejilla deja de caber y aparece el desplazamiento horizontal.
   static double dayWidthFor(double availableWidth) {
-    final available = (availableWidth - hourLabelWidth) / daysCount;
+    final available =
+        (availableWidth - hourLabelWidth - rightGutter) / daysCount;
     return math.max(minDayWidth, available);
   }
 
@@ -97,9 +108,10 @@ class WeekTimeline extends StatelessWidget {
   static bool needsHorizontalScroll(double availableWidth) =>
       gridWidthFor(dayWidthFor(availableWidth)) > availableWidth;
 
-  /// Ancho total de la rejilla con columnas de [dayWidth], hora incluida.
+  /// Ancho total de la rejilla con columnas de [dayWidth], hora y respiro
+  /// incluidos.
   static double gridWidthFor(double dayWidth) =>
-      hourLabelWidth + daysCount * dayWidth;
+      hourLabelWidth + daysCount * dayWidth + rightGutter;
 
   /// Margen interior de un bloque dentro de su columna.
   static const double blockInset = 2;
@@ -222,6 +234,8 @@ class WeekTimeline extends StatelessWidget {
               );
             },
           ),
+        // Respiro final, el mismo que deja la rejilla de horas.
+        const SizedBox(width: rightGutter),
       ],
     );
   }
@@ -290,6 +304,8 @@ class WeekTimeline extends StatelessWidget {
                     );
                   },
                 ),
+              // Respiro final, el mismo que deja la cabecera de días.
+              const SizedBox(width: rightGutter),
             ],
           ),
           // Capa de franjas, encima de la rejilla.

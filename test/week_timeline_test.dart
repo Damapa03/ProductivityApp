@@ -111,12 +111,29 @@ void main() {
 
   group('WeekTimeline — reparto del ancho', () {
     test('reparte el ancho disponible entre los siete días', () {
-      // Con hueco para las etiquetas de hora y sin topar con el máximo, las
-      // columnas comen exactamente el espacio sobrante.
-      expect(WeekTimeline.dayWidthFor(375), closeTo(48.14, 0.01));
+      // Las columnas comen el sobrante una vez descontadas las etiquetas de
+      // hora y el respiro de la derecha.
+      final width = WeekTimeline.dayWidthFor(375);
+      expect(width, closeTo(47.0, 0.01));
       expect(
-        WeekTimeline.gridWidthFor(WeekTimeline.dayWidthFor(375)),
+        WeekTimeline.gridWidthFor(width),
         closeTo(375, 0.01),
+        reason: 'la rejilla debe llenar el ancho sin pasarse',
+      );
+    });
+
+    test('el respiro de la derecha va incluido en el ancho', () {
+      // El hueco no es un margen por fuera: el ancho total sigue siendo el
+      // disponible, así que la semana no deja de estirarse por añadirlo.
+      final width = WeekTimeline.dayWidthFor(375);
+      final gutterless = (375 - WeekTimeline.hourLabelWidth) / WeekTimeline.daysCount;
+      expect(width, lessThan(gutterless));
+      // Lo que el respiro se come del ancho disponible es exactamente el respiro:
+      // el resto sigue siendo el de las etiquetas de hora más las siete
+      // columnas, sin un margen escondido por fuera.
+      expect(
+        WeekTimeline.gridWidthFor(width) - gutterless * WeekTimeline.daysCount,
+        closeTo(WeekTimeline.hourLabelWidth, 0.01),
       );
     });
 
@@ -129,7 +146,7 @@ void main() {
     });
 
     test('sin techo: se estira hasta el ancho disponible', () {
-      expect(WeekTimeline.dayWidthFor(1600), closeTo(223.14, 0.01));
+      expect(WeekTimeline.dayWidthFor(1600), closeTo(222.0, 0.01));
       expect(
         WeekTimeline.gridWidthFor(WeekTimeline.dayWidthFor(1600)),
         closeTo(1600, 0.01),
@@ -146,13 +163,32 @@ void main() {
       await tester.pumpWidget(_harness());
       await tester.pumpAndSettle();
 
-      // Etiquetas de hora + siete columnas = ancho completo, y solo se
-      // desplaza el eje vertical de las horas.
+      // Etiquetas de hora + siete columnas + el respiro = ancho completo, y
+      // solo se desplaza el eje vertical de las horas.
       final lastColumn = find.byKey(WeekTimeline.dayColumnKey(6));
       final gridRight = tester.getTopLeft(lastColumn).dx +
           tester.getSize(lastColumn).width;
-      expect(gridRight, closeTo(390, 0.5));
+      expect(gridRight, closeTo(390 - WeekTimeline.rightGutter, 0.5));
       expect(find.byType(SingleChildScrollView), findsOneWidget);
+    });
+
+    testWidgets('la última columna deja un respiro antes del borde', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(390, 1200);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await tester.pumpWidget(_harness());
+      await tester.pumpAndSettle();
+
+      final lastColumn = find.byKey(WeekTimeline.dayColumnKey(6));
+      expect(
+        390 -
+            (tester.getTopLeft(lastColumn).dx +
+                tester.getSize(lastColumn).width),
+        closeTo(WeekTimeline.rightGutter, 0.5),
+      );
     });
 
     testWidgets('en pantalla ancha las columnas se estiran y no hay scroll', (
@@ -165,11 +201,11 @@ void main() {
       await tester.pumpWidget(_harness());
       await tester.pumpAndSettle();
 
-      expect(_dayWidth(tester), closeTo(223.14, 0.5));
+      expect(_dayWidth(tester), closeTo(222.0, 0.5));
       final lastColumn = find.byKey(WeekTimeline.dayColumnKey(6));
       expect(
         tester.getTopLeft(lastColumn).dx + tester.getSize(lastColumn).width,
-        closeTo(1600, 0.5),
+        closeTo(1600 - WeekTimeline.rightGutter, 0.5),
       );
       expect(find.byType(SingleChildScrollView), findsOneWidget);
     });
