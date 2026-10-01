@@ -120,11 +120,22 @@ void main() {
       );
     });
 
-    test('acota el ancho por los dos extremos', () {
-      // Pantalla estrecha: no baja del mínimo legible.
+    test('por debajo del ancho mínimo la rejilla se desborda', () {
+      // Pantalla estrecha: las columnas se quedan en el mínimo legible aunque
+      // no quepan, y el ancho total supera la pantalla.
       expect(WeekTimeline.dayWidthFor(200), WeekTimeline.minDayWidth);
-      // Pantalla muy ancha: no se estira de más y la rejilla se centra.
-      expect(WeekTimeline.dayWidthFor(2000), WeekTimeline.maxDayWidth);
+      expect(WeekTimeline.gridWidthFor(WeekTimeline.minDayWidth), greaterThan(200));
+      expect(WeekTimeline.needsHorizontalScroll(200), isTrue);
+    });
+
+    test('sin techo: se estira hasta el ancho disponible', () {
+      expect(WeekTimeline.dayWidthFor(1600), closeTo(223.14, 0.01));
+      expect(
+        WeekTimeline.gridWidthFor(WeekTimeline.dayWidthFor(1600)),
+        closeTo(1600, 0.01),
+      );
+      // Y no hace falta desplazar en horizontal.
+      expect(WeekTimeline.needsHorizontalScroll(1600), isFalse);
     });
 
     testWidgets('la rejilla ocupa todo el ancho de la pantalla', (tester) async {
@@ -135,8 +146,8 @@ void main() {
       await tester.pumpWidget(_harness());
       await tester.pumpAndSettle();
 
-      // Etiquetas de hora + siete columnas = ancho completo. Y un solo
-      // desplazamiento: el vertical de las 24 horas.
+      // Etiquetas de hora + siete columnas = ancho completo, y solo se
+      // desplaza el eje vertical de las horas.
       final lastColumn = find.byKey(WeekTimeline.dayColumnKey(6));
       final gridRight = tester.getTopLeft(lastColumn).dx +
           tester.getSize(lastColumn).width;
@@ -144,7 +155,7 @@ void main() {
       expect(find.byType(SingleChildScrollView), findsOneWidget);
     });
 
-    testWidgets('centra la rejilla cuando las columnas topan con el máximo', (
+    testWidgets('en pantalla ancha las columnas se estiran y no hay scroll', (
       tester,
     ) async {
       tester.view.physicalSize = const Size(1600, 1200);
@@ -154,16 +165,65 @@ void main() {
       await tester.pumpWidget(_harness());
       await tester.pumpAndSettle();
 
-      // Las columnas se quedan en 120 px y sobran papel a los lados.
-      expect(_dayWidth(tester), WeekTimeline.maxDayWidth);
-      final gridWidth = WeekTimeline.gridWidthFor(_dayWidth(tester));
-      expect(gridWidth, closeTo(878, 0.5));
-      // Centrada: el mismo margen a la izquierda que a la derecha.
-      final gridLeft = tester.getTopLeft(
-        find.byKey(WeekTimeline.dayColumnKey(0)),
-      ).dx -
-          WeekTimeline.hourLabelWidth;
-      expect(gridLeft, closeTo((1600 - gridWidth) / 2, 0.5));
+      expect(_dayWidth(tester), closeTo(223.14, 0.5));
+      final lastColumn = find.byKey(WeekTimeline.dayColumnKey(6));
+      expect(
+        tester.getTopLeft(lastColumn).dx + tester.getSize(lastColumn).width,
+        closeTo(1600, 0.5),
+      );
+      expect(find.byType(SingleChildScrollView), findsOneWidget);
+    });
+
+    testWidgets('por debajo del mínimo aparece el scroll horizontal', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(200, 1200);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await tester.pumpWidget(_harness());
+      await tester.pumpAndSettle();
+
+      // Las columnas no bajan del mínimo y la rejilla no cabe. Hay un
+      // desplazamiento vertical (las horas) y dos horizontales: el de la
+      // cabecera de días y el de las columnas, para que ambas se muevan juntas.
+      expect(_dayWidth(tester), WeekTimeline.minDayWidth);
+      final scrollViews = tester
+          .widgetList<SingleChildScrollView>(find.byType(SingleChildScrollView))
+          .toList();
+      expect(scrollViews, hasLength(3));
+      expect(
+        scrollViews.where((s) => s.scrollDirection == Axis.vertical),
+        hasLength(1),
+      );
+      expect(
+        scrollViews.where((s) => s.scrollDirection == Axis.horizontal),
+        hasLength(2),
+      );
+    });
+
+    testWidgets('la cabecera de días queda fija sobre el scroll de horas', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(390, 700);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await tester.pumpWidget(_harness());
+      await tester.pumpAndSettle();
+
+      final header = find.byKey(const ValueKey('week-day-header-28'));
+      expect(header, findsOneWidget);
+      final headerTop = tester.getTopLeft(header).dy;
+
+      // Se baja hasta el final del recorrido: los nombres de los días siguen
+      // en pantalla, en el mismo sitio.
+      await tester.drag(find.byKey(const Key('week-timeline')), const Offset(0, -4000));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const ValueKey('week-day-header-28')), findsOneWidget);
+      expect(find.byKey(const ValueKey('week-day-header-4')), findsOneWidget);
+      expect(tester.getTopLeft(header).dy, closeTo(headerTop, 0.5));
     });
   });
 
@@ -258,21 +318,61 @@ void main() {
       }
     });
 
-    testWidgets('atenúa con futurePale los días que ya han pasado', (
+    testWidgets('los días que ya han pasado no llevan tinte de fondo', (
       tester,
     ) async {
-      // Semana anterior: sus siete días ya han pasado.
+      // Semana anterior: sus siete días ya han pasado y ninguno se marca.
       await tester.pumpWidget(
         _harness(weekStart: _monday.subtract(const Duration(days: 7))),
       );
       await tester.pumpAndSettle();
 
+      for (var day = 21; day <= 27; day++) {
+        final header = tester.widget<Container>(
+          find.byKey(ValueKey('week-day-header-$day')),
+        );
+        expect(
+          (header.decoration! as BoxDecoration).color,
+          isNull,
+          reason: 'el día $day no debería llevar fondo',
+        );
+      }
+    });
+
+    testWidgets('cada columna lleva su línea separadora con la de al lado', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_harness());
+      await tester.pumpAndSettle();
+
+      Color? leftBorderOf(int dayIndex) {
+        final cell = tester.widget<Container>(
+          find
+              .descendant(
+                of: find.byKey(WeekTimeline.dayColumnKey(dayIndex)),
+                matching: find.byType(Container),
+              )
+              .first,
+        );
+        final border = (cell.decoration! as BoxDecoration).border;
+        return border is Border ? border.left.color : null;
+      }
+
+      // Del lunes al domingo hay una línea vertical entre cada par de días.
+      for (var dayIndex = 0; dayIndex < WeekTimeline.daysCount; dayIndex++) {
+        expect(
+          leftBorderOf(dayIndex),
+          AppColors.lineFaint,
+          reason: 'falta la línea del día $dayIndex',
+        );
+      }
+      // Y la cabecera usa la misma línea, para que el separador sea continuo.
       final header = tester.widget<Container>(
-        find.byKey(ValueKey('week-day-header-21')),
+        find.byKey(ValueKey('week-day-header-29')),
       );
       expect(
-        (header.decoration! as BoxDecoration).color,
-        AppColors.futurePale,
+        ((header.decoration! as BoxDecoration).border as Border).left.color,
+        AppColors.lineFaint,
       );
     });
 
