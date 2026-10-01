@@ -25,6 +25,66 @@ void main() {
     expect(today.map((e) => e.title).toList(), ['Hoy']);
   });
 
+  group('eventsBetween filtra por rango de la semana', () {
+    final schedule = DailySchedule.empty('ana@flowly.com').copyWith(
+      events: [
+        ScheduleEvent(
+          id: 'lunes',
+          title: 'Lunes',
+          start: DateTime(2026, 9, 28, 0),
+          end: DateTime(2026, 9, 28, 1),
+        ),
+        ScheduleEvent(
+          id: 'domingo',
+          title: 'Domingo',
+          start: DateTime(2026, 10, 4, 23, 45),
+          end: DateTime(2026, 10, 5),
+        ),
+        ScheduleEvent(
+          id: 'siguiente',
+          title: 'Lunes siguiente',
+          start: DateTime(2026, 10, 5, 0),
+          end: DateTime(2026, 10, 5, 1),
+        ),
+        ScheduleEvent(
+          id: 'anterior',
+          title: 'Semana anterior',
+          start: DateTime(2026, 9, 27, 12),
+          end: DateTime(2026, 9, 27, 13),
+        ),
+      ],
+    );
+
+    // Semana del lunes 28 al domingo 4, cruzando el cambio de mes.
+    final from = DateTime(2026, 9, 28);
+    final to = DateTime(2026, 10, 5);
+
+    test('incluye desde el inicio y excluye el límite superior', () {
+      expect(
+        schedule.eventsBetween(from, to).map((e) => e.title).toList(),
+        ['Lunes', 'Domingo'],
+      );
+    });
+
+    test('no incluye lo que empieza justo al terminar la semana', () {
+      final titles = schedule.eventsBetween(from, to).map((e) => e.title);
+      expect(titles, isNot(contains('Lunes siguiente')));
+    });
+
+    test('excluye la semana anterior', () {
+      final titles = schedule.eventsBetween(from, to).map((e) => e.title);
+      expect(titles, isNot(contains('Semana anterior')));
+    });
+
+    test('funciona también dentro de un mismo mes', () {
+      final dentroDeSeptiembre = schedule.eventsBetween(
+        DateTime(2026, 9, 28),
+        DateTime(2026, 9, 29),
+      );
+      expect(dentroDeSeptiembre.map((e) => e.title).toList(), ['Lunes']);
+    });
+  });
+
   test('duration calcula el intervalo de la franja', () {
     final event = ScheduleEvent(
       id: 'e1',

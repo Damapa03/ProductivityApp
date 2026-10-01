@@ -23,6 +23,19 @@ class DailySchedule {
         .toList();
   }
 
+  /// Franjas que empiezan dentro del intervalo [from, toExclusive).
+  ///
+  /// La vista semanal filtra por rango con esta consulta: como cada franja
+  /// guarda su fecha en [ScheduleEvent.start], da igual que la semana se
+  /// cruce de mes o de año sin tocar el modelo ni el contrato JSON. El límite
+  /// superior es exclusivo, de modo que la primera franja del lunes siguiente
+  /// no se cuela en la semana anterior.
+  List<ScheduleEvent> eventsBetween(DateTime from, DateTime toExclusive) {
+    return events
+        .where((e) => !e.start.isBefore(from) && e.start.isBefore(toExclusive))
+        .toList();
+  }
+
   DailySchedule copyWith({String? ownerId, List<ScheduleEvent>? events}) {
     return DailySchedule(
       ownerId: ownerId ?? this.ownerId,
