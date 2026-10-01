@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import '../../app/theme/colors.dart';
 import '../../app/theme/text_styles.dart';
 import '../../models/schedule_event.dart';
+import 'schedule_painting.dart';
 
 /// Línea de tiempo del día actual con sus 24 horas (mockup 04).
 ///
@@ -157,7 +157,7 @@ class _HourRow extends StatelessWidget {
   final ValueChanged<DateTime> onTap;
 
   /// Etiqueta en formato 24 h: «00:00» … «23:00».
-  String get _label => '${hour.toString().padLeft(2, '0')}:00';
+  String get _label => scheduleHourLabel(hour);
 
   @override
   Widget build(BuildContext context) {
@@ -206,15 +206,6 @@ class _HourRow extends StatelessWidget {
   }
 }
 
-/// Colores de los bloques del mockup 04, en ciclo por índice: pine, ámbar,
-/// rosa y neutro con borde.
-const List<({Color bg, Color fg, bool outline})> _eventPalettes = [
-  (bg: AppColors.pinePale, fg: AppColors.pineDeep, outline: false),
-  (bg: AppColors.amberPale, fg: AppColors.amberDeep, outline: false),
-  (bg: AppColors.rosePale, fg: AppColors.roseDeep, outline: false),
-  (bg: AppColors.cardBg, fg: AppColors.ink, outline: true),
-];
-
 /// Bloque de una franja, posicionado sobre la cuadrícula.
 class _EventBlock extends StatelessWidget {
   const _EventBlock({
@@ -228,7 +219,7 @@ class _EventBlock extends StatelessWidget {
 
   final ScheduleEvent event;
 
-  /// Índice en [_eventPalettes] para elegir color y texto del bloque.
+  /// Índice en [scheduleBlockPalettes] para elegir color y texto del bloque.
   final int paletteIndex;
 
   /// Ancho total disponible para las franjas (contenido menos etiquetas).
@@ -244,7 +235,7 @@ class _EventBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final palette = _eventPalettes[paletteIndex % _eventPalettes.length];
+    final palette = scheduleBlockPaletteAt(paletteIndex);
     final top = DayTimeline.offsetFor(event.start).clamp(0.0, DayTimeline.totalHeight);
     final maxHeight = DayTimeline.totalHeight - top;
     final durationHeight = event.duration.inSeconds / 3600 * DayTimeline.hourHeight;
@@ -253,9 +244,7 @@ class _EventBlock extends StatelessWidget {
     // en caso contrario la franja ocupa todo el ancho de la pista.
     final slotWidth = trackWidth / slotCount;
     final left = DayTimeline.hourLabelWidth + (slotIndex * slotWidth);
-    final locale = Localizations.localeOf(context).toLanguageTag();
-    final start = DateFormat.Hm(locale).format(event.start);
-    final end = DateFormat.Hm(locale).format(event.end);
+    final timeRange = scheduleTimeRange(context, event);
 
     return Positioned(
       key: ValueKey('event-block-${event.id}'),
@@ -287,7 +276,7 @@ class _EventBlock extends StatelessWidget {
               ),
               const SizedBox(height: 2),
               Text(
-                '$start – $end',
+                timeRange,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: AppTextStyles.eventTime.copyWith(color: palette.fg),

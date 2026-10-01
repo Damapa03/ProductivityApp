@@ -211,4 +211,34 @@ static const TextStyle fieldPlaceholder = TextStyle(
     height: 1.2,
     color: AppColors.ink,
   );
+
+  /// Sigla del día en la cabecera de la rejilla semanal (p. ej. «Mie»).
+  static const TextStyle weekDayName = TextStyle(
+    fontFamily: AppFonts.body,
+    fontWeight: FontWeight.w400,
+    fontSize: 10.5,
+    height: 1.2,
+    color: AppColors.inkSoft,
+  );
+
+  /// Número de día en la cabecera de la rejilla semanal (mockup 04b).
+  static const TextStyle weekDayNumber = TextStyle(
+    fontFamily: AppFonts.display,
+    fontWeight: FontWeight.w600,
+    fontSize: 13,
+    height: 1.25,
+    color: AppColors.ink,
+  );
+
+  /// Título de una franja en la rejilla semanal.
+  ///
+  /// Las columnas son estrechas, así que solo cabe el nombre: las horas las
+  /// aporta la posición del bloque. El color lo fija la paleta.
+  static const TextStyle weekEventName = TextStyle(
+    fontFamily: AppFonts.body,
+    fontWeight: FontWeight.w600,
+    fontSize: 9.5,
+    height: 1.2,
+    color: AppColors.ink,
+  );
 }
