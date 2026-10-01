@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
-import '../../app/theme/text_styles.dart';
 import '../../data/schedule_repository.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/daily_schedule.dart';
 import '../../models/schedule_event.dart';
+import '../../widgets/screen_header.dart';
 import '../../widgets/segmented_control.dart';
 import 'day_timeline.dart';
 import 'schedule_dialogs.dart';
@@ -13,10 +12,10 @@ import 'schedule_dialogs.dart';
 /// Pantalla «Daily Schedule»: plan del día actual sobre una línea de tiempo
 /// con sus 24 horas (ver mockup 04).
 ///
-/// Comparte cabecera con Daily Tasks (fecha + título) y añade un selector
-/// «Día / Semana» donde solo «Día» está implementada. Al tocar un hueco se
-/// crea una franja horaria (tarea de agenda, independiente del kanban) y al
-/// tocar una franja se ofrece editarla o eliminarla.
+/// Comparte cabecera con el resto de pantallas ([ScreenHeader]: fecha + título)
+/// y añade un selector «Día / Semana» donde solo «Día» está implementada. Al
+/// tocar un hueco se crea una franja horaria (tarea de agenda, independiente
+/// del kanban) y al tocar una franja se ofrece editarla o eliminarla.
 class DailyScheduleScreen extends StatefulWidget {
   const DailyScheduleScreen({
     super.key,
@@ -165,13 +164,6 @@ class _DailyScheduleScreenState extends State<DailyScheduleScreen> {
     });
   }
 
-  /// Fecha del día localizada («lunes, 28 septiembre») con mayúscula inicial.
-  String _formattedDate(BuildContext context) {
-    final locale = Localizations.localeOf(context).toLanguageTag();
-    final formatted = DateFormat('EEEE, d MMMM', locale).format(DateTime.now());
-    return formatted[0].toUpperCase() + formatted.substring(1);
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -186,26 +178,10 @@ class _DailyScheduleScreenState extends State<DailyScheduleScreen> {
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Padding(
-                    // Mismo margen superior y lateral que Daily Tasks para
-                    // alinear la cabecera con el selector y la línea de tiempo.
-                    padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          _formattedDate(context),
-                          style: AppTextStyles.eyebrow,
-                        ),
-                        const SizedBox(height: 3),
-                        Text(
-                          l10n.scheduleTitle,
-                          style: AppTextStyles.screenTitle,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 18),
+                  // Cabecera compartida con el resto de pantallas (fecha +
+                  // nombre), con el mismo margen que el selector y la línea de
+                  // tiempo.
+                  ScreenHeader(title: l10n.scheduleTitle),
                   // Selector «Día / Semana»: solo «Día» está implementada;
                   // «Semana» está presente pero sin funcionalidad.
                   SegmentedControl(

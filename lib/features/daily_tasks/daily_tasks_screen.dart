@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import '../../app/theme/colors.dart';
-import '../../app/theme/text_styles.dart';
 import '../../data/kanban_repository.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/kanban_board.dart';
 import '../../models/kanban_column.dart';
 import '../../models/kanban_task.dart';
+import '../../widgets/screen_header.dart';
 import '../../widgets/segmented_control.dart';
 import 'add_task_fab.dart';
 import 'all_tasks_view.dart';
@@ -198,12 +197,6 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
     await _persist(board.copyWith(tasks: tasks));
   }
 
-  String _formattedDate(BuildContext context) {
-    final locale = Localizations.localeOf(context).toLanguageTag();
-    final formatted = DateFormat('EEEE, d MMMM', locale).format(DateTime.now());
-    return formatted[0].toUpperCase() + formatted.substring(1);
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -216,15 +209,10 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Padding(
-                    // Margen superior para que la fecha no quede pegada
-                    // al borde (en navegador el SafeArea no aporta aire), y
-                    // lateral de 24 para alinear el título con el selector de
-                    // vista y con el tablero.
-                    padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
-                    child: _buildHeader(context, l10n),
-                  ),
-                  const SizedBox(height: 18),
+                  // Cabecera compartida con el resto de pantallas (fecha +
+                  // nombre), con el mismo margen que el selector de vista y el
+                  // tablero.
+                  ScreenHeader(title: l10n.dailyTasksTitle),
                   _ViewSwitcher(
                     showAllTasks: _showAllTasks,
                     onChanged: (all) => setState(() => _showAllTasks = all),
@@ -244,19 +232,6 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
               ),
       ),
       floatingActionButton: AddTaskFab(onPressed: _addTaskFromFab),
-    );
-  }
-
-  Widget _buildHeader(BuildContext context, AppLocalizations l10n) {
-    // Sin flecha de retroceso: la pantalla ya no es una ruta encima del login,
-    // es una pestaña del shell.
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(_formattedDate(context), style: AppTextStyles.eyebrow),
-        const SizedBox(height: 3),
-        Text(l10n.dailyTasksTitle, style: AppTextStyles.screenTitle),
-      ],
     );
   }
 

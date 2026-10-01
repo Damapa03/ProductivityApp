@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import '../../app/theme/text_styles.dart';
 import '../../data/black_list_repository.dart';
 import '../../l10n/app_localizations.dart';
+import '../../widgets/screen_header.dart';
 
 /// Pantalla «Black List»: escritura libre a modo de listado (mockup 06).
 ///
@@ -156,13 +156,6 @@ class _BlackListScreenState extends State<BlackListScreen> {
     });
   }
 
-  /// Fecha del día localizada («lunes, 28 septiembre») con mayúscula inicial.
-  String _formattedDate(BuildContext context) {
-    final locale = Localizations.localeOf(context).toLanguageTag();
-    final formatted = DateFormat('EEEE, d MMMM', locale).format(DateTime.now());
-    return formatted[0].toUpperCase() + formatted.substring(1);
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -172,20 +165,8 @@ class _BlackListScreenState extends State<BlackListScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Padding(
-              // Mismo margen superior y lateral que Daily Tasks y Agenda para
-              // alinear la cabecera con el resto de pantallas.
-              padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(_formattedDate(context), style: AppTextStyles.eyebrow),
-                  const SizedBox(height: 3),
-                  Text(l10n.blackListTitle, style: AppTextStyles.screenTitle),
-                ],
-              ),
-            ),
-            const SizedBox(height: 18),
+            // Cabecera compartida con el resto de pantallas (fecha + nombre).
+            ScreenHeader(title: l10n.blackListTitle),
             Expanded(
               child: _loaded
                   ? Padding(
