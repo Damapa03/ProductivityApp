@@ -22,6 +22,7 @@ Widget _harness({
   required String title,
   Locale locale = const Locale('es'),
   DateTime? date,
+  Widget? trailing,
 }) {
   return MaterialApp(
     locale: locale,
@@ -31,7 +32,7 @@ Widget _harness({
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          ScreenHeader(title: title, date: date),
+          ScreenHeader(title: title, date: date, trailing: trailing),
           const SizedBox(height: 20, key: _below),
         ],
       ),

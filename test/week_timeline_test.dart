@@ -77,6 +77,38 @@ Future<void> _tapCell(
 }
 
 void main() {
+  group('WeekTimeline — weekIndexFor', () {
+    test('la semana en curso sitúa la columna de hoy', () {
+      // Miércoles 30 de septiembre de 2026 → columna 2 (lunes = 0).
+      expect(todayIndexIn(_monday, DateTime(2026, 9, 30)), 2);
+      expect(todayIndexIn(_monday, _monday), 0);
+      expect(todayIndexIn(_monday, DateTime(2026, 10, 4)), 6);
+    });
+
+    test('otra semana no tiene columna de hoy', () {
+      final previous = _monday.subtract(const Duration(days: 7));
+      final next = _monday.add(const Duration(days: 7));
+      // Cualquier día, pasado o futuro.
+      expect(todayIndexIn(previous, DateTime(2026, 10, 1)), -1);
+      expect(todayIndexIn(next, DateTime(2026, 10, 1)), -1);
+    });
+
+    test('funciona al cruzar el año', () {
+      // Semana que empieza en diciembre y termina en enero: la columna de hoy
+      // se cuenta sobre los días de enero, no sobre los del lunes.
+      final week = DateTime(2026, 12, 28);
+      expect(todayIndexIn(week, DateTime(2027, 1, 3)), 6);
+      expect(todayIndexIn(week, DateTime(2026, 12, 31)), 3);
+    });
+
+    test('ignora la hora del día', () {
+      expect(
+        todayIndexIn(_monday, DateTime(2026, 9, 30, 23, 59)),
+        todayIndexIn(_monday, DateTime(2026, 9, 30)),
+      );
+    });
+  });
+
   group('WeekTimeline — reparto del ancho', () {
     test('reparte el ancho disponible entre los siete días', () {
       // Con hueco para las etiquetas de hora y sin topar con el máximo, las
@@ -199,6 +231,48 @@ void main() {
       expect(
         line.left,
         WeekTimeline.hourLabelWidth + todayIndex * _dayWidth(tester),
+      );
+    });
+
+    testWidgets('una semana que no es la de hoy no resalta ni marca la hora', (
+      tester,
+    ) async {
+      // Semana siguiente: hoy no está en la rejilla, así que no se puede
+      // resaltar ninguna cabecera ni dibujar la línea de la hora actual (si se
+      // hiciera, caería sobre una columna que no es hoy).
+      await tester.pumpWidget(
+        _harness(weekStart: _monday.add(const Duration(days: 7))),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('week-now-line')), findsNothing);
+      for (var day = 0; day < WeekTimeline.daysCount; day++) {
+        final header = tester.widget<Container>(
+          find.byKey(ValueKey('week-day-header-${day + 5}')),
+        );
+        expect(
+          (header.decoration! as BoxDecoration).color,
+          isNot(AppColors.pinePale),
+          reason: 'no debería resaltarse ningún día',
+        );
+      }
+    });
+
+    testWidgets('atenúa con futurePale los días que ya han pasado', (
+      tester,
+    ) async {
+      // Semana anterior: sus siete días ya han pasado.
+      await tester.pumpWidget(
+        _harness(weekStart: _monday.subtract(const Duration(days: 7))),
+      );
+      await tester.pumpAndSettle();
+
+      final header = tester.widget<Container>(
+        find.byKey(ValueKey('week-day-header-21')),
+      );
+      expect(
+        (header.decoration! as BoxDecoration).color,
+        AppColors.futurePale,
       );
     });
 

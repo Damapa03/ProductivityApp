@@ -50,6 +50,11 @@
   "scheduleStartLabel": "Start",
   "scheduleEndLabel": "End",
   "scheduleDayLabel": "Day",
+  "scheduleToday": "Today",
+  "schedulePreviousDay": "Previous day",
+  "scheduleNextDay": "Next day",
+  "schedulePreviousWeek": "Previous week",
+  "scheduleNextWeek": "Next week",
   "scheduleInvalidRange": "End time must be later than start.",
 
   "columnRename": "Rename",

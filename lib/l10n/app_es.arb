@@ -56,6 +56,11 @@
   "scheduleStartLabel": "Inicio",
   "scheduleEndLabel": "Fin",
   "scheduleDayLabel": "Día",
+  "scheduleToday": "Hoy",
+  "schedulePreviousDay": "Día anterior",
+  "scheduleNextDay": "Día siguiente",
+  "schedulePreviousWeek": "Semana anterior",
+  "scheduleNextWeek": "Semana siguiente",
   "scheduleInvalidRange": "La hora de fin debe ser posterior al inicio.",
 
   "columnRename": "Renombrar",

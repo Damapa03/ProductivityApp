@@ -51,6 +51,13 @@ String _onlyBlockId(WidgetTester tester) {
   return ids.single.substring('event-block-'.length);
 }
 
+/// Mayúscula inicial, como la que pone la cabecera a la fecha.
+String _capitalize(String text) => text[0].toUpperCase() + text.substring(1);
+
+/// Contexto bajo el que leer el locale activo, para formatear como la pantalla.
+BuildContext _localeContext(WidgetTester tester) =>
+    tester.element(find.byType(DailyScheduleScreen));
+
 /// Bloque (Positioned) de la franja con [id] en la línea de tiempo.
 Positioned _block(WidgetTester tester, String id) => tester.widget<Positioned>(
   find.byKey(ValueKey('event-block-$id')),
@@ -178,6 +185,119 @@ void main() {
         .clamp(position.minScrollExtent, position.maxScrollExtent)
         .toDouble();
     expect(position.pixels, expected);
+  });
+
+  testWidgets('la cabecera muestra las flechas de día y semana', (tester) async {
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('step-navigator-previous')), findsOneWidget);
+    expect(find.byKey(const Key('step-navigator-next')), findsOneWidget);
+    // Estando en hoy no hace falta atajo para volver.
+    expect(find.byKey(const Key('step-navigator-today')), findsNothing);
+  });
+
+  testWidgets('las flechas mueven el día del plan y el título con él', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    final today = DateTime.now();
+    final todayLabel = DateFormat(
+      'EEEE, d MMMM',
+      'es',
+    ).format(today);
+    expect(find.text(_capitalize(todayLabel)), findsOneWidget);
+
+    // Un día hacia delante: la fecha de la cabecera avanza uno.
+    await tester.tap(find.byKey(const Key('step-navigator-next')));
+    await tester.pumpAndSettle();
+    final tomorrow = today.add(const Duration(days: 1));
+    expect(
+      find.text(
+        _capitalize(DateFormat('EEEE, d MMMM', 'es').format(tomorrow)),
+      ),
+      findsOneWidget,
+    );
+
+    // Y una hacia atrás se vuelve a hoy (y el atajo desaparece otra vez).
+    await tester.tap(find.byKey(const Key('step-navigator-previous')));
+    await tester.pumpAndSettle();
+    expect(find.text(_capitalize(todayLabel)), findsOneWidget);
+    expect(find.byKey(const Key('step-navigator-today')), findsNothing);
+  });
+
+  testWidgets('el botón «Hoy» aparece fuera de hoy y devuelve', (tester) async {
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('step-navigator-next')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('step-navigator-today')), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('step-navigator-today')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('step-navigator-today')), findsNothing);
+    expect(
+      find.text(
+        _capitalize(DateFormat('EEEE, d MMMM', 'es').format(DateTime.now())),
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('en Semana las flechas saltan la semana entera', (tester) async {
+    _useTallSurface(tester);
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+    await _showWeekView(tester);
+
+    final today = DateTime.now();
+    String range() => WeekTimeline.rangeLabel(
+      _localeContext(tester),
+      WeekTimeline.startOfWeek(today),
+    );
+    expect(find.text(range()), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('step-navigator-next')));
+    await tester.pumpAndSettle();
+    expect(
+      find.text(
+        WeekTimeline.rangeLabel(
+          _localeContext(tester),
+          WeekTimeline.startOfWeek(today).add(const Duration(days: 7)),
+        ),
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('la línea de la hora actual solo se ve en el día de hoy', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('now-line')), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('step-navigator-next')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('now-line')), findsNothing);
+  });
+
+  testWidgets('en otra semana no se resalta ningún día ni se marca la hora', (
+    tester,
+  ) async {
+    _useTallSurface(tester);
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+    await _showWeekView(tester);
+
+    expect(find.byKey(const Key('week-now-line')), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('step-navigator-next')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('week-now-line')), findsNothing);
   });
 
   testWidgets('el selector muestra Día y Semana y conmuta entre las vistas', (

@@ -139,7 +139,7 @@ class WeekTimeline extends StatelessWidget {
     // Agenda (que vive en un IndexedStack) la marca de la hora actual se
     // renueva sin necesidad de un temporizador.
     final now = DateTime.now();
-    final todayIndex = now.weekday - DateTime.monday;
+    final today = DateTime(now.year, now.month, now.day);
 
     return Scrollbar(
       controller: controller,
@@ -154,6 +154,7 @@ class WeekTimeline extends StatelessWidget {
             // reparten el sobrante a partes iguales.
             final dayWidth = dayWidthFor(constraints.maxWidth);
             final gridWidth = gridWidthFor(dayWidth);
+            final todayIndex = todayIndexIn(weekStart, today);
 
             // Paleta por franja, recorriendo el orden de pintado.
             var paletteIndex = 0;
@@ -209,10 +210,18 @@ class WeekTimeline extends StatelessWidget {
                           height: dayHeaderHeight,
                         ),
                         for (var dayIndex = 0; dayIndex < daysCount; dayIndex++)
-                          _DayHeader(
-                            day: weekStart.add(Duration(days: dayIndex)),
-                            width: dayWidth,
-                            isToday: dayIndex == todayIndex,
+                          Builder(
+                            builder: (context) {
+                              final day = weekStart.add(
+                                Duration(days: dayIndex),
+                              );
+                              return _DayHeader(
+                                day: day,
+                                width: dayWidth,
+                                isToday: _sameDay(day, today),
+                                isPast: day.isBefore(today),
+                              );
+                            },
                           ),
                       ],
                     ),
@@ -229,24 +238,32 @@ class WeekTimeline extends StatelessWidget {
                               for (var dayIndex = 0;
                                   dayIndex < daysCount;
                                   dayIndex++)
-                                _DayColumn(
-                                  key: dayColumnKey(dayIndex),
-                                  day: weekStart.add(
-                                    Duration(days: dayIndex),
-                                  ),
-                                  width: dayWidth,
-                                  onTap: onCreateEvent,
+                                Builder(
+                                  builder: (context) {
+                                    final day = weekStart.add(
+                                      Duration(days: dayIndex),
+                                    );
+                                    return _DayColumn(
+                                      key: dayColumnKey(dayIndex),
+                                      day: day,
+                                      width: dayWidth,
+                                      isPast: day.isBefore(today),
+                                      onTap: onCreateEvent,
+                                    );
+                                  },
                                 ),
                             ],
                           ),
                           // Capa de franjas, encima de la rejilla.
                           ...blocks,
-                          // Hora actual, solo en la columna de hoy.
-                          _NowLine(
-                            now: now,
-                            dayIndex: todayIndex,
-                            dayWidth: dayWidth,
-                          ),
+                          // Hora actual, solo si hoy está en la semana
+                          // mostrada.
+                          if (todayIndex >= 0)
+                            _NowLine(
+                              now: now,
+                              dayIndex: todayIndex,
+                              dayWidth: dayWidth,
+                            ),
                         ],
                       ),
                     ),
@@ -318,13 +335,36 @@ Map<String, ({int column, int columns})> layoutDayColumns(
   return result;
 }
 
+/// Si [a] y [b] caen en el mismo día, sin mirar la hora.
+bool _sameDay(DateTime a, DateTime b) =>
+    a.year == b.year && a.month == b.month && a.day == b.day;
+
+/// Columna de hoy dentro de la semana que empieza en [weekStart], o `-1` si la
+/// semana mostrada es otra.
+///
+/// Sin este chequeo, mirar el lunes de la semana siguiente resaltaría la
+/// columna del lunes creyendo que es hoy y la línea de la hora actual caería
+/// sobre un día que no lo es.
+@visibleForTesting
+int todayIndexIn(DateTime weekStart, DateTime today) {
+  final monday = DateTime(weekStart.year, weekStart.month, weekStart.day);
+  final day = DateTime(today.year, today.month, today.day);
+  if (day.isBefore(monday)) return -1;
+  if (!day.isBefore(monday.add(const Duration(days: WeekTimeline.daysCount)))) {
+    return -1;
+  }
+  return day.weekday - DateTime.monday;
+}
+
 /// Cabecera de un día de la semana: sigla y número, con el de hoy resaltado
-/// (`pinePale` de fondo y número en `pineDeep`, como el mockup 04b).
+/// (`pinePale` de fondo y número en `pineDeep`, como el mockup 04b) y los ya
+/// pasados atenuados con `futurePale`, igual que sus columnas.
 class _DayHeader extends StatelessWidget {
   const _DayHeader({
     required this.day,
     required this.width,
     required this.isToday,
+    required this.isPast,
   });
 
   final DateTime day;
@@ -332,6 +372,9 @@ class _DayHeader extends StatelessWidget {
 
   /// Si la columna es la del día actual.
   final bool isToday;
+
+  /// Si el día ya ha pasado entero.
+  final bool isPast;
 
   @override
   Widget build(BuildContext context) {
@@ -344,7 +387,11 @@ class _DayHeader extends StatelessWidget {
       width: width,
       height: WeekTimeline.dayHeaderHeight,
       decoration: BoxDecoration(
-        color: isToday ? AppColors.pinePale : null,
+        color: isToday
+            ? AppColors.pinePale
+            : isPast
+            ? AppColors.futurePale
+            : null,
         border: const Border(
           bottom: BorderSide(color: AppColors.line),
           left: BorderSide(color: AppColors.lineFaint),
@@ -409,17 +456,25 @@ class _HourLabelColumn extends StatelessWidget {
 /// El gesto calcula el minuto desde la posición vertical del toque
 /// (redondeando al cuarto de hora, igual que la vista diaria) y notifica el
 /// instante aplicado sobre la fecha de la columna.
+///
+/// Las columnas que ya han pasado se tiñen con `futurePale`, el mismo recurso
+/// que usa el calendario de hábitos para los días venideros: al mirar otra
+/// semana se distingue de un vistazo qué quedó atrás.
 class _DayColumn extends StatelessWidget {
   const _DayColumn({
     super.key,
     required this.day,
     required this.width,
+    required this.isPast,
     required this.onTap,
   });
 
   /// Día al que pertenece la columna, a las 00:00.
   final DateTime day;
   final double width;
+
+  /// Si el día ya ha pasado entero.
+  final bool isPast;
   final ValueChanged<DateTime> onTap;
 
   @override
@@ -447,6 +502,7 @@ class _DayColumn extends StatelessWidget {
               child: Container(
                 height: WeekTimeline.hourHeight,
                 decoration: BoxDecoration(
+                  color: isPast ? AppColors.futurePale : null,
                   border: hour == 0
                       ? null
                       : const Border(

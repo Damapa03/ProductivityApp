@@ -141,6 +141,21 @@ class AppLocalizationsEs extends AppLocalizations {
   String get scheduleDayLabel => 'Día';
 
   @override
+  String get scheduleToday => 'Hoy';
+
+  @override
+  String get schedulePreviousDay => 'Día anterior';
+
+  @override
+  String get scheduleNextDay => 'Día siguiente';
+
+  @override
+  String get schedulePreviousWeek => 'Semana anterior';
+
+  @override
+  String get scheduleNextWeek => 'Semana siguiente';
+
+  @override
   String get scheduleInvalidRange =>
       'La hora de fin debe ser posterior al inicio.';
 

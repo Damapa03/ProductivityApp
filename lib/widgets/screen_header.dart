@@ -18,6 +18,7 @@ class ScreenHeader extends StatelessWidget {
     required this.title,
     this.date,
     this.eyebrow,
+    this.trailing,
   });
 
   /// Nombre de la pantalla, p. ej. «Tareas diarias».
@@ -25,6 +26,11 @@ class ScreenHeader extends StatelessWidget {
 
   /// Día que se muestra. Por defecto, hoy (útil en tests para fijar la fecha).
   final DateTime? date;
+
+  /// Widget a la derecha del título, en su misma fila. Lo usa la agenda para
+  /// las flechas de día y semana; si no se pasa, la cabecera es igual que la
+  /// del resto de pantallas.
+  final Widget? trailing;
 
   /// Texto de la línea de arriba. Por defecto, la fecha de [date] (o la de
   /// hoy); la vista semanal de la agenda lo sustituye por el rango de días que
@@ -54,7 +60,15 @@ class ScreenHeader extends StatelessWidget {
             style: AppTextStyles.eyebrow,
           ),
           const SizedBox(height: titleSpacing),
-          Text(title, style: AppTextStyles.screenTitle),
+          if (trailing case final trailing?)
+            Row(
+              children: [
+                Expanded(child: Text(title, style: AppTextStyles.screenTitle)),
+                trailing,
+              ],
+            )
+          else
+            Text(title, style: AppTextStyles.screenTitle),
           const SizedBox(height: bottomSpacing),
         ],
       ),

@@ -356,6 +356,36 @@ abstract class AppLocalizations {
   /// **'Día'**
   String get scheduleDayLabel;
 
+  /// No description provided for @scheduleToday.
+  ///
+  /// In es, this message translates to:
+  /// **'Hoy'**
+  String get scheduleToday;
+
+  /// No description provided for @schedulePreviousDay.
+  ///
+  /// In es, this message translates to:
+  /// **'Día anterior'**
+  String get schedulePreviousDay;
+
+  /// No description provided for @scheduleNextDay.
+  ///
+  /// In es, this message translates to:
+  /// **'Día siguiente'**
+  String get scheduleNextDay;
+
+  /// No description provided for @schedulePreviousWeek.
+  ///
+  /// In es, this message translates to:
+  /// **'Semana anterior'**
+  String get schedulePreviousWeek;
+
+  /// No description provided for @scheduleNextWeek.
+  ///
+  /// In es, this message translates to:
+  /// **'Semana siguiente'**
+  String get scheduleNextWeek;
+
   /// No description provided for @scheduleInvalidRange.
   ///
   /// In es, this message translates to:

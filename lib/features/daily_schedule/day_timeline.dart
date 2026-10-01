@@ -22,6 +22,7 @@ class DayTimeline extends StatelessWidget {
     required this.events,
     required this.onCreateEvent,
     required this.onTapEvent,
+    this.showNowLine = true,
   });
 
   /// Controlador del desplazamiento vertical (scroll inicial hacia la hora actual).
@@ -29,6 +30,11 @@ class DayTimeline extends StatelessWidget {
 
   /// Franjas del día a dibujar.
   final List<ScheduleEvent> events;
+
+  /// Si se dibuja la línea de la hora actual. La pantalla lo desactiva al
+  /// mostrar un día que no es hoy: esa marca solo tiene sentido sobre el día
+  /// en el que ocurre.
+  final bool showNowLine;
 
   /// Notifica la hora de inicio de una nueva franja al tocar un hueco.
   final ValueChanged<DateTime> onCreateEvent;
@@ -126,7 +132,7 @@ class DayTimeline extends StatelessWidget {
                       onTap: () => onTapEvent(ordered[i]),
                     ),
                   // Marca de la hora actual, encima de las franjas.
-                  _NowLine(now: now),
+                  if (showNowLine) _NowLine(now: now),
                 ],
               );
             },

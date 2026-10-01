@@ -6,19 +6,21 @@ import '../../models/daily_schedule.dart';
 import '../../models/schedule_event.dart';
 import '../../widgets/screen_header.dart';
 import '../../widgets/segmented_control.dart';
+import '../../widgets/step_navigator.dart';
 import 'day_timeline.dart';
 import 'schedule_dialogs.dart';
 import 'week_timeline.dart';
 
-/// Pantalla «Daily Schedule»: plan del día actual sobre una línea de tiempo
-/// con sus 24 horas (ver mockup 04) y, en modo «Semana», la rejilla de los
-/// siete días con las mismas funciones (ver mockup 04b).
+/// Pantalla «Daily Schedule»: plan de un día sobre una línea de tiempo con sus
+/// 24 horas (ver mockup 04) y, en modo «Semana», la rejilla de los siete días
+/// con las mismas funciones (ver mockup 04b).
 ///
-/// Comparte cabecera con el resto de pantallas ([ScreenHeader]) y añade un
-/// selector «Día / Semana». Ambas vistas leen y escriben el mismo horario: al
-/// tocar un hueco se crea una franja horaria (tarea de agenda, independiente
-/// del kanban) con la fecha y la hora de esa celda, y al tocar una franja se
-/// ofrece editarla o eliminarla.
+/// Comparte cabecera con el resto de pantallas ([ScreenHeader]), con un
+/// selector «Día / Semana» y unas flechas ([StepNavigator]) que mueven el día
+/// que se está mirando o la semana entera, según el modo. Ambas vistas leen y
+/// escriben el mismo horario: al tocar un hueco se crea una franja horaria
+/// (tarea de agenda, independiente del kanban) con la fecha y la hora de esa
+/// celda, y al tocar una franja se ofrece editarla o eliminarla.
 class DailyScheduleScreen extends StatefulWidget {
   const DailyScheduleScreen({
     super.key,
@@ -48,6 +50,21 @@ class _DailyScheduleScreenState extends State<DailyScheduleScreen> {
   /// `true` si la vista activa es la rejilla semanal («Semana»).
   bool _showWeek = false;
 
+  /// Día que se está mirando, a las 00:00.
+  ///
+  /// Toda la pantalla se deriva de aquí en lugar de de hoy: la vista de un día
+  /// muestra sus franjas y la rejilla semanal la semana a la que pertenece, de
+  /// modo que las flechas de la cabecera bastan con mover esta fecha (un día en
+  /// modo día, siete en modo semanal). Al volver a entrar en la pestaña se
+  /// vuelve a hoy.
+  late DateTime _focusedDay = _midnight(DateTime.now());
+
+  /// Hoy a las 00:00, la referencia para saber si lo que se mira es hoy.
+  static DateTime _today() => _midnight(DateTime.now());
+
+  static DateTime _midnight(DateTime day) =>
+      DateTime(day.year, day.month, day.day);
+
   @override
   void initState() {
     super.initState();
@@ -57,9 +74,11 @@ class _DailyScheduleScreenState extends State<DailyScheduleScreen> {
   @override
   void didUpdateWidget(covariant DailyScheduleScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Nueva entrada a la pestaña Agenda: la rejilla vuelve a enfocar la hora
-    // actual (el IndexedStack conserva la posición entre visitas).
+    // Nueva entrada a la pestaña Agenda: se vuelve al día de hoy y la rejilla
+    // reenfoca la hora actual (el IndexedStack conserva la posición entre
+    // visitas, pero el sitio en el calendario se reinicia).
     if (widget.entryTick != oldWidget.entryTick) {
+      _focusedDay = _today();
       _scrollToCurrentHour();
     }
   }
@@ -97,11 +116,35 @@ class _DailyScheduleScreenState extends State<DailyScheduleScreen> {
   /// día lo fija el hueco tocado y no hay nada que escoger.
   List<DateTime>? get _selectableDays {
     if (!_showWeek) return null;
-    final monday = WeekTimeline.startOfWeek(DateTime.now());
     return [
       for (var day = 0; day < WeekTimeline.daysCount; day++)
-        monday.add(Duration(days: day)),
+        _weekStart.add(Duration(days: day)),
     ];
+  }
+
+  /// Lunes de la semana que se está mirando.
+  DateTime get _weekStart => WeekTimeline.startOfWeek(_focusedDay);
+
+  /// Si el día mostrado es hoy, y por tanto no hace falta atajo para volver.
+  bool get _isToday =>
+      _focusedDay.year == _today().year &&
+      _focusedDay.month == _today().month &&
+      _focusedDay.day == _today().day;
+
+  /// Avanza o retrocede en el tiempo: un día en el plan del día, una semana
+  /// entera en la rejilla (sumar siete conserva el día de la semana, así que
+  /// la semana salta exacta).
+  void _step(int days) {
+    setState(() => _focusedDay = _focusedDay.add(Duration(days: days)));
+    // La vista recién pintada arranca arriba del todo, así que se reenfoca la
+    // hora actual para no dejar al usuario en la medianoche.
+    _scrollToCurrentHour();
+  }
+
+  /// Vuelve al día de hoy desde el que se esté mirando.
+  void _goToToday() {
+    if (_isToday) return;
+    _step(_today().difference(_focusedDay).inDays);
   }
 
   /// Crea una franja con inicio en [start] (hora del hueco tocado).
@@ -209,10 +252,12 @@ class _DailyScheduleScreenState extends State<DailyScheduleScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final schedule = _schedule;
-    final today = DateTime.now();
-    final todayEvents = schedule?.eventsOn(today) ?? const <ScheduleEvent>[];
-    // Lunes de la semana actual y el lunes siguiente como límite exclusivo.
-    final weekStart = WeekTimeline.startOfWeek(today);
+    final focusedDay = _focusedDay;
+    final focusedEvents =
+        schedule?.eventsOn(focusedDay) ?? const <ScheduleEvent>[];
+    // Lunes de la semana que se está mirando y el lunes siguiente como límite
+    // exclusivo.
+    final weekStart = _weekStart;
     final nextWeek = weekStart.add(
       const Duration(days: WeekTimeline.daysCount),
     );
@@ -229,14 +274,23 @@ class _DailyScheduleScreenState extends State<DailyScheduleScreen> {
                   // Cabecera compartida con el resto de pantallas, con el mismo
                   // margen que el selector y la rejilla. En modo Semana el
                   // título pasa a «Esta semana» y la línea de arriba muestra el
-                  // rango de días en lugar de la fecha de hoy.
+                  // rango de días en lugar de la fecha del día. A la derecha
+                  // del título van las flechas para mover el día o la semana,
+                  // con el atajo de «Hoy» solo cuando no se está en hoy.
                   ScreenHeader(
                     title: _showWeek
                         ? l10n.scheduleWeekTitle
                         : l10n.scheduleTitle,
+                    date: _showWeek ? null : focusedDay,
                     eyebrow: _showWeek
                         ? WeekTimeline.rangeLabel(context, weekStart)
                         : null,
+                    trailing: StepNavigator(
+                      isWeekView: _showWeek,
+                      onPrevious: () => _step(_showWeek ? -7 : -1),
+                      onNext: () => _step(_showWeek ? 7 : 1),
+                      onToday: _isToday ? null : _goToToday,
+                    ),
                   ),
                   SegmentedControl(
                     options: [l10n.scheduleViewDay, l10n.scheduleViewWeek],
@@ -257,7 +311,10 @@ class _DailyScheduleScreenState extends State<DailyScheduleScreen> {
                           )
                         : DayTimeline(
                             controller: _dayScrollController,
-                            events: todayEvents,
+                            events: focusedEvents,
+                            // La marca de la hora actual solo tiene sentido
+                            // sobre el día en el que ocurre.
+                            showNowLine: _isToday,
                             onCreateEvent: _createEvent,
                             onTapEvent: _openEvent,
                           ),
