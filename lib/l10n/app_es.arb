@@ -93,8 +93,11 @@
   "navHabits": "Hábitos",
   "navSchedule": "Agenda",
   "navFocus": "Timer",
-  "navBlackList": "Black List",
+  "navBlackList": "Lista negra",
   "navProfile": "Perfil",
+
+  "blackListTitle": "Lista negra",
+  "blackListHint": "Empieza a escribir…",
 
   "comingSoonTitle": "Próximamente",
   "comingSoonBody": "Esta pantalla todavía no está disponible."

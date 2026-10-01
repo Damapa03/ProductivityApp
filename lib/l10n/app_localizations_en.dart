@@ -218,6 +218,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navProfile => 'Profile';
 
   @override
+  String get blackListTitle => 'Black List';
+
+  @override
+  String get blackListHint => 'Start typing…';
+
+  @override
   String get comingSoonTitle => 'Coming soon';
 
   @override

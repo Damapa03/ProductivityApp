@@ -212,10 +212,16 @@ class AppLocalizationsEs extends AppLocalizations {
   String get navFocus => 'Timer';
 
   @override
-  String get navBlackList => 'Black List';
+  String get navBlackList => 'Lista negra';
 
   @override
   String get navProfile => 'Perfil';
+
+  @override
+  String get blackListTitle => 'Lista negra';
+
+  @override
+  String get blackListHint => 'Empieza a escribir…';
 
   @override
   String get comingSoonTitle => 'Próximamente';

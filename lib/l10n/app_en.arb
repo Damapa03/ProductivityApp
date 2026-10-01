@@ -79,6 +79,9 @@
   "navBlackList": "Black List",
   "navProfile": "Profile",
 
+  "blackListTitle": "Black List",
+  "blackListHint": "Start typing…",
+
   "comingSoonTitle": "Coming soon",
   "comingSoonBody": "This screen is not available yet."
 }

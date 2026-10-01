@@ -491,7 +491,7 @@ abstract class AppLocalizations {
   /// No description provided for @navBlackList.
   ///
   /// In es, this message translates to:
-  /// **'Black List'**
+  /// **'Lista negra'**
   String get navBlackList;
 
   /// No description provided for @navProfile.
@@ -499,6 +499,18 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Perfil'**
   String get navProfile;
+
+  /// No description provided for @blackListTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Lista negra'**
+  String get blackListTitle;
+
+  /// No description provided for @blackListHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Empieza a escribir…'**
+  String get blackListHint;
 
   /// No description provided for @comingSoonTitle.
   ///
