@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart';
 import 'package:productyivity_app/app/theme/colors.dart';
@@ -76,6 +77,23 @@ String _dayLabel(DateTime day) {
   return formatted[0].toUpperCase() + formatted.substring(1);
 }
 
+/// El mes [title] se pinta entero entre las dos flechas, sin recortarse.
+///
+/// El hueco libre es el que queda entre el borde derecho de la flecha hacia
+/// atrás y el izquierdo de la hacia delante; si el texto midiera más que ese
+/// hueco, aparecería con puntos suspensivos.
+void _expectMonthFits(WidgetTester tester, String title) {
+  final month = tester.getRect(find.text(title));
+  final previous =
+      tester.getRect(find.byKey(const ValueKey('step-navigator-previous')));
+  final next =
+      tester.getRect(find.byKey(const ValueKey('step-navigator-next')));
+
+  expect(month.left, greaterThanOrEqualTo(previous.right));
+  expect(month.right, lessThanOrEqualTo(next.left));
+  expect(month.width, lessThan(next.left - previous.right));
+}
+
 /// Marcar o desmarcar el hábito [habitId] en la lista de checks.
 Future<void> _check(WidgetTester tester, String habitId) async {
   await tester.tap(find.byKey(ValueKey('habit-row-$habitId')));
@@ -89,8 +107,26 @@ String _selectedLabel(WidgetTester tester) {
       .data!;
 }
 
+/// Carga las fuentes de la app en el test.
+///
+/// Sin esto Flutter mide el texto con su fuente de reserva, que dibuja un
+/// cuadrado por glifo: todo saldría casi el doble de ancho y las medidas de
+/// estos tests no dirían nada del diseño real.
+Future<void> _loadAppFonts() async {
+  for (final font in {
+    'Space Grotesk': 'SpaceGrotesk-Bold.ttf',
+    'IBM Plex Sans': 'IBMPlexSans-Regular.ttf',
+  }.entries) {
+    final loader = FontLoader(font.key)
+      ..addFont(rootBundle.load('assets/fonts/${font.value}'));
+    await loader.load();
+  }
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+
+  setUpAll(_loadAppFonts);
 
   setUp(() {
     SharedPreferences.setMockInitialValues({});
@@ -169,6 +205,29 @@ void main() {
       await tester.tap(find.byKey(const ValueKey('step-navigator-previous')));
       await tester.pumpAndSettle();
       expect(find.text('Diciembre 2026'), findsOneWidget);
+    });
+
+    testWidgets('el mes cabe entre las flechas sin recortarse', (
+      tester,
+    ) async {
+      // Con las fuentes de la app, el nombre del mes tiene que caber en el
+      // hueco que dejan las flechas: si no, saldría con puntos suspensivos.
+      tester.view.physicalSize = const Size(375, 812);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await tester.pumpWidget(_harness());
+      await tester.pumpAndSettle();
+
+      _expectMonthFits(tester, 'Octubre 2026');
+
+      // Y también con la píldora «Hoy», que es lo más ancho que llega a poner
+      // la navegación a la izquierda.
+      await tester.tap(find.byKey(const ValueKey('step-navigator-previous')));
+      await tester.pumpAndSettle();
+
+      _expectMonthFits(tester, 'Septiembre 2026');
     });
 
     testWidgets('el botón «Hoy» solo aparece fuera del mes actual y vuelve', (
@@ -517,6 +576,43 @@ void main() {
   });
 
   group('rejilla', () {
+    testWidgets('cabe en el móvil del mockup sin desbordarse', (
+      tester,
+    ) async {
+      // 375x812, el móvil del mockup, menos la barra inferior de 64.
+      tester.view.physicalSize = const Size(375, 812);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      // Cinco hábitos, como una lista llena de verdad.
+      await _seed(
+        HabitLog(
+          ownerId: 'ana@flowly.com',
+          habits: [
+            for (final id in ['agua', 'lectura', 'tarde', 'noche', 'mañana'])
+              Habit(
+                id: id,
+                title: 'Hábito $id',
+                createdAt: DateTime(2026, 9, 1),
+              ),
+          ],
+          completions: const {},
+        ),
+      );
+
+      await tester.pumpWidget(_harness());
+      await tester.pumpAndSettle();
+
+      // Ni una sola excepción de desbordamiento (el scroll de la lista
+      // absorbe los hábitos que no entran).
+      expect(tester.takeException(), isNull);
+      expect(find.byKey(const Key('habit-check-list')), findsOneWidget);
+      // El calendario entero se ve sin tener que hacer scroll.
+      expect(find.byKey(const Key('weekday-row')), findsOneWidget);
+      expect(find.byKey(const Key('habits-legend')), findsOneWidget);
+    });
+
     testWidgets('cambiar de mes no mueve el día seleccionado', (
       tester,
     ) async {
