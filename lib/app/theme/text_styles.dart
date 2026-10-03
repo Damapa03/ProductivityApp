@@ -300,6 +300,15 @@ static const TextStyle fieldPlaceholder = TextStyle(
     color: AppColors.inkSoft,
   );
 
+  /// Título de la tarjeta de hábitos del día (mockup 03).
+  static const TextStyle habitCardTitle = TextStyle(
+    fontFamily: AppFonts.display,
+    fontWeight: FontWeight.w600,
+    fontSize: 15,
+    height: 1.2,
+    color: AppColors.ink,
+  );
+
   /// Nombre de un hábito en la lista de checks del día.
   static const TextStyle habitLabel = TextStyle(
     fontFamily: AppFonts.body,
