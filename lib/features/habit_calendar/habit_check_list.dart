@@ -276,6 +276,10 @@ class _DeleteMenu extends StatelessWidget {
 
   final VoidCallback onDelete;
 
+  /// Lado del botón. El de por defecto (48) doblaría la altura de la fila del
+  /// mockup, así que se encoge: la fila es lo que se toca a diario.
+  static const double size = 28;
+
   @override
   Widget build(BuildContext context) {
     return Semantics(
@@ -287,10 +291,14 @@ class _DeleteMenu extends StatelessWidget {
       child: ExcludeSemantics(
         child: PopupMenuButton<String>(
           icon: const Icon(Icons.more_vert, size: 16, color: AppColors.inkFaint),
-          padding: const EdgeInsets.all(4),
+          padding: EdgeInsets.zero,
           constraints: const BoxConstraints(minWidth: 128),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          style: IconButton.styleFrom(
+            minimumSize: const Size(size, size),
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
           onSelected: (value) {
             if (value == 'delete') onDelete();
           },

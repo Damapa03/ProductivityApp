@@ -168,7 +168,8 @@ class _HabitCalendarScreenState extends State<HabitCalendarScreen> {
                           statusOf: (day) => log.statusOf(day, _today),
                           onTapDay: _selectDay,
                         ),
-                        const SizedBox(height: 16),
+                        // `margin: 20px 0 22px` de la leyenda del mockup.
+                        const SizedBox(height: 20),
                         const Align(
                           alignment: Alignment.centerLeft,
                           child: HabitLegend(),
@@ -176,7 +177,7 @@ class _HabitCalendarScreenState extends State<HabitCalendarScreen> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 22),
                   // La lista lleva su propio margen: el calendario arriba no
                   // necesita scrolls, pero los hábitos pueden ser muchos.
                   Expanded(
@@ -204,9 +205,15 @@ class _HabitCalendarScreenState extends State<HabitCalendarScreen> {
 
 /// Cabecera con el mes que se está mirando y las flechas para recorrerlos.
 ///
-/// El mes va centrado de verdad ([Stack] con el texto al centro y la
-/// navegación anclada a la izquierda), así que no se desplaza cuando la
-/// píldora «Hoy» aparece o desaparece al moverse de mes.
+/// El mes va en el centro y la navegación se reparte a los dos lados: a la
+/// izquierda la flecha hacia atrás con la píldora «Hoy» —que es un «volver a
+/// ahora»—, a la derecha la hacia delante. Se reparte en vez de agrupar las
+/// flechas como el mockup porque, agrupadas, el título centrado quedaría debajo
+/// de ellas en cuanto aparece la píldora.
+///
+/// El hueco del centro se reserva con un [Expanded], de modo que el título no
+/// invade los controles: si el mes no cabe (pantalla muy estrecha o nombre muy
+/// largo) se recorta con puntos suspensivos en vez de solaparse.
 class _MonthHeader extends StatelessWidget {
   const _MonthHeader({
     required this.title,
@@ -234,24 +241,48 @@ class _MonthHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
 
+    // Las flechas mueven meses aquí, no días como en la agenda.
+    final previousLabel = l10n.habitsPreviousMonth;
+    final nextLabel = l10n.habitsNextMonth;
+    final todayLabel = l10n.habitsToday;
+
     return Padding(
       padding: padding,
       child: Column(
         children: [
-          Stack(
-            alignment: Alignment.center,
+          Row(
             children: [
-              Text(title, style: AppTextStyles.monthTitle),
               Align(
                 alignment: Alignment.centerLeft,
                 child: StepNavigator(
                   onPrevious: onPrevious,
                   onNext: onNext,
                   onToday: onToday,
-                  // Las flechas mueven meses aquí, no días como en la agenda.
-                  previousLabel: l10n.habitsPreviousMonth,
-                  nextLabel: l10n.habitsNextMonth,
-                  todayLabel: l10n.habitsToday,
+                  showNext: false,
+                  previousLabel: previousLabel,
+                  nextLabel: nextLabel,
+                  todayLabel: todayLabel,
+                ),
+              ),
+              Expanded(
+                child: Center(
+                  child: Text(
+                    title,
+                    style: AppTextStyles.monthTitle,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+              Align(
+                alignment: Alignment.centerRight,
+                child: StepNavigator(
+                  onPrevious: onPrevious,
+                  onNext: onNext,
+                  showPrevious: false,
+                  previousLabel: previousLabel,
+                  nextLabel: nextLabel,
                 ),
               ),
             ],

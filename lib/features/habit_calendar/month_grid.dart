@@ -47,8 +47,8 @@ class MonthGrid extends StatelessWidget {
   /// Grosor del anillo que marca el día seleccionado y el de hoy.
   static const double ringWidth = 2;
 
-  /// Separación entre filas.
-  static const double rowGap = 6;
+  /// Separación entre filas (`row-gap` de la rejilla del mockup).
+  static const double rowGap = 8;
 
   /// Separación entre la fila de siglas y la rejilla.
   static const double weekdayGap = 10;
@@ -328,11 +328,14 @@ class HabitLegend extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
 
-    return Row(
+    // `Wrap` y no `Row`: en una pantalla estrecha la segunda muestra baja de
+    // línea en vez de salirse del papel.
+    return Wrap(
       key: const Key('habits-legend'),
+      spacing: _itemsGap,
+      runSpacing: 6,
       children: [
         _item(l10n.habitsLegendDone, AppColors.done),
-        const SizedBox(width: _itemsGap),
         _item(l10n.habitsLegendMissed, AppColors.missPale),
       ],
     );

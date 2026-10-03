@@ -16,6 +16,8 @@ import '../l10n/app_localizations.dart';
 /// El widget no es exclusivo de la agenda: quien reuse las flechas para otro
 /// intervalo (los meses del calendario de hábitos) pasa sus propios textos con
 /// [previousLabel], [nextLabel] y [todayLabel]; si no, se usan los de la agenda.
+/// También se puede pintar solo una de las dos flechas con [showPrevious] y
+/// [showNext], para las cabeceras que las reparten a los lados del título.
 ///
 /// El botón «Hoy» solo aparece cuando no se está ya en hoy, de modo que volver
 /// al día actual no ocupa sitio en el uso habitual. El texto de las flechas no
@@ -32,6 +34,8 @@ class StepNavigator extends StatelessWidget {
     this.previousLabel,
     this.nextLabel,
     this.todayLabel,
+    this.showPrevious = true,
+    this.showNext = true,
   });
 
   /// Notifica que se quiere ver el intervalo anterior.
@@ -57,6 +61,15 @@ class StepNavigator extends StatelessWidget {
   /// Texto del botón de vuelta al día actual; por defecto, «Hoy».
   final String? todayLabel;
 
+  /// Si se pinta la flecha hacia atrás. Por defecto, sí.
+  ///
+  /// Ocultarla no cambia nada más: la callback se sigue pasando (y no se llega a
+  /// usar) para que quien monte la cabecera no tenga que inventarse un caso.
+  final bool showPrevious;
+
+  /// Si se pinta la flecha hacia delante. Por defecto, sí.
+  final bool showNext;
+
   /// Diámetro de los botones circulares (mockup 03).
   static const double buttonSize = 26;
 
@@ -77,21 +90,24 @@ class StepNavigator extends StatelessWidget {
           ),
           const SizedBox(width: gap),
         ],
-        _StepButton(
-          icon: Icons.chevron_left,
-          tooltip: previousLabel ??
-              (isWeekView
-                  ? l10n.schedulePreviousWeek
-                  : l10n.schedulePreviousDay),
-          onPressed: onPrevious,
-        ),
-        const SizedBox(width: gap),
-        _StepButton(
-          icon: Icons.chevron_right,
-          tooltip: nextLabel ??
-              (isWeekView ? l10n.scheduleNextWeek : l10n.scheduleNextDay),
-          onPressed: onNext,
-        ),
+        if (showPrevious) ...[
+          _StepButton(
+            icon: Icons.chevron_left,
+            tooltip: previousLabel ??
+                (isWeekView
+                    ? l10n.schedulePreviousWeek
+                    : l10n.schedulePreviousDay),
+            onPressed: onPrevious,
+          ),
+          if (showNext) const SizedBox(width: gap),
+        ],
+        if (showNext)
+          _StepButton(
+            icon: Icons.chevron_right,
+            tooltip: nextLabel ??
+                (isWeekView ? l10n.scheduleNextWeek : l10n.scheduleNextDay),
+            onPressed: onNext,
+          ),
       ],
     );
   }
