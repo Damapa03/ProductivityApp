@@ -103,6 +103,53 @@
   "navBlackList": "Lista negra",
   "navProfile": "Perfil",
 
+  "habitsTitle": "Hábitos",
+  "habitsToday": "Hoy",
+  "habitsProgress": "{done} de {total}",
+  "@habitsProgress": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "habitsAddHabit": "+ Añadir hábito",
+  "habitsAddHabitTitle": "Nuevo hábito",
+  "habitsAddHabitLabel": "HÁBITO",
+  "habitsAddHabitPlaceholder": "Beber 2 L de agua",
+  "habitsAdd": "Añadir",
+  "habitsEmpty": "Sin hábitos todavía. Añade el primero.",
+  "habitsDelete": "Eliminar",
+  "habitsDeleteTitle": "Eliminar hábito",
+  "habitsDeleteBody": "Se eliminará el hábito «{habit}» y sus días marcados. Esta acción no se puede deshacer.",
+  "@habitsDeleteBody": {
+    "placeholders": {
+      "habit": { "type": "String" }
+    }
+  },
+  "habitsPreviousMonth": "Mes anterior",
+  "habitsNextMonth": "Mes siguiente",
+  "habitsLegendDone": "Todo cumplido",
+  "habitsLegendMissed": "Faltó alguno",
+  "habitsDayStatus": "{day} de {month}: {status}",
+  "@habitsDayStatus": {
+    "placeholders": {
+      "day": { "type": "int" },
+      "month": { "type": "String" },
+      "status": { "type": "String" }
+    }
+  },
+  "habitsStatusDone": "todos los hábitos cumplidos",
+  "habitsStatusMissed": "algún hábito sin cumplir",
+  "habitsStatusNeutral": "aún sin cerrar",
+  "habitsStatusFuture": "día por venir",
+  "habitsToggleSemantics": "{habit}, del {date}",
+  "@habitsToggleSemantics": {
+    "placeholders": {
+      "habit": { "type": "String" },
+      "date": { "type": "String" }
+    }
+  },
+
   "blackListTitle": "Lista negra",
   "blackListHint": "Empieza a escribir…",
 

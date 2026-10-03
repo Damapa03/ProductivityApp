@@ -542,6 +542,138 @@ abstract class AppLocalizations {
   /// **'Perfil'**
   String get navProfile;
 
+  /// No description provided for @habitsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Hábitos'**
+  String get habitsTitle;
+
+  /// No description provided for @habitsToday.
+  ///
+  /// In es, this message translates to:
+  /// **'Hoy'**
+  String get habitsToday;
+
+  /// No description provided for @habitsProgress.
+  ///
+  /// In es, this message translates to:
+  /// **'{done} de {total}'**
+  String habitsProgress(int done, int total);
+
+  /// No description provided for @habitsAddHabit.
+  ///
+  /// In es, this message translates to:
+  /// **'+ Añadir hábito'**
+  String get habitsAddHabit;
+
+  /// No description provided for @habitsAddHabitTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Nuevo hábito'**
+  String get habitsAddHabitTitle;
+
+  /// No description provided for @habitsAddHabitLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'HÁBITO'**
+  String get habitsAddHabitLabel;
+
+  /// No description provided for @habitsAddHabitPlaceholder.
+  ///
+  /// In es, this message translates to:
+  /// **'Beber 2 L de agua'**
+  String get habitsAddHabitPlaceholder;
+
+  /// No description provided for @habitsAdd.
+  ///
+  /// In es, this message translates to:
+  /// **'Añadir'**
+  String get habitsAdd;
+
+  /// No description provided for @habitsEmpty.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin hábitos todavía. Añade el primero.'**
+  String get habitsEmpty;
+
+  /// No description provided for @habitsDelete.
+  ///
+  /// In es, this message translates to:
+  /// **'Eliminar'**
+  String get habitsDelete;
+
+  /// No description provided for @habitsDeleteTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Eliminar hábito'**
+  String get habitsDeleteTitle;
+
+  /// No description provided for @habitsDeleteBody.
+  ///
+  /// In es, this message translates to:
+  /// **'Se eliminará el hábito «{habit}» y sus días marcados. Esta acción no se puede deshacer.'**
+  String habitsDeleteBody(String habit);
+
+  /// No description provided for @habitsPreviousMonth.
+  ///
+  /// In es, this message translates to:
+  /// **'Mes anterior'**
+  String get habitsPreviousMonth;
+
+  /// No description provided for @habitsNextMonth.
+  ///
+  /// In es, this message translates to:
+  /// **'Mes siguiente'**
+  String get habitsNextMonth;
+
+  /// No description provided for @habitsLegendDone.
+  ///
+  /// In es, this message translates to:
+  /// **'Todo cumplido'**
+  String get habitsLegendDone;
+
+  /// No description provided for @habitsLegendMissed.
+  ///
+  /// In es, this message translates to:
+  /// **'Faltó alguno'**
+  String get habitsLegendMissed;
+
+  /// No description provided for @habitsDayStatus.
+  ///
+  /// In es, this message translates to:
+  /// **'{day} de {month}: {status}'**
+  String habitsDayStatus(int day, String month, String status);
+
+  /// No description provided for @habitsStatusDone.
+  ///
+  /// In es, this message translates to:
+  /// **'todos los hábitos cumplidos'**
+  String get habitsStatusDone;
+
+  /// No description provided for @habitsStatusMissed.
+  ///
+  /// In es, this message translates to:
+  /// **'algún hábito sin cumplir'**
+  String get habitsStatusMissed;
+
+  /// No description provided for @habitsStatusNeutral.
+  ///
+  /// In es, this message translates to:
+  /// **'aún sin cerrar'**
+  String get habitsStatusNeutral;
+
+  /// No description provided for @habitsStatusFuture.
+  ///
+  /// In es, this message translates to:
+  /// **'día por venir'**
+  String get habitsStatusFuture;
+
+  /// No description provided for @habitsToggleSemantics.
+  ///
+  /// In es, this message translates to:
+  /// **'{habit}, del {date}'**
+  String habitsToggleSemantics(String habit, String date);
+
   /// No description provided for @blackListTitle.
   ///
   /// In es, this message translates to:

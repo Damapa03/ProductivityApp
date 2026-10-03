@@ -86,6 +86,53 @@
   "navBlackList": "Black List",
   "navProfile": "Profile",
 
+  "habitsTitle": "Habits",
+  "habitsToday": "Today",
+  "habitsProgress": "{done} of {total}",
+  "@habitsProgress": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "habitsAddHabit": "+ Add habit",
+  "habitsAddHabitTitle": "New habit",
+  "habitsAddHabitLabel": "HABIT",
+  "habitsAddHabitPlaceholder": "Drink 2 L of water",
+  "habitsAdd": "Add",
+  "habitsEmpty": "No habits yet. Add the first one.",
+  "habitsDelete": "Delete",
+  "habitsDeleteTitle": "Delete habit",
+  "habitsDeleteBody": "Habit \"{habit}\" and its marked days will be deleted. This cannot be undone.",
+  "@habitsDeleteBody": {
+    "placeholders": {
+      "habit": { "type": "String" }
+    }
+  },
+  "habitsPreviousMonth": "Previous month",
+  "habitsNextMonth": "Next month",
+  "habitsLegendDone": "All habits done",
+  "habitsLegendMissed": "Missed one or more",
+  "habitsDayStatus": "{day} of {month}: {status}",
+  "@habitsDayStatus": {
+    "placeholders": {
+      "day": { "type": "int" },
+      "month": { "type": "String" },
+      "status": { "type": "String" }
+    }
+  },
+  "habitsStatusDone": "all habits done",
+  "habitsStatusMissed": "one or more habits pending",
+  "habitsStatusNeutral": "not closed yet",
+  "habitsStatusFuture": "upcoming day",
+  "habitsToggleSemantics": "{habit}, for {date}",
+  "@habitsToggleSemantics": {
+    "placeholders": {
+      "habit": { "type": "String" },
+      "date": { "type": "String" }
+    }
+  },
+
   "blackListTitle": "Black List",
   "blackListHint": "Start typing…",
 

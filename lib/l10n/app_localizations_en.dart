@@ -239,6 +239,80 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navProfile => 'Profile';
 
   @override
+  String get habitsTitle => 'Habits';
+
+  @override
+  String get habitsToday => 'Today';
+
+  @override
+  String habitsProgress(int done, int total) {
+    return '$done of $total';
+  }
+
+  @override
+  String get habitsAddHabit => '+ Add habit';
+
+  @override
+  String get habitsAddHabitTitle => 'New habit';
+
+  @override
+  String get habitsAddHabitLabel => 'HABIT';
+
+  @override
+  String get habitsAddHabitPlaceholder => 'Drink 2 L of water';
+
+  @override
+  String get habitsAdd => 'Add';
+
+  @override
+  String get habitsEmpty => 'No habits yet. Add the first one.';
+
+  @override
+  String get habitsDelete => 'Delete';
+
+  @override
+  String get habitsDeleteTitle => 'Delete habit';
+
+  @override
+  String habitsDeleteBody(String habit) {
+    return 'Habit \"$habit\" and its marked days will be deleted. This cannot be undone.';
+  }
+
+  @override
+  String get habitsPreviousMonth => 'Previous month';
+
+  @override
+  String get habitsNextMonth => 'Next month';
+
+  @override
+  String get habitsLegendDone => 'All habits done';
+
+  @override
+  String get habitsLegendMissed => 'Missed one or more';
+
+  @override
+  String habitsDayStatus(int day, String month, String status) {
+    return '$day of $month: $status';
+  }
+
+  @override
+  String get habitsStatusDone => 'all habits done';
+
+  @override
+  String get habitsStatusMissed => 'one or more habits pending';
+
+  @override
+  String get habitsStatusNeutral => 'not closed yet';
+
+  @override
+  String get habitsStatusFuture => 'upcoming day';
+
+  @override
+  String habitsToggleSemantics(String habit, String date) {
+    return '$habit, for $date';
+  }
+
+  @override
   String get blackListTitle => 'Black List';
 
   @override

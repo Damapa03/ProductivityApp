@@ -239,6 +239,80 @@ class AppLocalizationsEs extends AppLocalizations {
   String get navProfile => 'Perfil';
 
   @override
+  String get habitsTitle => 'Hábitos';
+
+  @override
+  String get habitsToday => 'Hoy';
+
+  @override
+  String habitsProgress(int done, int total) {
+    return '$done de $total';
+  }
+
+  @override
+  String get habitsAddHabit => '+ Añadir hábito';
+
+  @override
+  String get habitsAddHabitTitle => 'Nuevo hábito';
+
+  @override
+  String get habitsAddHabitLabel => 'HÁBITO';
+
+  @override
+  String get habitsAddHabitPlaceholder => 'Beber 2 L de agua';
+
+  @override
+  String get habitsAdd => 'Añadir';
+
+  @override
+  String get habitsEmpty => 'Sin hábitos todavía. Añade el primero.';
+
+  @override
+  String get habitsDelete => 'Eliminar';
+
+  @override
+  String get habitsDeleteTitle => 'Eliminar hábito';
+
+  @override
+  String habitsDeleteBody(String habit) {
+    return 'Se eliminará el hábito «$habit» y sus días marcados. Esta acción no se puede deshacer.';
+  }
+
+  @override
+  String get habitsPreviousMonth => 'Mes anterior';
+
+  @override
+  String get habitsNextMonth => 'Mes siguiente';
+
+  @override
+  String get habitsLegendDone => 'Todo cumplido';
+
+  @override
+  String get habitsLegendMissed => 'Faltó alguno';
+
+  @override
+  String habitsDayStatus(int day, String month, String status) {
+    return '$day de $month: $status';
+  }
+
+  @override
+  String get habitsStatusDone => 'todos los hábitos cumplidos';
+
+  @override
+  String get habitsStatusMissed => 'algún hábito sin cumplir';
+
+  @override
+  String get habitsStatusNeutral => 'aún sin cerrar';
+
+  @override
+  String get habitsStatusFuture => 'día por venir';
+
+  @override
+  String habitsToggleSemantics(String habit, String date) {
+    return '$habit, del $date';
+  }
+
+  @override
   String get blackListTitle => 'Lista negra';
 
   @override
