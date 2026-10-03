@@ -241,4 +241,108 @@ static const TextStyle fieldPlaceholder = TextStyle(
     height: 1.2,
     color: AppColors.ink,
   );
+
+  /// Nombre del mes y año sobre el calendario de hábitos (mockup 03).
+  ///
+  /// Va centrado y es algo más pequeño que [screenTitle]: el mes es un dato
+  /// que acompaña a la rejilla, no el título de una sección.
+  static const TextStyle monthTitle = TextStyle(
+    fontFamily: AppFonts.display,
+    fontWeight: FontWeight.w700,
+    fontSize: 23,
+    height: 1.15,
+    letterSpacing: -0.01,
+    color: AppColors.ink,
+  );
+
+  /// Sigla del día sobre la rejilla mensual (p. ej. «L», «M», «X»).
+  static const TextStyle weekdayInitial = TextStyle(
+    fontFamily: AppFonts.body,
+    fontWeight: FontWeight.w500,
+    fontSize: 11,
+    height: 1.2,
+    color: AppColors.inkSoft,
+  );
+
+  /// Número de día del calendario con todos sus hábitos cumplidos.
+  static const TextStyle dayDone = TextStyle(
+    fontFamily: AppFonts.body,
+    fontWeight: FontWeight.w600,
+    fontSize: 13,
+    height: 1.25,
+    color: AppColors.paper,
+  );
+
+  /// Número de día del calendario al que le faltó algún hábito.
+  static const TextStyle dayMissed = TextStyle(
+    fontFamily: AppFonts.body,
+    fontWeight: FontWeight.w500,
+    fontSize: 13,
+    height: 1.25,
+    color: AppColors.roseDeep,
+  );
+
+  /// Número de día del calendario que todavía no se ha cerrado.
+  static const TextStyle dayNeutral = TextStyle(
+    fontFamily: AppFonts.body,
+    fontWeight: FontWeight.w500,
+    fontSize: 13,
+    height: 1.25,
+    color: AppColors.ink,
+  );
+
+  /// Número de día del calendario que aún no ha llegado.
+  static const TextStyle dayFuture = TextStyle(
+    fontFamily: AppFonts.body,
+    fontWeight: FontWeight.w500,
+    fontSize: 13,
+    height: 1.25,
+    color: AppColors.inkSoft,
+  );
+
+  /// Nombre de un hábito en la lista de checks del día.
+  static const TextStyle habitLabel = TextStyle(
+    fontFamily: AppFonts.body,
+    fontWeight: FontWeight.w400,
+    fontSize: 13.5,
+    height: 1.35,
+    color: AppColors.ink,
+  );
+
+  /// Nombre de un hábito todavía pendiente: apagado para que se distinga
+  /// del que ya está cumplido.
+  static const TextStyle habitLabelPending = TextStyle(
+    fontFamily: AppFonts.body,
+    fontWeight: FontWeight.w400,
+    fontSize: 13.5,
+    height: 1.35,
+    color: AppColors.inkSoft,
+  );
+
+  /// Contador «2 de 4» de la lista de hábitos del día.
+  static const TextStyle habitProgress = TextStyle(
+    fontFamily: AppFonts.body,
+    fontWeight: FontWeight.w500,
+    fontSize: 12,
+    height: 1.2,
+    color: AppColors.inkSoft,
+  );
+
+  /// Fecha del día cuyos hábitos muestra la lista, bajo su título.
+  static const TextStyle habitDay = TextStyle(
+    fontFamily: AppFonts.body,
+    fontWeight: FontWeight.w400,
+    fontSize: 12,
+    height: 1.3,
+    color: AppColors.inkSoft,
+  );
+
+  /// Texto de la leyenda de colores del calendario.
+  static const TextStyle legendLabel = TextStyle(
+    fontFamily: AppFonts.body,
+    fontWeight: FontWeight.w400,
+    fontSize: 12,
+    height: 1.3,
+    color: AppColors.inkSoft,
+  );
 }

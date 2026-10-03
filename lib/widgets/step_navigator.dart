@@ -13,6 +13,10 @@ import '../l10n/app_localizations.dart';
 /// donde ya había navegación: botones circulares pequeños, con borde y glifo
 /// apagado.
 ///
+/// El widget no es exclusivo de la agenda: quien reuse las flechas para otro
+/// intervalo (los meses del calendario de hábitos) pasa sus propios textos con
+/// [previousLabel], [nextLabel] y [todayLabel]; si no, se usan los de la agenda.
+///
 /// El botón «Hoy» solo aparece cuando no se está ya en hoy, de modo que volver
 /// al día actual no ocupa sitio en el uso habitual. El texto de las flechas no
 /// se pinta (solo hay sitio para los glifos); [isWeekView] únicamente cambia
@@ -25,6 +29,9 @@ class StepNavigator extends StatelessWidget {
     required this.onNext,
     this.onToday,
     this.isWeekView = false,
+    this.previousLabel,
+    this.nextLabel,
+    this.todayLabel,
   });
 
   /// Notifica que se quiere ver el intervalo anterior.
@@ -38,6 +45,17 @@ class StepNavigator extends StatelessWidget {
 
   /// Si la agenda está en modo semanal (las flechas mueven una semana entera).
   final bool isWeekView;
+
+  /// Texto accesible (tooltip) de la flecha hacia atrás; por defecto, el día o
+  /// la semana anterior de la agenda.
+  final String? previousLabel;
+
+  /// Texto accesible (tooltip) de la flecha hacia delante; por defecto, el día
+  /// o la semana siguiente de la agenda.
+  final String? nextLabel;
+
+  /// Texto del botón de vuelta al día actual; por defecto, «Hoy».
+  final String? todayLabel;
 
   /// Diámetro de los botones circulares (mockup 03).
   static const double buttonSize = 26;
@@ -53,18 +71,25 @@ class StepNavigator extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (onToday != null) ...[
-          _TodayButton(label: l10n.scheduleToday, onTap: onToday!),
+          _TodayButton(
+            label: todayLabel ?? l10n.scheduleToday,
+            onTap: onToday!,
+          ),
           const SizedBox(width: gap),
         ],
         _StepButton(
           icon: Icons.chevron_left,
-          tooltip: isWeekView ? l10n.schedulePreviousWeek : l10n.schedulePreviousDay,
+          tooltip: previousLabel ??
+              (isWeekView
+                  ? l10n.schedulePreviousWeek
+                  : l10n.schedulePreviousDay),
           onPressed: onPrevious,
         ),
         const SizedBox(width: gap),
         _StepButton(
           icon: Icons.chevron_right,
-          tooltip: isWeekView ? l10n.scheduleNextWeek : l10n.scheduleNextDay,
+          tooltip: nextLabel ??
+              (isWeekView ? l10n.scheduleNextWeek : l10n.scheduleNextDay),
           onPressed: onNext,
         ),
       ],
