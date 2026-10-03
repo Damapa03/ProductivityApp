@@ -86,8 +86,10 @@ class MonthGrid extends StatelessWidget {
 
   /// Siglas de los días en el idioma activo, empezando en lunes.
   ///
-  /// Se toma la inicial del nombre abreviado («lun» → «L»), que en español da
-  /// la serie L M X J V S D del mockup.
+  /// Se pide el nombre corto (`EEEEE`), que en español es justo la serie del
+  /// mockup (L M X J V S D) y en inglés la de las iniciales (M T W T F S S). La
+  /// inicial del nombre abreviado no sirve: en español «mar» y «mié» empezarían
+  /// por la misma letra.
   static List<String> _weekdayInitials(BuildContext context) {
     final locale = Localizations.localeOf(context).toLanguageTag();
     // Lunes de esta semana como referencia: el orden de la rejilla no cambia
@@ -96,7 +98,7 @@ class MonthGrid extends StatelessWidget {
     final monday = today.subtract(Duration(days: today.weekday - 1));
     return [
       for (var day = 0; day < daysPerWeek; day++)
-        DateFormat.E(locale)
+        DateFormat('EEEEE', locale)
             .format(monday.add(Duration(days: day)))
             .substring(0, 1)
             .toUpperCase(),
@@ -129,7 +131,6 @@ class MonthGrid extends StatelessWidget {
 
     final day = DateTime(month.year, month.month, number);
     return _DayCell(
-      key: ValueKey('day-cell-${month.year}-${month.month}-$number'),
       day: day,
       number: number,
       month: month,
@@ -144,7 +145,6 @@ class MonthGrid extends StatelessWidget {
 /// Celda de un día del calendario.
 class _DayCell extends StatelessWidget {
   const _DayCell({
-    super.key,
     required this.day,
     required this.number,
     required this.month,
@@ -190,29 +190,40 @@ class _DayCell extends StatelessWidget {
         // esquinas del mockup.
         borderRadius: BorderRadius.circular(MonthGrid.cellSize),
         onTap: () => onTap(day),
-        child: Padding(
-          // El anillo va por fuera de la celda: se reserva su grosor para que
-          // hoy no descoloque la rejilla.
-          padding: const EdgeInsets.all(MonthGrid.ringWidth),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: _ringColor,
-                width: MonthGrid.ringWidth,
+        child: Center(
+          // El anillo va por fuera de la celda, así que la casilla se reserva
+          // su grosor: hoy no descuadra la rejilla.
+          child: SizedBox(
+            width: _ringSize,
+            height: _ringSize,
+            child: DecoratedBox(
+              key: ValueKey(
+                'day-ring-${month.year}-${month.month}-$number',
               ),
-              borderRadius: BorderRadius.circular(
-                MonthGrid.cellSize - MonthGrid.ringWidth,
-              ),
-            ),
-            child: Container(
-              width: MonthGrid.cellSize,
-              height: MonthGrid.cellSize,
-              alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: _background,
-                borderRadius: BorderRadius.circular(_radius),
+                border: Border.all(
+                  color: _ringColor,
+                  width: MonthGrid.ringWidth,
+                ),
+                borderRadius: BorderRadius.circular(_ringRadius),
               ),
-              child: Text('$number', style: _textStyle),
+              child: Center(
+                child: Container(
+                  // La clave va en la celda pintada, que es la que lleva el
+                  // color con el que se juzga el día.
+                  key: ValueKey(
+                    'day-cell-${month.year}-${month.month}-$number',
+                  ),
+                  width: MonthGrid.cellSize,
+                  height: MonthGrid.cellSize,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: _background,
+                    borderRadius: BorderRadius.circular(_cellRadius),
+                  ),
+                  child: Text('$number', style: _textStyle),
+                ),
+              ),
             ),
           ),
         ),
@@ -233,9 +244,16 @@ class _DayCell extends StatelessWidget {
         _ => l10n.habitsStatusNeutral,
       };
 
-  /// Radio de la celda pintada (mockup 03); el anillo de hoy va un poco más
-  /// redondeado para envolverla sin rozar las esquinas.
-  static const double _radius = 9;
+  /// Radio de la celda pintada (mockup 03); el anillo que la envuelve va algo
+  /// más redondeado para acompañar las esquinas por fuera.
+  static const double _cellRadius = 9;
+
+  /// Lado de la casilla con su anillo: la celda más el grosor del anillo a
+  /// cada lado, que es lo que ocupa la fila de la rejilla.
+  static const double _ringSize =
+      MonthGrid.cellSize + MonthGrid.ringWidth * 2;
+
+  static const double _ringRadius = _cellRadius + MonthGrid.ringWidth;
 
   /// Fondo de la celda según el estado del día.
   Color get _background => switch (status) {

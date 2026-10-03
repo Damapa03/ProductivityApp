@@ -186,7 +186,13 @@ class _Heading extends StatelessWidget {
             children: [
               Text(l10n.habitsTitle, style: AppTextStyles.habitCardTitle),
               const SizedBox(height: _titleGap),
-              Text(label, style: AppTextStyles.habitDay),
+              Text(
+                // Con clave propia: el día de la lista se confunde con el
+                // botón «Hoy» de la cabecera, que dice lo mismo.
+                key: const Key('habit-day-label'),
+                label,
+                style: AppTextStyles.habitDay,
+              ),
             ],
           ),
         ),
