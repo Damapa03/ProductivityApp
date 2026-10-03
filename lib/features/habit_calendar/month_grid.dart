@@ -165,12 +165,14 @@ class _DayCell extends StatelessWidget {
   /// Notifica que se ha tocado esta celda.
   final ValueChanged<DateTime> onTap;
 
-  /// Si el anillo se pinta alrededor del día de hoy.
-  ///
-  /// El anillo pineDeep es siempre del día seleccionado; el de hoy solo se ve
-  /// cuando es otro, para que se vea cuál es hoy sin confundirlo con el que
-  /// se está editando.
+  /// Si la celda es el día de hoy.
   bool get _isToday => _isSameDay(day, today);
+
+  /// Si la celda es el día cuyos hábitos muestra la lista de abajo.
+  ///
+  /// El anillo pineDeep marca siempre al seleccionado; el de hoy solo se ve
+  /// cuando es otro, para saber cuál es hoy sin confundirlo con el que se está
+  /// editando.
   bool get _isSelected => _isSameDay(day, selectedDay);
 
   static bool _isSameDay(DateTime a, DateTime b) =>
@@ -179,7 +181,11 @@ class _DayCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final label = l10n.habitsDayStatus(number, _monthName(context), _statusLabel(l10n));
+    final label = l10n.habitsDayStatus(
+      number,
+      _monthName(context),
+      _statusLabel(l10n),
+    );
 
     return Semantics(
       label: label,
