@@ -131,9 +131,8 @@ void main() {
     await tester.pumpWidget(_harness());
     await tester.pumpAndSettle();
 
-    // Pestaña y nombre que debe verse al entrar.
+    // Pestaña y nombre que debe verse al entrar. Hábitos ya tiene pantalla.
     const pending = [
-      (1, 'Hábitos'),
       (3, 'Timer'),
       (5, 'Perfil'),
     ];
@@ -156,21 +155,39 @@ void main() {
     await tester.pumpWidget(_harness());
     await tester.pumpAndSettle();
 
-    await tester.tap(_item(1));
+    await tester.tap(_item(3));
     await tester.pumpAndSettle();
 
-    expect(_activeIndex(tester), 1);
-    expect(find.text('Hábitos'), findsOneWidget);
+    expect(_activeIndex(tester), 3);
+    expect(find.text('Timer'), findsOneWidget);
 
-    // El icono de Hábitos aparece dos veces: a 20 en el nav y a 40 en el
+    // El icono del Timer aparece dos veces: a 20 en el nav y a 40 en el
     // marcador.
-    final icons = find.byIcon(Icons.calendar_month_outlined);
+    final icons = find.byIcon(Icons.schedule_outlined);
     expect(icons, findsNWidgets(2));
     final heights = [
       tester.getSize(icons.at(0)).height,
       tester.getSize(icons.at(1)).height,
     ]..sort();
     expect(heights, [20.0, 40.0]);
+  });
+
+  testWidgets('la pestaña Hábitos muestra su calendario', (tester) async {
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    await tester.tap(_item(1));
+    await tester.pumpAndSettle();
+
+    expect(_activeIndex(tester), 1);
+    expect(find.text('Hábitos'), findsOneWidget);
+    expect(find.byKey(const Key('habit-check-list')), findsOneWidget);
+    expect(find.byKey(const Key('weekday-row')), findsOneWidget);
+    expect(find.text('Próximamente'), findsNothing);
+    // El icono de Hábitos solo aparece en el nav (a 20 px): ya no hay marcador.
+    final icons = find.byIcon(Icons.calendar_month_outlined);
+    expect(icons, findsOneWidget);
+    expect(tester.getSize(icons).height, 20.0);
   });
 
   testWidgets('la pestaña Agenda muestra su línea de tiempo', (tester) async {
