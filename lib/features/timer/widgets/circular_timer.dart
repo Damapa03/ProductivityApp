@@ -45,8 +45,10 @@ class CircularTimer extends StatelessWidget {
                 Text(
                   timeStr,
                   style: AppTextStyles.headline.copyWith(
-                    fontSize: 48,
+                    fontSize: 56,
                     fontWeight: FontWeight.w700,
+                    height: 1.0,
+                    letterSpacing: -1.0,
                   ),
                 ),
                 const SizedBox(height: 8),
