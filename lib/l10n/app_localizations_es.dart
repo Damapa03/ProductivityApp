@@ -323,4 +323,40 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get comingSoonBody => 'Esta pantalla todavía no está disponible.';
+
+  @override
+  String get timerTitle => 'Temporizador';
+
+  @override
+  String get timerMode => 'Modo';
+
+  @override
+  String get timerModeWork => 'Trabajo';
+
+  @override
+  String get timerModeStudy => 'Estudio';
+
+  @override
+  String get timerTimes => 'Tiempos';
+
+  @override
+  String get timerPhaseWork => 'Trabajo';
+
+  @override
+  String get timerPhaseBreak => 'Descanso';
+
+  @override
+  String get timerPhaseReview => 'Repaso';
+
+  @override
+  String get timerStart => 'Iniciar';
+
+  @override
+  String get timerPause => 'Pausar';
+
+  @override
+  String get timerResume => 'Reanudar';
+
+  @override
+  String get timerReset => 'Reiniciar';
 }

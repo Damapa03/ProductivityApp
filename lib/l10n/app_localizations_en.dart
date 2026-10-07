@@ -323,4 +323,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get comingSoonBody => 'This screen is not available yet.';
+
+  @override
+  String get timerTitle => 'Timer';
+
+  @override
+  String get timerMode => 'Mode';
+
+  @override
+  String get timerModeWork => 'Work';
+
+  @override
+  String get timerModeStudy => 'Study';
+
+  @override
+  String get timerTimes => 'Times';
+
+  @override
+  String get timerPhaseWork => 'Work';
+
+  @override
+  String get timerPhaseBreak => 'Break';
+
+  @override
+  String get timerPhaseReview => 'Review';
+
+  @override
+  String get timerStart => 'Start';
+
+  @override
+  String get timerPause => 'Pause';
+
+  @override
+  String get timerResume => 'Resume';
+
+  @override
+  String get timerReset => 'Reset';
 }

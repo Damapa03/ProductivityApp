@@ -1,9 +1,7 @@
 {
   "@@locale": "es",
   "@@last_modified": "2026-09-17",
-
   "appName": "Flowly",
-
   "loginHeadline": "Buenas, de nuevo.",
   "loginSubline": "Retoma tus tareas donde las dejaste.",
   "loginForgotPassword": "¿Olvidaste tu contraseña?",
@@ -11,17 +9,17 @@
   "loginOrContinueWith": "o continúa con",
   "loginNewToFlowly": "¿Nuevo en Flowly? ",
   "loginCreateAccount": "Crear una cuenta",
-
   "registerHeadline": "Crea tu cuenta.",
   "registerSubline": "Empieza a crear hábitos que perduran.",
   "registerSubmit": "Crear cuenta",
   "registerWelcome": "Bienvenido a Flowly, {name} 🎉",
   "@registerWelcome": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
-
   "fieldNameLabel": "NOMBRE",
   "fieldNamePlaceholder": "Tu nombre completo",
   "fieldEmailLabel": "EMAIL",
@@ -34,10 +32,8 @@
   "fieldConfirmPasswordLabel": "CONFIRMAR CONTRASEÑA",
   "fieldConfirmPasswordPlaceholder": "Repite tu contraseña",
   "fieldPasswordMismatch": "Las contraseñas no coinciden.",
-
   "socialGoogle": "Google",
   "socialApple": "Apple",
-
   "dailyTasksTitle": "Tareas diarias",
   "dailyTasksNewColumn": "Nueva columna",
   "dailyTasksAddColumn": "Añadir columna",
@@ -45,7 +41,6 @@
   "dailyTasksEmptyColumn": "Sin tareas todavía",
   "dailyTasksViewByStatus": "Por estado",
   "dailyTasksViewAll": "Todas las tareas",
-
   "scheduleTitle": "Plan de hoy",
   "scheduleWeekTitle": "Esta semana",
   "scheduleViewDay": "Día",
@@ -62,13 +57,10 @@
   "schedulePreviousWeek": "Semana anterior",
   "scheduleNextWeek": "Semana siguiente",
   "scheduleInvalidRange": "La hora de fin debe ser posterior al inicio.",
-
   "columnRename": "Renombrar",
   "columnDelete": "Eliminar",
-
   "taskEdit": "Editar",
   "taskDelete": "Eliminar",
-
   "dialogCreateColumnTitle": "Nueva columna",
   "dialogRenameColumnTitle": "Renombrar columna",
   "dialogCreateTaskTitle": "Nueva tarea",
@@ -81,8 +73,12 @@
   "dialogDeleteColumnBody": "Se eliminará la columna «{column}» y sus {count} tareas. Esta acción no se puede deshacer.",
   "@dialogDeleteColumnBody": {
     "placeholders": {
-      "column": { "type": "String" },
-      "count": { "type": "int" }
+      "column": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
     }
   },
   "dialogEditTaskTitle": "Editar tarea",
@@ -90,26 +86,30 @@
   "dialogDeleteTaskBody": "Se eliminará la tarea «{task}». Esta acción no se puede deshacer.",
   "@dialogDeleteTaskBody": {
     "placeholders": {
-      "task": { "type": "String" }
+      "task": {
+        "type": "String"
+      }
     }
   },
   "dialogTaskColumnLabel": "Columna",
   "dialogTaskNoColumns": "Añade una columna antes de crear tareas.",
-
   "navTasks": "Tareas",
   "navHabits": "Hábitos",
   "navSchedule": "Agenda",
   "navFocus": "Timer",
   "navBlackList": "Lista negra",
   "navProfile": "Perfil",
-
   "habitsTitle": "Hábitos",
   "habitsToday": "Hoy",
   "habitsProgress": "{done} de {total}",
   "@habitsProgress": {
     "placeholders": {
-      "done": { "type": "int" },
-      "total": { "type": "int" }
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
     }
   },
   "habitsAddHabit": "+ Añadir hábito",
@@ -123,7 +123,9 @@
   "habitsDeleteBody": "Se eliminará el hábito «{habit}» y sus días marcados. Esta acción no se puede deshacer.",
   "@habitsDeleteBody": {
     "placeholders": {
-      "habit": { "type": "String" }
+      "habit": {
+        "type": "String"
+      }
     }
   },
   "habitsPreviousMonth": "Mes anterior",
@@ -133,9 +135,15 @@
   "habitsDayStatus": "{day} de {month}: {status}",
   "@habitsDayStatus": {
     "placeholders": {
-      "day": { "type": "int" },
-      "month": { "type": "String" },
-      "status": { "type": "String" }
+      "day": {
+        "type": "int"
+      },
+      "month": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
     }
   },
   "habitsStatusDone": "todos los hábitos cumplidos",
@@ -145,14 +153,28 @@
   "habitsToggleSemantics": "{habit}, del {date}",
   "@habitsToggleSemantics": {
     "placeholders": {
-      "habit": { "type": "String" },
-      "date": { "type": "String" }
+      "habit": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
     }
   },
-
   "blackListTitle": "Lista negra",
   "blackListHint": "Empieza a escribir…",
-
   "comingSoonTitle": "Próximamente",
-  "comingSoonBody": "Esta pantalla todavía no está disponible."
+  "comingSoonBody": "Esta pantalla todavía no está disponible.",
+  "timerTitle": "Temporizador",
+  "timerMode": "Modo",
+  "timerModeWork": "Trabajo",
+  "timerModeStudy": "Estudio",
+  "timerTimes": "Tiempos",
+  "timerPhaseWork": "Trabajo",
+  "timerPhaseBreak": "Descanso",
+  "timerPhaseReview": "Repaso",
+  "timerStart": "Iniciar",
+  "timerPause": "Pausar",
+  "timerResume": "Reanudar",
+  "timerReset": "Reiniciar"
 }

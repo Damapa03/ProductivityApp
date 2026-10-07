@@ -697,6 +697,78 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Esta pantalla todavía no está disponible.'**
   String get comingSoonBody;
+
+  /// No description provided for @timerTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Temporizador'**
+  String get timerTitle;
+
+  /// No description provided for @timerMode.
+  ///
+  /// In es, this message translates to:
+  /// **'Modo'**
+  String get timerMode;
+
+  /// No description provided for @timerModeWork.
+  ///
+  /// In es, this message translates to:
+  /// **'Trabajo'**
+  String get timerModeWork;
+
+  /// No description provided for @timerModeStudy.
+  ///
+  /// In es, this message translates to:
+  /// **'Estudio'**
+  String get timerModeStudy;
+
+  /// No description provided for @timerTimes.
+  ///
+  /// In es, this message translates to:
+  /// **'Tiempos'**
+  String get timerTimes;
+
+  /// No description provided for @timerPhaseWork.
+  ///
+  /// In es, this message translates to:
+  /// **'Trabajo'**
+  String get timerPhaseWork;
+
+  /// No description provided for @timerPhaseBreak.
+  ///
+  /// In es, this message translates to:
+  /// **'Descanso'**
+  String get timerPhaseBreak;
+
+  /// No description provided for @timerPhaseReview.
+  ///
+  /// In es, this message translates to:
+  /// **'Repaso'**
+  String get timerPhaseReview;
+
+  /// No description provided for @timerStart.
+  ///
+  /// In es, this message translates to:
+  /// **'Iniciar'**
+  String get timerStart;
+
+  /// No description provided for @timerPause.
+  ///
+  /// In es, this message translates to:
+  /// **'Pausar'**
+  String get timerPause;
+
+  /// No description provided for @timerResume.
+  ///
+  /// In es, this message translates to:
+  /// **'Reanudar'**
+  String get timerResume;
+
+  /// No description provided for @timerReset.
+  ///
+  /// In es, this message translates to:
+  /// **'Reiniciar'**
+  String get timerReset;
 }
 
 class _AppLocalizationsDelegate

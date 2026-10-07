@@ -7,6 +7,7 @@ import '../black_list/black_list_screen.dart';
 import '../daily_schedule/daily_schedule_screen.dart';
 import '../daily_tasks/daily_tasks_screen.dart';
 import '../habit_calendar/habit_calendar_screen.dart';
+import '../timer/timer_screen.dart';
 import 'coming_soon_screen.dart';
 
 /// Contenedor raíz tras el acceso: aloja las pantallas y la navegación
@@ -75,8 +76,7 @@ class _HomeShellState extends State<HomeShell> {
       _NavTab(
         label: l10n.navFocus,
         icon: const Icon(Icons.schedule_outlined),
-        screen: (context) =>
-            pending(l10n.navFocus, const Icon(Icons.schedule_outlined)),
+        screen: (context) => const TimerScreen(),
       ),
       _NavTab(
         label: l10n.navBlackList,

@@ -1,8 +1,6 @@
 {
   "@@locale": "en",
-
   "appName": "Flowly",
-
   "loginHeadline": "Good to see you again.",
   "loginSubline": "Pick up your tasks where you left off.",
   "loginForgotPassword": "Forgot password?",
@@ -10,12 +8,10 @@
   "loginOrContinueWith": "or continue with",
   "loginNewToFlowly": "New to Flowly? ",
   "loginCreateAccount": "Create an account",
-
   "registerHeadline": "Create your account.",
   "registerSubline": "Start building habits that stick.",
   "registerSubmit": "Create account",
   "registerWelcome": "Welcome to Flowly, {name} 🎉",
-
   "fieldNameLabel": "NAME",
   "fieldNamePlaceholder": "Your full name",
   "fieldEmailLabel": "EMAIL",
@@ -28,10 +24,8 @@
   "fieldConfirmPasswordLabel": "CONFIRM PASSWORD",
   "fieldConfirmPasswordPlaceholder": "Repeat your password",
   "fieldPasswordMismatch": "Passwords do not match.",
-
   "socialGoogle": "Google",
   "socialApple": "Apple",
-
   "dailyTasksTitle": "Daily tasks",
   "dailyTasksNewColumn": "New column",
   "dailyTasksAddColumn": "Add column",
@@ -39,7 +33,6 @@
   "dailyTasksEmptyColumn": "No tasks yet",
   "dailyTasksViewByStatus": "By status",
   "dailyTasksViewAll": "All tasks",
-
   "scheduleTitle": "Today's plan",
   "scheduleWeekTitle": "This week",
   "scheduleViewDay": "Day",
@@ -56,13 +49,10 @@
   "schedulePreviousWeek": "Previous week",
   "scheduleNextWeek": "Next week",
   "scheduleInvalidRange": "End time must be later than start.",
-
   "columnRename": "Rename",
   "columnDelete": "Delete",
-
   "taskEdit": "Edit",
   "taskDelete": "Delete",
-
   "dialogCreateColumnTitle": "New column",
   "dialogRenameColumnTitle": "Rename column",
   "dialogCreateTaskTitle": "New task",
@@ -78,21 +68,23 @@
   "dialogDeleteTaskBody": "Task \"{task}\" will be deleted. This cannot be undone.",
   "dialogTaskColumnLabel": "Column",
   "dialogTaskNoColumns": "Add a column before creating tasks.",
-
   "navTasks": "Tasks",
   "navHabits": "Habits",
   "navSchedule": "Schedule",
   "navFocus": "Timer",
   "navBlackList": "Black List",
   "navProfile": "Profile",
-
   "habitsTitle": "Habits",
   "habitsToday": "Today",
   "habitsProgress": "{done} of {total}",
   "@habitsProgress": {
     "placeholders": {
-      "done": { "type": "int" },
-      "total": { "type": "int" }
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
     }
   },
   "habitsAddHabit": "+ Add habit",
@@ -106,7 +98,9 @@
   "habitsDeleteBody": "Habit \"{habit}\" and its marked days will be deleted. This cannot be undone.",
   "@habitsDeleteBody": {
     "placeholders": {
-      "habit": { "type": "String" }
+      "habit": {
+        "type": "String"
+      }
     }
   },
   "habitsPreviousMonth": "Previous month",
@@ -116,9 +110,15 @@
   "habitsDayStatus": "{day} of {month}: {status}",
   "@habitsDayStatus": {
     "placeholders": {
-      "day": { "type": "int" },
-      "month": { "type": "String" },
-      "status": { "type": "String" }
+      "day": {
+        "type": "int"
+      },
+      "month": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
     }
   },
   "habitsStatusDone": "all habits done",
@@ -128,14 +128,28 @@
   "habitsToggleSemantics": "{habit}, for {date}",
   "@habitsToggleSemantics": {
     "placeholders": {
-      "habit": { "type": "String" },
-      "date": { "type": "String" }
+      "habit": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
     }
   },
-
   "blackListTitle": "Black List",
   "blackListHint": "Start typing…",
-
   "comingSoonTitle": "Coming soon",
-  "comingSoonBody": "This screen is not available yet."
+  "comingSoonBody": "This screen is not available yet.",
+  "timerTitle": "Timer",
+  "timerMode": "Mode",
+  "timerModeWork": "Work",
+  "timerModeStudy": "Study",
+  "timerTimes": "Times",
+  "timerPhaseWork": "Work",
+  "timerPhaseBreak": "Break",
+  "timerPhaseReview": "Review",
+  "timerStart": "Start",
+  "timerPause": "Pause",
+  "timerResume": "Resume",
+  "timerReset": "Reset"
 }
