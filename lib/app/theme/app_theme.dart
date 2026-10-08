@@ -38,6 +38,19 @@ abstract final class AppTheme {
           textStyle: AppTextStyles.buttonPrimary,
         ),
       ),
+      // Selectores de modo y tiempo del timer: se alinean con el color del
+      // botón de inicio (FilledButton en `primary`, pine) para que toda la
+      // pantalla comparta la misma gama. El segmento sin seleccionar usa la
+      // variante clara (pinePale) para no competir con el seleccionado.
+      segmentedButtonTheme: SegmentedButtonThemeData(
+        style: SegmentedButton.styleFrom(
+          backgroundColor: AppColors.pinePale,
+          foregroundColor: AppColors.pineDeep,
+          selectedBackgroundColor: AppColors.pine,
+          selectedForegroundColor: base.colorScheme.onPrimary,
+          side: const BorderSide(color: AppColors.line),
+        ),
+      ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: AppColors.pine,
