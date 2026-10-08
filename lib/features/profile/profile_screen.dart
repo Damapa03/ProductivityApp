@@ -330,8 +330,12 @@ class _ProfileRow extends StatelessWidget {
       child: Row(
         children: [
           Container(
+            key: const Key('profile-row-chip'),
             width: chip,
             height: chip,
+            // Centra el icono con holgura: sin esto el chip aprieta al Icon a
+            // 30×30 y su caja dejan de medir los 16 px del mockup.
+            alignment: Alignment.center,
             decoration: const BoxDecoration(
               color: AppColors.pinePale,
               borderRadius: BorderRadius.all(Radius.circular(chipRadius)),
