@@ -354,4 +354,69 @@ static const TextStyle fieldPlaceholder = TextStyle(
     height: 1.3,
     color: AppColors.inkSoft,
   );
+
+  /// Iniciales dentro del avatar de la cabecera de la pantalla Perfil
+  /// (mockup 07).
+  static const TextStyle profileInitials = TextStyle(
+    fontFamily: AppFonts.display,
+    fontWeight: FontWeight.w600,
+    fontSize: 19,
+    height: 1.2,
+    color: AppColors.pineDeep,
+  );
+
+  /// Nombre junto al avatar en la pantalla Perfil (mockup 07).
+  static const TextStyle profileName = TextStyle(
+    fontFamily: AppFonts.display,
+    fontWeight: FontWeight.w600,
+    fontSize: 16.5,
+    height: 1.2,
+    color: AppColors.ink,
+  );
+
+  /// Email bajo el nombre en la pantalla Perfil (mockup 07).
+  static const TextStyle profileEmail = TextStyle(
+    fontFamily: AppFonts.body,
+    fontWeight: FontWeight.w400,
+    fontSize: 12.5,
+    height: 1.3,
+    color: AppColors.inkSoft,
+  );
+
+  /// Etiqueta de grupo («Cuenta», «Preferencias»…) sobre cada bloque de la
+  /// pantalla Perfil (mockup 07).
+  static const TextStyle profileGroupLabel = TextStyle(
+    fontFamily: AppFonts.body,
+    fontWeight: FontWeight.w600,
+    fontSize: 11.5,
+    height: 1.3,
+    color: AppColors.inkSoft,
+  );
+
+  /// Texto de una fila de la pantalla Perfil (mockup 07).
+  static const TextStyle profileRowLabel = TextStyle(
+    fontFamily: AppFonts.body,
+    fontWeight: FontWeight.w400,
+    fontSize: 13.5,
+    height: 1.3,
+    color: AppColors.ink,
+  );
+
+  /// Valor a la derecha de una fila («2 vinculados», «Lunes», mockup 07).
+  static const TextStyle profileRowValue = TextStyle(
+    fontFamily: AppFonts.body,
+    fontWeight: FontWeight.w400,
+    fontSize: 12,
+    height: 1.3,
+    color: AppColors.inkSoft,
+  );
+
+  /// Texto del botón «Cerrar sesión» (mockup 07).
+  static const TextStyle profileLogout = TextStyle(
+    fontFamily: AppFonts.body,
+    fontWeight: FontWeight.w600,
+    fontSize: 13.5,
+    height: 1.2,
+    color: AppColors.rose,
+  );
 }
