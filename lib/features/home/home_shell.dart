@@ -7,15 +7,14 @@ import '../black_list/black_list_screen.dart';
 import '../daily_schedule/daily_schedule_screen.dart';
 import '../daily_tasks/daily_tasks_screen.dart';
 import '../habit_calendar/habit_calendar_screen.dart';
+import '../profile/profile_screen.dart';
 import '../timer/timer_screen.dart';
-import 'coming_soon_screen.dart';
 
 /// Contenedor raíz tras el acceso: aloja las pantallas y la navegación
 /// inferior (ver mockup 07).
 ///
-/// «Tareas», «Hábitos», «Agenda» y «Lista negra» tienen pantalla propia; el
-/// resto de pestañas muestran un marcador de posición hasta que tengan
-/// pantalla propia.
+/// Las seis pestañas tienen pantalla propia. `ComingSoonScreen` sigue en el
+/// proyecto por si alguna vuelve a quedar pendiente.
 class HomeShell extends StatefulWidget {
   const HomeShell({super.key, required this.ownerId});
 
@@ -46,12 +45,9 @@ class _HomeShellState extends State<HomeShell> {
     setState(() => _index = index);
   }
 
-  /// Las pestañas se construyen en cada `build` porque sus etiquetas (y las de
-  /// los marcadores) vienen de l10n.
+  /// Las pestañas se construyen en cada `build` porque sus etiquetas vienen
+  /// de l10n.
   List<_NavTab> _tabs(AppLocalizations l10n) {
-    Widget pending(String title, Widget icon) =>
-        ComingSoonScreen(title: title, icon: icon);
-
     return [
       _NavTab(
         label: l10n.navTasks,
@@ -86,8 +82,7 @@ class _HomeShellState extends State<HomeShell> {
       _NavTab(
         label: l10n.navProfile,
         icon: const Icon(Icons.person_outline),
-        screen: (context) =>
-            pending(l10n.navProfile, const Icon(Icons.person_outline)),
+        screen: (context) => ProfileScreen(ownerId: widget.ownerId),
       ),
     ];
   }
