@@ -176,5 +176,19 @@
   "timerStart": "Iniciar",
   "timerPause": "Pausar",
   "timerResume": "Reanudar",
-  "timerReset": "Reiniciar"
+  "timerReset": "Reiniciar",
+  "profileTitle": "Perfil",
+  "profileGroupAccount": "Cuenta",
+  "profileGroupPreferences": "Preferencias",
+  "profileGroupSupport": "Soporte",
+  "profileEditProfile": "Editar perfil",
+  "profileChangePassword": "Cambiar contraseña",
+  "profileConnectedCalendars": "Calendarios vinculados",
+  "profileConnectedValue": "2 vinculados",
+  "profileDailyReminders": "Recordatorios diarios",
+  "profileDarkMode": "Modo oscuro",
+  "profileWeekStartsOn": "La semana empieza en",
+  "profileWeekMonday": "Lunes",
+  "profileHelpCentre": "Centro de ayuda",
+  "profileLogout": "Cerrar sesión"
 }

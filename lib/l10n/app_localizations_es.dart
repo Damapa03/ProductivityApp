@@ -359,4 +359,46 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get timerReset => 'Reiniciar';
+
+  @override
+  String get profileTitle => 'Perfil';
+
+  @override
+  String get profileGroupAccount => 'Cuenta';
+
+  @override
+  String get profileGroupPreferences => 'Preferencias';
+
+  @override
+  String get profileGroupSupport => 'Soporte';
+
+  @override
+  String get profileEditProfile => 'Editar perfil';
+
+  @override
+  String get profileChangePassword => 'Cambiar contraseña';
+
+  @override
+  String get profileConnectedCalendars => 'Calendarios vinculados';
+
+  @override
+  String get profileConnectedValue => '2 vinculados';
+
+  @override
+  String get profileDailyReminders => 'Recordatorios diarios';
+
+  @override
+  String get profileDarkMode => 'Modo oscuro';
+
+  @override
+  String get profileWeekStartsOn => 'La semana empieza en';
+
+  @override
+  String get profileWeekMonday => 'Lunes';
+
+  @override
+  String get profileHelpCentre => 'Centro de ayuda';
+
+  @override
+  String get profileLogout => 'Cerrar sesión';
 }

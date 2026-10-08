@@ -151,5 +151,19 @@
   "timerStart": "Start",
   "timerPause": "Pause",
   "timerResume": "Resume",
-  "timerReset": "Reset"
+  "timerReset": "Reset",
+  "profileTitle": "Profile",
+  "profileGroupAccount": "Account",
+  "profileGroupPreferences": "Preferences",
+  "profileGroupSupport": "Support",
+  "profileEditProfile": "Edit profile",
+  "profileChangePassword": "Change password",
+  "profileConnectedCalendars": "Connected calendars",
+  "profileConnectedValue": "2 linked",
+  "profileDailyReminders": "Daily reminders",
+  "profileDarkMode": "Dark mode",
+  "profileWeekStartsOn": "Week starts on",
+  "profileWeekMonday": "Monday",
+  "profileHelpCentre": "Help centre",
+  "profileLogout": "Log out"
 }

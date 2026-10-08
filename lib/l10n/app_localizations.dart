@@ -769,6 +769,90 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Reiniciar'**
   String get timerReset;
+
+  /// No description provided for @profileTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Perfil'**
+  String get profileTitle;
+
+  /// No description provided for @profileGroupAccount.
+  ///
+  /// In es, this message translates to:
+  /// **'Cuenta'**
+  String get profileGroupAccount;
+
+  /// No description provided for @profileGroupPreferences.
+  ///
+  /// In es, this message translates to:
+  /// **'Preferencias'**
+  String get profileGroupPreferences;
+
+  /// No description provided for @profileGroupSupport.
+  ///
+  /// In es, this message translates to:
+  /// **'Soporte'**
+  String get profileGroupSupport;
+
+  /// No description provided for @profileEditProfile.
+  ///
+  /// In es, this message translates to:
+  /// **'Editar perfil'**
+  String get profileEditProfile;
+
+  /// No description provided for @profileChangePassword.
+  ///
+  /// In es, this message translates to:
+  /// **'Cambiar contraseña'**
+  String get profileChangePassword;
+
+  /// No description provided for @profileConnectedCalendars.
+  ///
+  /// In es, this message translates to:
+  /// **'Calendarios vinculados'**
+  String get profileConnectedCalendars;
+
+  /// No description provided for @profileConnectedValue.
+  ///
+  /// In es, this message translates to:
+  /// **'2 vinculados'**
+  String get profileConnectedValue;
+
+  /// No description provided for @profileDailyReminders.
+  ///
+  /// In es, this message translates to:
+  /// **'Recordatorios diarios'**
+  String get profileDailyReminders;
+
+  /// No description provided for @profileDarkMode.
+  ///
+  /// In es, this message translates to:
+  /// **'Modo oscuro'**
+  String get profileDarkMode;
+
+  /// No description provided for @profileWeekStartsOn.
+  ///
+  /// In es, this message translates to:
+  /// **'La semana empieza en'**
+  String get profileWeekStartsOn;
+
+  /// No description provided for @profileWeekMonday.
+  ///
+  /// In es, this message translates to:
+  /// **'Lunes'**
+  String get profileWeekMonday;
+
+  /// No description provided for @profileHelpCentre.
+  ///
+  /// In es, this message translates to:
+  /// **'Centro de ayuda'**
+  String get profileHelpCentre;
+
+  /// No description provided for @profileLogout.
+  ///
+  /// In es, this message translates to:
+  /// **'Cerrar sesión'**
+  String get profileLogout;
 }
 
 class _AppLocalizationsDelegate
