@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:productyivity_app/app/theme/colors.dart';
 import 'package:productyivity_app/features/daily_schedule/day_timeline.dart';
 import 'package:productyivity_app/features/home/home_shell.dart';
+import 'package:productyivity_app/features/profile/profile_screen.dart';
 import 'package:productyivity_app/l10n/app_localizations.dart';
 import 'package:productyivity_app/widgets/time_blocks_icon.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -127,31 +128,7 @@ void main() {
     expect(find.text('Próximamente'), findsNothing);
   });
 
-  testWidgets('cada pestaña pendiente muestra su marcador', (tester) async {
-    await tester.pumpWidget(_harness());
-    await tester.pumpAndSettle();
-
-    // Pestaña y nombre que debe verse al entrar. Hábitos ya tiene pantalla.
-    const pending = [
-      (3, 'Timer'),
-      (5, 'Perfil'),
-    ];
-
-    for (final (index, name) in pending) {
-      await tester.tap(_item(index));
-      await tester.pumpAndSettle();
-
-      expect(_activeIndex(tester), index, reason: 'no se activó $name');
-      expect(find.text(name), findsOneWidget);
-      expect(find.text('Próximamente'), findsOneWidget);
-      // El tablero ya no está a la vista.
-      expect(find.text('Tareas diarias'), findsNothing);
-    }
-  });
-
-  testWidgets('el marcador reutiliza el icono de su pestaña a 40 px', (
-    tester,
-  ) async {
+  testWidgets('la pestaña Timer muestra el temporizador', (tester) async {
     await tester.pumpWidget(_harness());
     await tester.pumpAndSettle();
 
@@ -159,17 +136,46 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(_activeIndex(tester), 3);
-    expect(find.text('Timer'), findsOneWidget);
+    expect(find.text('Temporizador'), findsOneWidget);
+    expect(find.text('Próximamente'), findsNothing);
+    // El tablero ya no está a la vista.
+    expect(find.text('Tareas diarias'), findsNothing);
+  });
 
-    // El icono del Timer aparece dos veces: a 20 en el nav y a 40 en el
-    // marcador.
-    final icons = find.byIcon(Icons.schedule_outlined);
+  testWidgets('la pestaña Perfil muestra su pantalla', (tester) async {
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    await tester.tap(_item(5));
+    await tester.pumpAndSettle();
+
+    expect(_activeIndex(tester), 5);
+    expect(find.byType(ProfileScreen), findsOneWidget);
+    expect(find.text('Perfil'), findsOneWidget);
+    expect(find.text('Cerrar sesión'), findsOneWidget);
+    expect(find.text('Próximamente'), findsNothing);
+    // El tablero ya no está a la vista.
+    expect(find.text('Tareas diarias'), findsNothing);
+  });
+
+  testWidgets('el icono de Perfil se ve en la pantalla y en la barra', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    await tester.tap(_item(5));
+    await tester.pumpAndSettle();
+
+    // Dos usos del mismo icono: el de la navegación (20 px) y el del chip de
+    // «Editar perfil» (16 px).
+    final icons = find.byIcon(Icons.person_outline);
     expect(icons, findsNWidgets(2));
     final heights = [
       tester.getSize(icons.at(0)).height,
       tester.getSize(icons.at(1)).height,
     ]..sort();
-    expect(heights, [20.0, 40.0]);
+    expect(heights, [16.0, 20.0]);
   });
 
   testWidgets('la pestaña Hábitos muestra su calendario', (tester) async {
@@ -234,7 +240,7 @@ void main() {
     // Ir a Perfil y volver.
     await tester.tap(_item(5));
     await tester.pumpAndSettle();
-    expect(find.text('Próximamente'), findsOneWidget);
+    expect(find.byType(ProfileScreen), findsOneWidget);
 
     await tester.tap(_item(0));
     await tester.pumpAndSettle();
