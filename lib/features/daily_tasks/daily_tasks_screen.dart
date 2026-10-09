@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../app/theme/colors.dart';
+import '../../app/theme/palette.dart';
 import '../../data/kanban_repository.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/kanban_board.dart';
@@ -200,6 +200,7 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final palette = Palette.of(context);
     final board = _board;
 
     return Scaffold(
@@ -226,7 +227,7 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
                             onEditTask: _editTask,
                             onDeleteTask: _deleteTask,
                           )
-                        : _buildBoard(board),
+                        : _buildBoard(board, palette),
                   ),
                 ],
               ),
@@ -235,7 +236,7 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
     );
   }
 
-  Widget _buildBoard(KanbanBoard board) {
+  Widget _buildBoard(KanbanBoard board, Palette palette) {
     return Scrollbar(
       controller: _boardScrollController,
       thumbVisibility: true,
@@ -252,7 +253,7 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
                 key: ValueKey(board.columns[i].id),
                 columnId: board.columns[i].id,
                 columnName: board.columns[i].name,
-                color: AppColors.columnDots[i % AppColors.columnDots.length],
+                color: palette.columnDots[i % palette.columnDots.length],
                 tasks: board.tasksFor(board.columns[i].id),
                 columnIndex: i,
                 onAddTask: () => _createTask(board.columns[i]),
@@ -315,12 +316,13 @@ class _AddColumnButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final palette = Palette.of(context);
     return Tooltip(
       message: l10n.dailyTasksAddColumn,
       child: IconButton(
         key: const Key('add-column-button'),
         onPressed: onPressed,
-        icon: const Icon(Icons.add, color: AppColors.pine),
+        icon: Icon(Icons.add, color: palette.pine),
         iconSize: 20,
         padding: EdgeInsets.zero,
         constraints: const BoxConstraints.tightFor(width: 40, height: 40),

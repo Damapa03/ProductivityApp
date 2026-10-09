@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../app/theme/colors.dart';
+import '../../app/theme/palette.dart';
 import '../../app/theme/text_styles.dart';
 import '../../models/schedule_event.dart';
 import 'schedule_painting.dart';
@@ -167,6 +167,8 @@ class _HourRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = Palette.of(context);
+    final styles = AppTextStyles.of(context);
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTapUp: (details) {
@@ -187,7 +189,7 @@ class _HourRow extends StatelessWidget {
         decoration: BoxDecoration(
           border: hour == 0
               ? null
-              : const Border(top: BorderSide(color: AppColors.lineFaint)),
+              : Border(top: BorderSide(color: palette.lineFaint)),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -199,7 +201,7 @@ class _HourRow extends StatelessWidget {
                 alignment: Alignment.topLeft,
                 child: Transform.translate(
                   offset: const Offset(0, -7),
-                  child: Text(_label, style: AppTextStyles.hourLabel),
+                  child: Text(_label, style: styles.hourLabel),
                 ),
               ),
             ),
@@ -241,7 +243,9 @@ class _EventBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final palette = scheduleBlockPaletteAt(paletteIndex);
+    final palette = Palette.of(context);
+    final styles = AppTextStyles.of(context);
+    final blockPalette = scheduleBlockPaletteAt(palette, paletteIndex);
     final top = DayTimeline.offsetFor(event.start).clamp(0.0, DayTimeline.totalHeight);
     final maxHeight = DayTimeline.totalHeight - top;
     final durationHeight = event.duration.inSeconds / 3600 * DayTimeline.hourHeight;
@@ -264,9 +268,9 @@ class _EventBlock extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
           decoration: BoxDecoration(
-            color: palette.bg,
-            border: palette.outline
-                ? Border.all(color: AppColors.line)
+            color: blockPalette.bg,
+            border: blockPalette.outline
+                ? Border.all(color: palette.line)
                 : null,
             borderRadius: BorderRadius.circular(8),
           ),
@@ -278,14 +282,14 @@ class _EventBlock extends StatelessWidget {
                 event.title,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: AppTextStyles.eventName.copyWith(color: palette.fg),
+                style: styles.eventName.copyWith(color: blockPalette.fg),
               ),
               const SizedBox(height: 2),
               Text(
                 timeRange,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: AppTextStyles.eventTime.copyWith(color: palette.fg),
+                style: styles.eventTime.copyWith(color: blockPalette.fg),
               ),
             ],
           ),
@@ -308,6 +312,7 @@ class _NowLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = Palette.of(context);
     final top = DayTimeline.offsetFor(now).clamp(0.0, DayTimeline.totalHeight);
     return Positioned(
       key: const Key('now-line'),
@@ -321,7 +326,7 @@ class _NowLine extends StatelessWidget {
             // Línea de 2 px a todo lo ancho.
             Align(
               alignment: Alignment.centerLeft,
-              child: Container(height: 2, color: AppColors.rose),
+              child: Container(height: 2, color: palette.rose),
             ),
             // Punto de 8 px centrado sobre el arranque de la línea.
             Align(
@@ -331,8 +336,8 @@ class _NowLine extends StatelessWidget {
                 child: Container(
                   width: 8,
                   height: 8,
-                  decoration: const BoxDecoration(
-                    color: AppColors.rose,
+                  decoration: BoxDecoration(
+                    color: palette.rose,
                     shape: BoxShape.circle,
                   ),
                 ),

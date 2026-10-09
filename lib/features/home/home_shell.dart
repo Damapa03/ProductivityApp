@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../app/theme/colors.dart';
+import '../../app/theme/palette.dart';
 import '../../l10n/app_localizations.dart';
 import '../../widgets/time_blocks_icon.dart';
 import '../black_list/black_list_screen.dart';
@@ -149,13 +149,14 @@ class _BottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = Palette.of(context);
     return Container(
       key: const Key('bottom-nav'),
       height: _height,
       padding: const EdgeInsets.symmetric(horizontal: _hPadding),
-      decoration: const BoxDecoration(
-        color: AppColors.paper,
-        border: Border(top: BorderSide(color: AppColors.line)),
+      decoration: BoxDecoration(
+        color: palette.paper,
+        border: Border(top: BorderSide(color: palette.line)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -200,7 +201,8 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = active ? AppColors.pineDeep : AppColors.navInactive;
+    final palette = Palette.of(context);
+    final color = active ? palette.pineDeep : palette.navInactive;
 
     return Semantics(
       label: tab.label,
@@ -218,7 +220,7 @@ class _NavItem extends StatelessWidget {
             width: size,
             height: size,
             decoration: BoxDecoration(
-              color: active ? AppColors.pinePale : Colors.transparent,
+              color: active ? palette.pinePale : Colors.transparent,
               borderRadius: BorderRadius.circular(radius),
             ),
             // El color se propaga por [IconTheme] para que todos los iconos

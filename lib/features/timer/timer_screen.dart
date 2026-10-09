@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../app/theme/colors.dart';
+import '../../app/theme/palette.dart';
 import '../../l10n/app_localizations.dart';
 import 'controllers/timer_controller.dart';
 import 'widgets/circular_timer.dart';
@@ -38,13 +38,14 @@ class _TimerScreenState extends State<TimerScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final palette = Palette.of(context);
     final state = _controller.state;
 
     return Scaffold(
-      backgroundColor: AppColors.paper,
+      backgroundColor: palette.paper,
       appBar: AppBar(
         title: Text(l10n.timerTitle),
-        backgroundColor: AppColors.paper,
+        backgroundColor: palette.paper,
         elevation: 0,
       ),
       body: SingleChildScrollView(

@@ -69,6 +69,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final styles = AppTextStyles.of(context);
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -84,12 +85,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   const SizedBox(height: 52),
                   Text(
                     l10n.registerHeadline,
-                    style: AppTextStyles.headline,
+                    style: styles.headline,
                   ),
                   const SizedBox(height: 10),
                   Text(
                     l10n.registerSubline,
-                    style: AppTextStyles.subline,
+                    style: styles.subline,
                   ),
                   const SizedBox(height: 42),
                   UnderlineField(
@@ -122,7 +123,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             padding: const EdgeInsets.only(top: 8),
                             child: Text(
                               field.errorText!,
-                              style: AppTextStyles.fieldError,
+                              style: styles.fieldError,
                             ),
                           ),
                       ],
@@ -145,7 +146,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             padding: const EdgeInsets.only(top: 8),
                             child: Text(
                               field.errorText!,
-                              style: AppTextStyles.fieldError,
+                              style: styles.fieldError,
                             ),
                           ),
                       ],

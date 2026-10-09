@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../app/theme/colors.dart';
+import '../app/theme/palette.dart';
 import '../app/theme/text_styles.dart';
 
 /// Botón social (Google / Apple) de Flowly.
@@ -12,23 +12,25 @@ class SocialButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = Palette.of(context);
+    final styles = AppTextStyles.of(context);
     return Expanded(
       child: OutlinedButton(
         onPressed: () {},
         style: OutlinedButton.styleFrom(
           minimumSize: const Size(0, 56),
           padding: const EdgeInsets.symmetric(vertical: 12),
-          side: const BorderSide(color: AppColors.line, width: 1.5),
+          side: BorderSide(color: palette.line, width: 1.5),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(6),
           ),
-          textStyle: AppTextStyles.buttonSecondary,
-          foregroundColor: AppColors.ink,
+          textStyle: styles.buttonSecondary,
+          foregroundColor: palette.ink,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 17, color: AppColors.inkSoft),
+            Icon(icon, size: 17, color: palette.inkSoft),
             const SizedBox(width: 8),
             Text(label),
           ],

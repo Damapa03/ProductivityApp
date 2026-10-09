@@ -50,6 +50,7 @@ class ScreenHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final styles = AppTextStyles.of(context);
     return Padding(
       padding: padding,
       child: Column(
@@ -57,18 +58,18 @@ class ScreenHeader extends StatelessWidget {
         children: [
           Text(
             eyebrow ?? _formattedDate(context),
-            style: AppTextStyles.eyebrow,
+            style: styles.eyebrow,
           ),
           const SizedBox(height: titleSpacing),
           if (trailing case final trailing?)
             Row(
               children: [
-                Expanded(child: Text(title, style: AppTextStyles.screenTitle)),
+                Expanded(child: Text(title, style: styles.screenTitle)),
                 trailing,
               ],
             )
           else
-            Text(title, style: AppTextStyles.screenTitle),
+            Text(title, style: styles.screenTitle),
           const SizedBox(height: bottomSpacing),
         ],
       ),

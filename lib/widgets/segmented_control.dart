@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../app/theme/colors.dart';
+import '../app/theme/palette.dart';
 import '../app/theme/text_styles.dart';
 
 /// Segmentado reutilizable: única opción activa a la vez y tocar la opción ya
@@ -29,12 +29,14 @@ class SegmentedControl extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = Palette.of(context);
+    final styles = AppTextStyles.of(context);
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 24),
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
-        color: AppColors.cardBg,
-        border: Border.all(color: AppColors.line),
+        color: palette.cardBg,
+        border: Border.all(color: palette.line),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -51,17 +53,17 @@ class SegmentedControl extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 9),
                   decoration: BoxDecoration(
                     color: i == activeIndex
-                        ? AppColors.pineDeep
+                        ? palette.pineDeep
                         : Colors.transparent,
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
                     options[i],
                     textAlign: TextAlign.center,
-                    style: AppTextStyles.segmented.copyWith(
+                    style: styles.segmented.copyWith(
                       color: i == activeIndex
-                          ? const Color(0xFFF3F4EF)
-                          : AppColors.inkSoft,
+                          ? palette.onPrimary
+                          : palette.inkSoft,
                     ),
                   ),
                 ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../app/theme/colors.dart';
+import '../../app/theme/palette.dart';
 import '../../l10n/app_localizations.dart';
 
 /// Botón flotante para añadir una tarea pidiendo nombre y columna destino.
@@ -14,10 +14,11 @@ class AddTaskFab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final palette = Palette.of(context);
     return FloatingActionButton(
       onPressed: onPressed,
-      backgroundColor: AppColors.pineDeep,
-      foregroundColor: const Color(0xFFF3F4EF),
+      backgroundColor: palette.pineDeep,
+      foregroundColor: palette.onPrimary,
       tooltip: l10n.dailyTasksAddTask,
       child: const Icon(Icons.add),
     );

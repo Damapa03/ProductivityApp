@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../app/theme/colors.dart';
+import '../../app/theme/palette.dart';
 import '../../app/theme/text_styles.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/kanban_task.dart';
@@ -65,6 +65,7 @@ class KanbanColumnView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = Palette.of(context);
     return DragTarget<_ColumnDragData>(
       onWillAcceptWithDetails: (details) => details.data.columnId != columnId,
       onAcceptWithDetails: (details) =>
@@ -84,10 +85,10 @@ class KanbanColumnView extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 color: isTaskOver || isColumnOver
-                    ? AppColors.pinePale
+                    ? palette.pinePale
                     : Colors.transparent,
                 border: (isTaskOver || isColumnOver)
-                    ? Border.all(color: AppColors.pine, width: 1.4)
+                    ? Border.all(color: palette.pine, width: 1.4)
                     : Border.all(color: Colors.transparent),
               ),
               child: Column(
@@ -114,24 +115,27 @@ class KanbanColumnView extends StatelessWidget {
 
   Widget _buildHeader(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final palette = Palette.of(context);
     return LongPressDraggable<_ColumnDragData>(
       data: _ColumnDragData(columnId: columnId, index: columnIndex),
       delay: const Duration(milliseconds: 120),
       feedback: _buildHeaderFeedback(context),
-      childWhenDragging: Opacity(opacity: 0.4, child: _buildHeaderRow(l10n)),
-      child: _buildHeaderRow(l10n),
+      childWhenDragging: Opacity(opacity: 0.4, child: _buildHeaderRow(l10n, palette)),
+      child: _buildHeaderRow(l10n, palette),
     );
   }
 
   /// Réplica compacta de la cabecera que sigue al puntero durante el drag.
   Widget _buildHeaderFeedback(BuildContext context) {
+    final palette = Palette.of(context);
+    final styles = AppTextStyles.of(context);
     return Material(
       color: Colors.transparent,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         decoration: BoxDecoration(
-          color: AppColors.cardBg,
-          border: Border.all(color: AppColors.pine, width: 1.4),
+          color: palette.cardBg,
+          border: Border.all(color: palette.pine, width: 1.4),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
@@ -145,18 +149,19 @@ class KanbanColumnView extends StatelessWidget {
             ),
             Text(
               columnName,
-              style: AppTextStyles.columnTitle,
+              style: styles.columnTitle,
               overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(width: 7),
-            Text('${tasks.length}', style: AppTextStyles.columnCount),
+            Text('${tasks.length}', style: styles.columnCount),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildHeaderRow(AppLocalizations l10n) {
+  Widget _buildHeaderRow(AppLocalizations l10n, Palette palette) {
+    final styles = AppTextStyles.from(palette);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -169,21 +174,21 @@ class KanbanColumnView extends StatelessWidget {
         Expanded(
           child: Text(
             columnName,
-            style: AppTextStyles.columnTitle,
+            style: styles.columnTitle,
             overflow: TextOverflow.ellipsis,
           ),
         ),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 1),
           decoration: BoxDecoration(
-            color: AppColors.cardBg,
-            border: Border.all(color: AppColors.line),
+            color: palette.cardBg,
+            border: Border.all(color: palette.line),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Text('${tasks.length}', style: AppTextStyles.columnCount),
+          child: Text('${tasks.length}', style: styles.columnCount),
         ),
         PopupMenuButton<String>(
-          icon: const Icon(Icons.more_horiz, size: 18, color: AppColors.inkSoft),
+          icon: Icon(Icons.more_horiz, size: 18, color: palette.inkSoft),
           padding: EdgeInsets.zero,
           constraints: const BoxConstraints(minWidth: 128),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -194,11 +199,11 @@ class KanbanColumnView extends StatelessWidget {
           itemBuilder: (context) => [
             PopupMenuItem(
               value: 'rename',
-              child: Text(l10n.columnRename, style: AppTextStyles.columnTitle),
+              child: Text(l10n.columnRename, style: styles.columnTitle),
             ),
             PopupMenuItem(
               value: 'delete',
-              child: Text(l10n.columnDelete, style: AppTextStyles.columnTitle),
+              child: Text(l10n.columnDelete, style: styles.columnTitle),
             ),
           ],
         ),
@@ -208,6 +213,7 @@ class KanbanColumnView extends StatelessWidget {
 
   List<Widget> _buildTaskList(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final styles = AppTextStyles.of(context);
     return [
       for (final task in tasks)
         Padding(
@@ -226,7 +232,7 @@ class KanbanColumnView extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 10),
             child: Text(
               l10n.dailyTasksEmptyColumn,
-              style: AppTextStyles.emptyHint,
+              style: styles.emptyHint,
             ),
           ),
         ),
@@ -239,7 +245,7 @@ class KanbanColumnView extends StatelessWidget {
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             minimumSize: Size.zero,
           ),
-          child: Text(l10n.dailyTasksAddTask, style: AppTextStyles.link),
+          child: Text(l10n.dailyTasksAddTask, style: styles.link),
         ),
       ),
     ];

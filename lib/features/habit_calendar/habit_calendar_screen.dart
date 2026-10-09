@@ -240,6 +240,7 @@ class _MonthHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final styles = AppTextStyles.of(context);
 
     // Las flechas mueven meses aquí, no días como en la agenda.
     final previousLabel = l10n.habitsPreviousMonth;
@@ -268,7 +269,7 @@ class _MonthHeader extends StatelessWidget {
                 child: Center(
                   child: Text(
                     title,
-                    style: AppTextStyles.monthTitle,
+                    style: styles.monthTitle,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.center,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../app/theme/colors.dart';
+import '../../app/theme/palette.dart';
 import '../../app/theme/text_styles.dart';
 import '../../l10n/app_localizations.dart';
 
@@ -13,7 +13,7 @@ class TaskMenuButton extends StatelessWidget {
     required this.onEdit,
     required this.onDelete,
     this.iconSize = 16,
-    this.iconColor = AppColors.inkFaint,
+    this.iconColor,
   });
 
   /// Abre el diálogo de edición de la tarea.
@@ -23,13 +23,21 @@ class TaskMenuButton extends StatelessWidget {
   final VoidCallback onDelete;
 
   final double iconSize;
-  final Color iconColor;
+
+  /// Color del icono; si es null, se usa `inkFaint` de la paleta activa.
+  final Color? iconColor;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final palette = Palette.of(context);
+    final styles = AppTextStyles.of(context);
     return PopupMenuButton<String>(
-      icon: Icon(Icons.more_vert, size: iconSize, color: iconColor),
+      icon: Icon(
+        Icons.more_vert,
+        size: iconSize,
+        color: iconColor ?? palette.inkFaint,
+      ),
       padding: const EdgeInsets.all(4),
       constraints: const BoxConstraints(minWidth: 128),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -40,11 +48,11 @@ class TaskMenuButton extends StatelessWidget {
       itemBuilder: (context) => [
         PopupMenuItem(
           value: 'edit',
-          child: Text(l10n.taskEdit, style: AppTextStyles.columnTitle),
+          child: Text(l10n.taskEdit, style: styles.columnTitle),
         ),
         PopupMenuItem(
           value: 'delete',
-          child: Text(l10n.taskDelete, style: AppTextStyles.columnTitle),
+          child: Text(l10n.taskDelete, style: styles.columnTitle),
         ),
       ],
     );

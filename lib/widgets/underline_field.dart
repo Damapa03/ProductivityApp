@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../app/theme/colors.dart';
+import '../app/theme/palette.dart';
 import '../app/theme/text_styles.dart';
 
 /// Campo de la marca Flowly: etiqueta + subrayado + placeholder.
@@ -74,11 +74,13 @@ class _UnderlineFieldState extends State<UnderlineField> {
 
   @override
   Widget build(BuildContext context) {
-    final lineColor = _hasError ? AppColors.rose : AppColors.line;
+    final palette = Palette.of(context);
+    final styles = AppTextStyles.of(context);
+    final lineColor = _hasError ? palette.rose : palette.line;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(widget.label, style: AppTextStyles.fieldLabel),
+        Text(widget.label, style: styles.fieldLabel),
         const SizedBox(height:       8),
         TextField(
           controller: _effective,
@@ -88,12 +90,12 @@ class _UnderlineFieldState extends State<UnderlineField> {
           onTap: _onTapValidate,
           onSubmitted: widget.onSubmitted,
           textInputAction: widget.textInputAction,
-          style: AppTextStyles.fieldInput,
-          cursorColor: AppColors.pine,
+          style: styles.fieldInput,
+          cursorColor: palette.pine,
           decoration: InputDecoration(
             isDense: true,
             hintText: widget.placeholder,
-            hintStyle: AppTextStyles.fieldPlaceholder,
+            hintStyle: styles.fieldPlaceholder,
             border: InputBorder.none,
             enabledBorder: InputBorder.none,
             focusedBorder: InputBorder.none,

@@ -57,11 +57,13 @@ void main() {
     await tester.pumpWidget(_harness(title: 'Lista negra'));
     await tester.pumpAndSettle();
 
+    final styles = AppTextStyles.of(tester.element(find.byType(ScreenHeader)));
+
     final date = tester.widget<Text>(find.text(_today(const Locale('es'))));
-    expect(date.style, AppTextStyles.eyebrow);
+    expect(date.style, styles.eyebrow);
 
     final title = tester.widget<Text>(find.text('Lista negra'));
-    expect(title.style, AppTextStyles.screenTitle);
+    expect(title.style, styles.screenTitle);
   });
 
   testWidgets('la fecha sigue al idioma de la app', (tester) async {

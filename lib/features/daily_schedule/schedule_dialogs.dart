@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../../app/theme/colors.dart';
+import '../../app/theme/palette.dart';
 import '../../app/theme/text_styles.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/schedule_event.dart';
@@ -63,6 +63,8 @@ Future<ScheduleEventDraft?> showScheduleEventDialog(
 /// Devuelve `null` si se cierra sin elegir.
 Future<ScheduleEventAction?> showScheduleEventOptions(BuildContext context) {
   final l10n = AppLocalizations.of(context);
+  final palette = Palette.of(context);
+  final styles = AppTextStyles.of(context);
   return showModalBottomSheet<ScheduleEventAction>(
     context: context,
     builder: (context) => SafeArea(
@@ -70,14 +72,14 @@ Future<ScheduleEventAction?> showScheduleEventOptions(BuildContext context) {
         mainAxisSize: MainAxisSize.min,
         children: [
           ListTile(
-            leading: const Icon(Icons.edit_outlined, color: AppColors.pine),
-            title: Text(l10n.taskEdit, style: AppTextStyles.fieldInput),
+            leading: Icon(Icons.edit_outlined, color: palette.pine),
+            title: Text(l10n.taskEdit, style: styles.fieldInput),
             onTap: () =>
                 Navigator.of(context).pop(ScheduleEventAction.edit),
           ),
           ListTile(
-            leading: const Icon(Icons.delete_outline, color: AppColors.rose),
-            title: Text(l10n.taskDelete, style: AppTextStyles.fieldInput),
+            leading: Icon(Icons.delete_outline, color: palette.rose),
+            title: Text(l10n.taskDelete, style: styles.fieldInput),
             onTap: () =>
                 Navigator.of(context).pop(ScheduleEventAction.delete),
           ),
@@ -93,13 +95,14 @@ Future<bool> showDeleteScheduleEventDialog(
   required String eventTitle,
 }) async {
   final l10n = AppLocalizations.of(context);
+  final styles = AppTextStyles.of(context);
   final confirmed = await showDialog<bool>(
     context: context,
     builder: (context) => AlertDialog(
       title: Text(l10n.dialogDeleteTaskTitle, style: _dialogTitle),
       content: Text(
         l10n.dialogDeleteTaskBody(eventTitle),
-        style: AppTextStyles.subline,
+        style: styles.subline,
       ),
       actions: [
         TextButton(
@@ -218,6 +221,7 @@ class _ScheduleEventDialogState extends State<_ScheduleEventDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final styles = AppTextStyles.of(context);
 
     return AlertDialog(
       title: Text(l10n.scheduleCreateEventTitle, style: _dialogTitle),
@@ -229,12 +233,12 @@ class _ScheduleEventDialogState extends State<_ScheduleEventDialog> {
             controller: _controller,
             autofocus: true,
             maxLength: 60,
-            style: AppTextStyles.fieldInput,
+            style: styles.fieldInput,
             decoration: InputDecoration(
               labelText: l10n.scheduleEventNameLabel,
-              labelStyle: AppTextStyles.fieldLabel,
+              labelStyle: styles.fieldLabel,
               hintText: l10n.scheduleEventNamePlaceholder,
-              hintStyle: AppTextStyles.fieldPlaceholder,
+              hintStyle: styles.fieldPlaceholder,
               counterText: '',
             ),
             onSubmitted: (_) => _submit(),
@@ -261,7 +265,7 @@ class _ScheduleEventDialogState extends State<_ScheduleEventDialog> {
           ),
           if (widget.selectableDays case final days?) ...[
             const SizedBox(height: 14),
-            Text(l10n.scheduleDayLabel.toUpperCase(), style: AppTextStyles.fieldLabel),
+            Text(l10n.scheduleDayLabel.toUpperCase(), style: styles.fieldLabel),
             const SizedBox(height: 6),
             _DayChipRow(
               days: days,
@@ -271,7 +275,7 @@ class _ScheduleEventDialogState extends State<_ScheduleEventDialog> {
           ],
           if (_error != null) ...[
             const SizedBox(height: 12),
-            Text(_error!, style: AppTextStyles.fieldError),
+            Text(_error!, style: styles.fieldError),
           ],
         ],
       ),
@@ -360,12 +364,14 @@ class _DayChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = Palette.of(context);
+    final styles = AppTextStyles.of(context);
     final background = isSelected
-        ? AppColors.pineDeep
+        ? palette.pineDeep
         : isToday
-        ? AppColors.pinePale
+        ? palette.pinePale
         : Colors.transparent;
-    final foreground = isSelected ? const Color(0xFFF3F4EF) : AppColors.ink;
+    final foreground = isSelected ? palette.onPrimary : palette.ink;
 
     return InkWell(
       onTap: onTap,
@@ -375,7 +381,7 @@ class _DayChip extends StatelessWidget {
         decoration: BoxDecoration(
           color: background,
           border: Border.all(
-            color: isSelected ? AppColors.pineDeep : AppColors.line,
+            color: isSelected ? palette.pineDeep : palette.line,
           ),
           borderRadius: BorderRadius.circular(8),
         ),
@@ -384,12 +390,12 @@ class _DayChip extends StatelessWidget {
           children: [
             Text(
               name,
-              style: AppTextStyles.weekDayName.copyWith(color: foreground),
+              style: styles.weekDayName.copyWith(color: foreground),
             ),
             const SizedBox(height: 2),
             Text(
               number,
-              style: AppTextStyles.weekDayNumber.copyWith(color: foreground),
+              style: styles.weekDayNumber.copyWith(color: foreground),
             ),
           ],
         ),
@@ -416,13 +422,15 @@ class _TimeField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = Palette.of(context);
+    final styles = AppTextStyles.of(context);
     final locale = Localizations.localeOf(context).toLanguageTag();
     final formatted = DateFormat.Hm(locale).format(time);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label.toUpperCase(), style: AppTextStyles.fieldLabel),
+        Text(label.toUpperCase(), style: styles.fieldLabel),
         const SizedBox(height: 6),
         InkWell(
           onTap: onTap,
@@ -430,16 +438,16 @@ class _TimeField extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             decoration: BoxDecoration(
-              border: Border.all(color: AppColors.line),
+              border: Border.all(color: palette.line),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Row(
               children: [
-                Expanded(child: Text(formatted, style: AppTextStyles.fieldInput)),
-                const Icon(
+                Expanded(child: Text(formatted, style: styles.fieldInput)),
+                Icon(
                   Icons.schedule_outlined,
                   size: 18,
-                  color: AppColors.inkFaint,
+                  color: palette.inkFaint,
                 ),
               ],
             ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../app/theme/colors.dart';
+import '../../../app/theme/palette.dart';
 import '../../../app/theme/text_styles.dart';
 import '../../../l10n/app_localizations.dart';
 import '../controllers/timer_controller.dart';
@@ -16,6 +16,8 @@ class CircularTimer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = Palette.of(context);
+    final styles = AppTextStyles.of(context);
     final phase = state.currentPhase;
     final minutes = (state.remainingSeconds / 60).floor();
     final seconds = state.remainingSeconds % 60;
@@ -33,9 +35,9 @@ class CircularTimer extends StatelessWidget {
               child: CircularProgressIndicator(
                 value: 1.0 - state.progress,
                 strokeWidth: 12,
-                backgroundColor: AppColors.line,
+                backgroundColor: palette.line,
                 valueColor: AlwaysStoppedAnimation<Color>(
-                  _getColor(phase?.type),
+                  _getColor(palette, phase?.type),
                 ),
               ),
             ),
@@ -44,7 +46,7 @@ class CircularTimer extends StatelessWidget {
               children: [
                 Text(
                   timeStr,
-                  style: AppTextStyles.headline.copyWith(
+                  style: styles.headline.copyWith(
                     fontSize: 56,
                     fontWeight: FontWeight.w700,
                     height: 1.0,
@@ -54,8 +56,8 @@ class CircularTimer extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   _getPhaseLabel(context, phase?.type),
-                  style: AppTextStyles.subline.copyWith(
-                    color: AppColors.ink.withValues(alpha: 0.7),
+                  style: styles.subline.copyWith(
+                    color: palette.ink.withValues(alpha: 0.7),
                   ),
                 ),
               ],
@@ -66,16 +68,16 @@ class CircularTimer extends StatelessWidget {
     );
   }
 
-  Color _getColor(TimerPhaseType? type) {
+  Color _getColor(Palette palette, TimerPhaseType? type) {
     switch (type) {
       case TimerPhaseType.work:
-        return AppColors.pine;
+        return palette.pine;
       case TimerPhaseType.breakTime:
-        return AppColors.amber;
+        return palette.amber;
       case TimerPhaseType.review:
-        return AppColors.rose;
+        return palette.rose;
       case null:
-        return AppColors.pine;
+        return palette.pine;
     }
   }
 

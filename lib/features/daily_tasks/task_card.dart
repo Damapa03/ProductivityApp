@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../app/theme/colors.dart';
+import '../../app/theme/palette.dart';
 import '../../app/theme/text_styles.dart';
 import 'task_menu_button.dart';
 
@@ -32,14 +32,16 @@ class TaskCard extends StatelessWidget {
 
   Widget _buildCard(BuildContext context, {required double opacity}) {
     final hasMenu = onEdit != null || onDelete != null;
+    final palette = Palette.of(context);
+    final styles = AppTextStyles.of(context);
     return Opacity(
       opacity: opacity,
       child: Container(
         width: double.infinity,
         padding: EdgeInsets.fromLTRB(12, 12, hasMenu ? 4 : 12, 12),
         decoration: BoxDecoration(
-          color: AppColors.cardBg,
-          border: Border.all(color: AppColors.line),
+          color: palette.cardBg,
+          border: Border.all(color: palette.line),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
@@ -50,7 +52,7 @@ class TaskCard extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 2),
                 child: Text(
                   title,
-                  style: AppTextStyles.taskText,
+                  style: styles.taskText,
                   maxLines: 4,
                   overflow: TextOverflow.ellipsis,
                 ),

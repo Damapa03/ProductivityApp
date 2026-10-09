@@ -3,7 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../../app/theme/colors.dart';
+import '../../app/theme/palette.dart';
 import '../../app/theme/text_styles.dart';
 import '../../models/schedule_event.dart';
 import 'schedule_painting.dart';
@@ -421,6 +421,8 @@ class _DayHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = Palette.of(context);
+    final styles = AppTextStyles.of(context);
     final locale = Localizations.localeOf(context).toLanguageTag();
     final name = DateFormat.E(locale).format(day);
     final number = '${day.day}';
@@ -430,10 +432,10 @@ class _DayHeader extends StatelessWidget {
       width: width,
       height: WeekTimeline.dayHeaderHeight,
       decoration: BoxDecoration(
-        color: isToday ? AppColors.pinePale : null,
-        border: const Border(
-          bottom: BorderSide(color: AppColors.line),
-          left: BorderSide(color: AppColors.lineFaint),
+        color: isToday ? palette.pinePale : null,
+        border: Border(
+          bottom: BorderSide(color: palette.line),
+          left: BorderSide(color: palette.lineFaint),
         ),
       ),
       child: Column(
@@ -442,12 +444,12 @@ class _DayHeader extends StatelessWidget {
           Text(
             name[0].toUpperCase() + name.substring(1),
             maxLines: 1,
-            style: AppTextStyles.weekDayName,
+            style: styles.weekDayName,
           ),
           Text(
             number,
-            style: AppTextStyles.weekDayNumber.copyWith(
-              color: isToday ? AppColors.pineDeep : AppColors.ink,
+            style: styles.weekDayNumber.copyWith(
+              color: isToday ? palette.pineDeep : palette.ink,
             ),
           ),
         ],
@@ -466,6 +468,7 @@ class _HourLabelColumn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final styles = AppTextStyles.of(context);
     return SizedBox(
       width: WeekTimeline.hourLabelWidth,
       child: Column(
@@ -479,7 +482,7 @@ class _HourLabelColumn extends StatelessWidget {
                   offset: const Offset(0, -6),
                   child: Text(
                     scheduleHourLabel(hour),
-                    style: AppTextStyles.hourLabel,
+                    style: styles.hourLabel,
                   ),
                 ),
               ),
@@ -515,6 +518,7 @@ class _DayColumn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = Palette.of(context);
     return SizedBox(
       width: width,
       child: Column(
@@ -541,9 +545,9 @@ class _DayColumn extends StatelessWidget {
                   border: Border(
                     top: hour == 0
                         ? BorderSide.none
-                        : const BorderSide(color: AppColors.lineFaint),
+                        : BorderSide(color: palette.lineFaint),
                     // Separador entre días, en la misma línea que la cabecera.
-                    left: const BorderSide(color: AppColors.lineFaint),
+                    left: BorderSide(color: palette.lineFaint),
                   ),
                 ),
               ),
@@ -578,7 +582,9 @@ class _WeekEventBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final palette = scheduleBlockPaletteAt(paletteIndex);
+    final palette = Palette.of(context);
+    final styles = AppTextStyles.of(context);
+    final blockPalette = scheduleBlockPaletteAt(palette, paletteIndex);
     final top = WeekTimeline.offsetFor(event.start)
         .clamp(0.0, WeekTimeline.totalHeight);
     final maxHeight = WeekTimeline.totalHeight - top;
@@ -603,9 +609,9 @@ class _WeekEventBlock extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 3),
           decoration: BoxDecoration(
-            color: palette.bg,
-            border: palette.outline
-                ? Border.all(color: AppColors.line)
+            color: blockPalette.bg,
+            border: blockPalette.outline
+                ? Border.all(color: palette.line)
                 : null,
             borderRadius: BorderRadius.circular(5),
           ),
@@ -613,7 +619,7 @@ class _WeekEventBlock extends StatelessWidget {
             event.title,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: AppTextStyles.weekEventName.copyWith(color: palette.fg),
+            style: styles.weekEventName.copyWith(color: blockPalette.fg),
           ),
         ),
       ),
@@ -644,6 +650,7 @@ class _NowLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = Palette.of(context);
     final top = WeekTimeline.offsetFor(now).clamp(0.0, WeekTimeline.totalHeight);
     return Positioned(
       key: const Key('week-now-line'),
@@ -656,7 +663,7 @@ class _NowLine extends StatelessWidget {
           children: [
             Align(
               alignment: Alignment.centerLeft,
-              child: Container(height: 2, color: AppColors.rose),
+              child: Container(height: 2, color: palette.rose),
             ),
             Align(
               alignment: Alignment.centerLeft,
@@ -665,8 +672,8 @@ class _NowLine extends StatelessWidget {
                 child: Container(
                   width: 8,
                   height: 8,
-                  decoration: const BoxDecoration(
-                    color: AppColors.rose,
+                  decoration: BoxDecoration(
+                    color: palette.rose,
                     shape: BoxShape.circle,
                   ),
                 ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../app/theme/colors.dart';
+import '../app/theme/palette.dart';
 import '../app/theme/text_styles.dart';
 
 /// Marca Flowly: glifo de 4 barras (verde + ámbar) y wordmark.
@@ -14,6 +14,8 @@ class BrandMark extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = Palette.of(context);
+    final styles = AppTextStyles.of(context);
     final bars = <Widget>[
       for (var i = 0; i < _barHeights.length; i++)
         Positioned(
@@ -23,7 +25,7 @@ class BrandMark extends StatelessWidget {
             width: _barWidth,
             height: _barHeights[i],
             decoration: BoxDecoration(
-              color: i == 2 ? AppColors.amber : AppColors.pine,
+              color: i == 2 ? palette.amber : palette.pine,
               borderRadius: BorderRadius.circular(_barRadius),
             ),
           ),
@@ -39,7 +41,7 @@ class BrandMark extends StatelessWidget {
           child: Stack(alignment: Alignment.bottomCenter, children: bars),
         ),
         const SizedBox(width: 10),
-        const Text('Flowly', style: AppTextStyles.wordmark),
+        Text('Flowly', style: styles.wordmark),
       ],
     );
   }

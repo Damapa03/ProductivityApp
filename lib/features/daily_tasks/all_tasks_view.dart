@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 
-import '../../app/theme/colors.dart';
+import '../../app/theme/palette.dart';
 import '../../app/theme/text_styles.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/kanban_column.dart';
 import '../../models/kanban_task.dart';
 import 'task_menu_button.dart';
 
-/// Estilos de la burbuja del estado, alineados con `AppColors.columnDots`
+/// Estilos de la burbuja del estado, alineados con `palette.columnDots`
 /// (ver mockup 02b): (fondo pale, texto deep). Se recorren en ciclo por
 /// el índice de la columna.
-const List<(Color, Color)> _badgeStyles = [
-  (AppColors.columnGrayPale, AppColors.inkSoft), // Search
-  (AppColors.rosePale, AppColors.roseDeep), // TODO
-  (AppColors.amberPale, AppColors.amberDeep), // Doing
-  (AppColors.pinePale, AppColors.pineDeep), // Done
+List<(Color, Color)> _badgeStyles(Palette palette) => [
+  (palette.columnGrayPale, palette.inkSoft), // Search
+  (palette.rosePale, palette.roseDeep), // TODO
+  (palette.amberPale, palette.amberDeep), // Doing
+  (palette.pinePale, palette.pineDeep), // Done
 ];
 
 /// Vista «Todas las tareas»: lista plana con todas las tareas del tablero.
@@ -48,9 +48,11 @@ class AllTasksView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final styles = AppTextStyles.of(context);
+    final palette = Palette.of(context);
     if (tasks.isEmpty) {
       return Center(
-        child: Text(l10n.dailyTasksEmptyColumn, style: AppTextStyles.emptyHint),
+        child: Text(l10n.dailyTasksEmptyColumn, style: styles.emptyHint),
       );
     }
     return ListView.separated(
@@ -60,7 +62,8 @@ class AllTasksView extends StatelessWidget {
       itemBuilder: (context, index) {
         final task = tasks[index];
         final i = _columnIndex(task.columnId);
-        final (bg, fg) = _badgeStyles[i >= 0 ? i % _badgeStyles.length : 0];
+        final badgeStyles = _badgeStyles(palette);
+        final (bg, fg) = badgeStyles[i >= 0 ? i % badgeStyles.length : 0];
         return _TaskListTile(
           title: task.title,
           statusName: i >= 0 ? columns[i].name : '',
@@ -94,11 +97,13 @@ class _TaskListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = Palette.of(context);
+    final styles = AppTextStyles.of(context);
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.cardBg,
-        border: Border.all(color: AppColors.line),
+        color: palette.cardBg,
+        border: Border.all(color: palette.line),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -109,7 +114,7 @@ class _TaskListTile extends StatelessWidget {
               padding: const EdgeInsets.only(top: 2),
               child: Text(
                 title,
-                style: AppTextStyles.taskText,
+                style: styles.taskText,
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -125,7 +130,7 @@ class _TaskListTile extends StatelessWidget {
             ),
             child: Text(
               statusName,
-              style: AppTextStyles.statusBadge.copyWith(color: badgeFg),
+              style: styles.statusBadge.copyWith(color: badgeFg),
             ),
           ),
           TaskMenuButton(onEdit: onEdit, onDelete: onDelete),

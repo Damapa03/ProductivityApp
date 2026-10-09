@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../app/theme/colors.dart';
+import '../../app/theme/palette.dart';
 import '../../app/theme/text_styles.dart';
 import '../../l10n/app_localizations.dart';
 
@@ -20,6 +20,8 @@ class ComingSoonScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final palette = Palette.of(context);
+    final styles = AppTextStyles.of(context);
 
     return Scaffold(
       body: SafeArea(
@@ -30,24 +32,24 @@ class ComingSoonScreen extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconTheme(
-                  data: const IconThemeData(
-                    color: AppColors.inkFaint,
+                  data: IconThemeData(
+                    color: palette.inkFaint,
                     size: 40,
                   ),
                   child: icon,
                 ),
                 const SizedBox(height: 20),
-                Text(title, style: AppTextStyles.eyebrow),
+                Text(title, style: styles.eyebrow),
                 const SizedBox(height: 6),
                 Text(
                   l10n.comingSoonTitle,
-                  style: AppTextStyles.screenTitle,
+                  style: styles.screenTitle,
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 10),
                 Text(
                   l10n.comingSoonBody,
-                  style: AppTextStyles.subline,
+                  style: styles.subline,
                   textAlign: TextAlign.center,
                 ),
               ],

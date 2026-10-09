@@ -159,6 +159,7 @@ class _BlackListScreenState extends State<BlackListScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final styles = AppTextStyles.of(context);
 
     return Scaffold(
       body: SafeArea(
@@ -180,14 +181,14 @@ class _BlackListScreenState extends State<BlackListScreen> {
                         textAlignVertical: TextAlignVertical.top,
                         keyboardType: TextInputType.multiline,
                         textInputAction: TextInputAction.newline,
-                        style: AppTextStyles.writingText,
+                        style: styles.writingText,
                         // Sin autocorrección ni sugerencias: cada línea es un
                         // apunte libre (nombres, siglas), no una frase.
                         autocorrect: false,
                         enableSuggestions: false,
                         decoration: InputDecoration(
                           hintText: l10n.blackListHint,
-                          hintStyle: AppTextStyles.writingHint,
+                          hintStyle: styles.writingHint,
                           border: InputBorder.none,
                           enabledBorder: InputBorder.none,
                           focusedBorder: InputBorder.none,

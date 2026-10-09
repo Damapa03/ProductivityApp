@@ -3,6 +3,7 @@ import 'dart:ui' show Tristate;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:productyivity_app/app/theme/colors.dart';
+import 'package:productyivity_app/app/theme/theme_controller.dart';
 import 'package:productyivity_app/data/profile_repository.dart';
 import 'package:productyivity_app/features/profile/profile_screen.dart';
 import 'package:productyivity_app/l10n/app_localizations.dart';
@@ -46,6 +47,8 @@ void main() {
 
   setUp(() {
     SharedPreferences.setMockInitialValues({});
+    // El tema es global ([ThemeController]): cada prueba arranca en claro.
+    ThemeController.instance.value = ThemeMode.light;
   });
 
   testWidgets('muestra el título «Perfil» sin la fecha del ScreenHeader', (
@@ -165,6 +168,27 @@ void main() {
     await tester.tap(_toggle('reminders'));
     await tester.pumpAndSettle();
     expect(_toggleColor(tester, _toggle('reminders')), AppColors.line);
+  });
+
+  testWidgets('el interruptor de modo oscuro cambia el tema de la app', (
+    tester,
+  ) async {
+    _mockupSize(tester);
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    expect(ThemeController.instance.value, ThemeMode.light);
+
+    await tester.tap(_toggle('dark'));
+    await tester.pumpAndSettle();
+
+    // No es estado local: cambia el tema compartido por toda la app.
+    expect(ThemeController.instance.value, ThemeMode.dark);
+    expect(_toggleColor(tester, _toggle('dark')), AppColors.pine);
+
+    await tester.tap(_toggle('dark'));
+    await tester.pumpAndSettle();
+    expect(ThemeController.instance.value, ThemeMode.light);
   });
 
   testWidgets('los interruptores exponen su estado a lectores de pantalla', (

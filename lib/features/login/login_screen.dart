@@ -54,6 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final styles = AppTextStyles.of(context);
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -69,12 +70,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 52),
                   Text(
                     l10n.loginHeadline,
-                    style: AppTextStyles.headline,
+                    style: styles.headline,
                   ),
                   const SizedBox(height: 10),
                   Text(
                     l10n.loginSubline,
-                    style: AppTextStyles.subline,
+                    style: styles.subline,
                   ),
                   const SizedBox(height: 42),
                   UnderlineField(
@@ -103,7 +104,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: () {},
                       child: Text(
                         l10n.loginForgotPassword,
-                        style: AppTextStyles.fieldLabel,
+                        style: styles.fieldLabel,
                       ),
                     ),
                   ),
@@ -123,7 +124,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 12),
                         child: Text(
                           l10n.loginOrContinueWith,
-                          style: AppTextStyles.eyebrow,
+                          style: styles.eyebrow,
                         ),
                       ),
                       const Expanded(child: Divider()),
@@ -144,11 +145,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Text.rich(
                         TextSpan(
                           text: l10n.loginNewToFlowly,
-                          style: AppTextStyles.eyebrow,
+                          style: styles.eyebrow,
                           children: [
                             TextSpan(
                               text: l10n.loginCreateAccount,
-                              style: AppTextStyles.link,
+                              style: styles.link,
                             ),
                           ],
                         ),

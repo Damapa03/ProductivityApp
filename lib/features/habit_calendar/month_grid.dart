@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../../app/theme/colors.dart';
+import '../../app/theme/palette.dart';
 import '../../app/theme/text_styles.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/habit.dart';
@@ -63,6 +63,7 @@ class MonthGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cells = _cells();
+    final palette = Palette.of(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -76,7 +77,7 @@ class MonthGrid extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 for (var column = 0; column < daysPerWeek; column++)
-                  Expanded(child: _slot(cells[row * daysPerWeek + column])),
+                  Expanded(child: _slot(cells[row * daysPerWeek + column], palette)),
               ],
             ),
           ),
@@ -126,7 +127,7 @@ class MonthGrid extends StatelessWidget {
   }
 
   /// Una casilla de la rejilla: un hueco invisible o el día que toque.
-  Widget _slot(int? number) {
+  Widget _slot(int? number, Palette palette) {
     if (number == null) return const SizedBox.shrink();
 
     final day = DateTime(month.year, month.month, number);
@@ -137,6 +138,7 @@ class MonthGrid extends StatelessWidget {
       status: statusOf(day),
       today: today,
       selectedDay: selectedDay,
+      palette: palette,
       onTap: onTapDay,
     );
   }
@@ -151,6 +153,7 @@ class _DayCell extends StatelessWidget {
     required this.status,
     required this.today,
     required this.selectedDay,
+    required this.palette,
     required this.onTap,
   });
 
@@ -161,6 +164,9 @@ class _DayCell extends StatelessWidget {
   final DayStatus status;
   final DateTime today;
   final DateTime selectedDay;
+
+  /// Paleta activa, para pintar el fondo y el anillo según el tema.
+  final Palette palette;
 
   /// Notifica que se ha tocado esta celda.
   final ValueChanged<DateTime> onTap;
@@ -263,22 +269,25 @@ class _DayCell extends StatelessWidget {
 
   /// Fondo de la celda según el estado del día.
   Color get _background => switch (status) {
-        DayStatus.done => AppColors.done,
-        DayStatus.missed => AppColors.missPale,
-        DayStatus.future => AppColors.futurePale,
-        _ => AppColors.cardBg,
+        DayStatus.done => palette.done,
+        DayStatus.missed => palette.missPale,
+        DayStatus.future => palette.futurePale,
+        _ => palette.cardBg,
       };
 
-  TextStyle get _textStyle => switch (status) {
-        DayStatus.done => AppTextStyles.dayDone,
-        DayStatus.missed => AppTextStyles.dayMissed,
-        DayStatus.future => AppTextStyles.dayFuture,
-        _ => AppTextStyles.dayNeutral,
-      };
+  TextStyle get _textStyle {
+    final styles = AppTextStyles.from(palette);
+    return switch (status) {
+      DayStatus.done => styles.dayDone,
+      DayStatus.missed => styles.dayMissed,
+      DayStatus.future => styles.dayFuture,
+      _ => styles.dayNeutral,
+    };
+  }
 
   Color get _ringColor {
-    if (_isSelected) return AppColors.pineDeep;
-    if (_isToday) return AppColors.line;
+    if (_isSelected) return palette.pineDeep;
+    if (_isToday) return palette.line;
     return Colors.transparent;
   }
 }
@@ -295,6 +304,8 @@ class _WeekdayRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final styles = AppTextStyles.of(context);
+
     return Row(
       key: const Key('weekday-row'),
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -306,7 +317,7 @@ class _WeekdayRow extends StatelessWidget {
               child: Text(
                 initial,
                 textAlign: TextAlign.center,
-                style: AppTextStyles.weekdayInitial,
+                style: styles.weekdayInitial,
               ),
             ),
           ),
@@ -333,6 +344,8 @@ class HabitLegend extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final palette = Palette.of(context);
+    final styles = AppTextStyles.of(context);
 
     // `Wrap` y no `Row`: en una pantalla estrecha la segunda muestra baja de
     // línea en vez de salirse del papel.
@@ -341,13 +354,13 @@ class HabitLegend extends StatelessWidget {
       spacing: _itemsGap,
       runSpacing: 6,
       children: [
-        _item(l10n.habitsLegendDone, AppColors.done),
-        _item(l10n.habitsLegendMissed, AppColors.missPale),
+        _item(l10n.habitsLegendDone, palette.done, styles),
+        _item(l10n.habitsLegendMissed, palette.missPale, styles),
       ],
     );
   }
 
-  Widget _item(String label, Color color) {
+  Widget _item(String label, Color color, AppTextStyles styles) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -360,7 +373,7 @@ class HabitLegend extends StatelessWidget {
           ),
         ),
         const SizedBox(width: gap),
-        Text(label, style: AppTextStyles.legendLabel),
+        Text(label, style: styles.legendLabel),
       ],
     );
   }

@@ -1,41 +1,66 @@
 import 'package:flutter/material.dart';
 
-import 'colors.dart';
+import 'palette.dart';
 import 'text_styles.dart';
 
-/// Tema claro de Flowly (Material 3).
+/// Temas claro y oscuro de Flowly (Material 3).
+///
+/// Los dos comparten el mismo armazón: solo cambian la [Palette] con la que se
+/// resuelven los tokens y la [Brightness] del `ColorScheme`.
 abstract final class AppTheme {
-  static ThemeData get light {
+  /// Tema claro (paleta [Palette.light]).
+  static ThemeData get light => _build(Palette.light, Brightness.light);
+
+  /// Tema oscuro (paleta [Palette.dark]).
+  static ThemeData get dark => _build(Palette.dark, Brightness.dark);
+
+  static ThemeData _build(Palette palette, Brightness brightness) {
+    final styles = AppTextStyles.from(palette);
+    final colorScheme = brightness == Brightness.light
+        ? ColorScheme.light(
+            primary: palette.pine,
+            onPrimary: palette.onPrimary,
+            onPrimaryContainer: palette.pinePale,
+            primaryContainer: palette.pinePale,
+            onSecondaryContainer: palette.pineDeep,
+            surface: palette.paper,
+            onSurface: palette.ink,
+            onSurfaceVariant: palette.inkSoft,
+          )
+        : ColorScheme.dark(
+            primary: palette.pine,
+            onPrimary: palette.onPrimary,
+            onPrimaryContainer: palette.pinePale,
+            primaryContainer: palette.pinePale,
+            onSecondaryContainer: palette.pineDeep,
+            surface: palette.paper,
+            onSurface: palette.ink,
+            onSurfaceVariant: palette.inkSoft,
+          );
+
     final base = ThemeData(
       useMaterial3: true,
-      brightness: Brightness.light,
-      colorScheme: ColorScheme.light(
-        primary: AppColors.pine,
-        onPrimary: Color(0xFFF3F4EF),
-        onPrimaryContainer: AppColors.pinePale,
-        primaryContainer: AppColors.pinePale,
-        onSecondaryContainer: AppColors.pineDeep,
-        surface: AppColors.paper,
-        onSurface: AppColors.ink,
-        onSurfaceVariant: AppColors.inkSoft,
-      ),
-      scaffoldBackgroundColor: AppColors.paper,
+      brightness: brightness,
+      colorScheme: colorScheme,
+      scaffoldBackgroundColor: palette.paper,
+      // Deja la paleta disponible para cualquier `Palette.of(context)`.
+      extensions: [palette],
     );
     return base.copyWith(
       textTheme: base.textTheme.copyWith(
-        headlineMedium: AppTextStyles.headline,
-        bodyMedium: AppTextStyles.subline,
+        headlineMedium: styles.headline,
+        bodyMedium: styles.subline,
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.pineDeep,
-          foregroundColor: const Color(0xFFF3F4EF),
+          backgroundColor: palette.pineDeep,
+          foregroundColor: palette.onPrimary,
           minimumSize: const Size(0, 56),
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(6),
           ),
-          textStyle: AppTextStyles.buttonPrimary,
+          textStyle: styles.buttonPrimary,
         ),
       ),
       // Selectores de modo y tiempo del timer: se alinean con el color del
@@ -44,33 +69,33 @@ abstract final class AppTheme {
       // variante clara (pinePale) para no competir con el seleccionado.
       segmentedButtonTheme: SegmentedButtonThemeData(
         style: SegmentedButton.styleFrom(
-          backgroundColor: AppColors.pinePale,
-          foregroundColor: AppColors.pineDeep,
-          selectedBackgroundColor: AppColors.pine,
-          selectedForegroundColor: base.colorScheme.onPrimary,
-          side: const BorderSide(color: AppColors.line),
+          backgroundColor: palette.pinePale,
+          foregroundColor: palette.pineDeep,
+          selectedBackgroundColor: palette.pine,
+          selectedForegroundColor: colorScheme.onPrimary,
+          side: BorderSide(color: palette.line),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: AppColors.pine,
-          textStyle: AppTextStyles.link,
+          foregroundColor: palette.pine,
+          textStyle: styles.link,
           padding: EdgeInsets.zero,
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           minimumSize: Size.zero,
         ),
       ),
-      inputDecorationTheme: const InputDecorationTheme(
-        contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-        hintStyle: AppTextStyles.fieldPlaceholder,
+      inputDecorationTheme: InputDecorationTheme(
+        contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+        hintStyle: styles.fieldPlaceholder,
         border: InputBorder.none,
         enabledBorder: InputBorder.none,
         focusedBorder: InputBorder.none,
         filled: true,
-        fillColor: AppColors.cardBg,
+        fillColor: palette.cardBg,
       ),
-      dividerTheme: const DividerThemeData(
-        color: AppColors.line,
+      dividerTheme: DividerThemeData(
+        color: palette.line,
         thickness: 1,
         space: 20,
       ),
@@ -79,8 +104,8 @@ abstract final class AppTheme {
       // casi invisible sobre el fondo del diálogo. Se fuerza un tono oscuro
       // para que la hora y los minutos elegidos se lean bien.
       timePickerTheme: TimePickerThemeData(
-        hourMinuteTextColor: AppColors.ink,
-        timeSelectorSeparatorColor: const WidgetStatePropertyAll(AppColors.inkSoft),
+        hourMinuteTextColor: palette.ink,
+        timeSelectorSeparatorColor: WidgetStatePropertyAll(palette.inkSoft),
       ),
     );
   }

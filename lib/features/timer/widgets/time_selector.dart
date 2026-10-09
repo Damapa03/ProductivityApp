@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../app/theme/colors.dart';
+import '../../../app/theme/palette.dart';
 import '../../../app/theme/text_styles.dart';
 import '../../../l10n/app_localizations.dart';
 
@@ -17,13 +17,15 @@ class TimeSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final palette = Palette.of(context);
+    final styles = AppTextStyles.of(context);
 
     return Card(
-      color: AppColors.paper,
+      color: palette.paper,
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: const BorderSide(color: AppColors.line),
+        side: BorderSide(color: palette.line),
       ),
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -32,7 +34,7 @@ class TimeSelector extends StatelessWidget {
           children: [
             Text(
               l10n.timerTimes,
-              style: AppTextStyles.fieldLabel.copyWith(
+              style: styles.fieldLabel.copyWith(
                 fontWeight: FontWeight.w600,
               ),
             ),

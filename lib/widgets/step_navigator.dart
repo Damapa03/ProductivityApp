@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../app/theme/colors.dart';
+import '../app/theme/palette.dart';
 import '../app/theme/text_styles.dart';
 import '../l10n/app_localizations.dart';
 
@@ -122,6 +122,8 @@ class _TodayButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = Palette.of(context);
+    final styles = AppTextStyles.of(context);
     return InkWell(
       key: const Key('step-navigator-today'),
       onTap: onTap,
@@ -131,11 +133,11 @@ class _TodayButton extends StatelessWidget {
         alignment: Alignment.center,
         padding: const EdgeInsets.symmetric(horizontal: 10),
         decoration: BoxDecoration(
-          color: AppColors.pinePale,
-          border: Border.all(color: AppColors.line),
+          color: palette.pinePale,
+          border: Border.all(color: palette.line),
           borderRadius: BorderRadius.circular(StepNavigator.buttonSize),
         ),
-        child: Text(label, style: AppTextStyles.statusBadge),
+        child: Text(label, style: styles.statusBadge),
       ),
     );
   }
@@ -155,6 +157,7 @@ class _StepButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = Palette.of(context);
     return Tooltip(
       message: tooltip,
       child: InkWell(
@@ -170,9 +173,9 @@ class _StepButton extends StatelessWidget {
           height: StepNavigator.buttonSize,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(color: AppColors.line),
+            border: Border.all(color: palette.line),
           ),
-          child: Icon(icon, size: 16, color: AppColors.inkSoft),
+          child: Icon(icon, size: 16, color: palette.inkSoft),
         ),
       ),
     );

@@ -33,13 +33,14 @@ Future<bool> showDeleteHabitDialog(
   Habit habit,
 ) async {
   final l10n = AppLocalizations.of(context);
+  final styles = AppTextStyles.of(context);
   final confirmed = await showDialog<bool>(
     context: context,
     builder: (context) => AlertDialog(
       title: Text(l10n.habitsDeleteTitle, style: _dialogTitle),
       content: Text(
         l10n.habitsDeleteBody(habit.title),
-        style: AppTextStyles.subline,
+        style: styles.subline,
       ),
       actions: [
         TextButton(
@@ -83,6 +84,7 @@ class _AddHabitDialogState extends State<_AddHabitDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final styles = AppTextStyles.of(context);
 
     return AlertDialog(
       title: Text(l10n.habitsAddHabitTitle, style: _dialogTitle),
@@ -91,13 +93,13 @@ class _AddHabitDialogState extends State<_AddHabitDialog> {
         controller: _controller,
         autofocus: true,
         maxLength: 40,
-        style: AppTextStyles.fieldInput,
+        style: styles.fieldInput,
         textCapitalization: TextCapitalization.sentences,
         decoration: InputDecoration(
           labelText: l10n.habitsAddHabitLabel,
-          labelStyle: AppTextStyles.fieldLabel,
+          labelStyle: styles.fieldLabel,
           hintText: l10n.habitsAddHabitPlaceholder,
-          hintStyle: AppTextStyles.fieldPlaceholder,
+          hintStyle: styles.fieldPlaceholder,
           counterText: '',
         ),
         onSubmitted: (_) => _submit(),

@@ -63,6 +63,7 @@ Future<TaskDraft?> showCreateTaskDialogWithColumn(
   String? initialColumnId,
 }) async {
   final l10n = AppLocalizations.of(context);
+  final styles = AppTextStyles.of(context);
   final controller = TextEditingController();
   var selected = initialColumnId ?? columns.first.id;
 
@@ -84,10 +85,10 @@ Future<TaskDraft?> showCreateTaskDialogWithColumn(
             controller: controller,
             autofocus: true,
             maxLength: 60,
-            style: AppTextStyles.fieldInput,
+            style: styles.fieldInput,
             decoration: InputDecoration(
               hintText: l10n.dialogTaskPlaceholder,
-              hintStyle: AppTextStyles.fieldPlaceholder,
+              hintStyle: styles.fieldPlaceholder,
               counterText: '',
             ),
             onSubmitted: (_) => submit(),
@@ -97,15 +98,15 @@ Future<TaskDraft?> showCreateTaskDialogWithColumn(
             initialValue: selected,
             decoration: InputDecoration(
               labelText: l10n.dialogTaskColumnLabel,
-              labelStyle: AppTextStyles.fieldLabel,
+              labelStyle: styles.fieldLabel,
             ),
-            style: AppTextStyles.fieldInput,
+            style: styles.fieldInput,
             isExpanded: true,
             items: [
               for (final column in columns)
                 DropdownMenuItem(
                   value: column.id,
-                  child: Text(column.name, style: AppTextStyles.fieldInput),
+                  child: Text(column.name, style: styles.fieldInput),
                 ),
             ],
             onChanged: (value) {
@@ -150,13 +151,14 @@ Future<bool> showDeleteColumnDialog(
   required int taskCount,
 }) async {
   final l10n = AppLocalizations.of(context);
+  final styles = AppTextStyles.of(context);
   final confirmed = await showDialog<bool>(
     context: context,
     builder: (context) => AlertDialog(
       title: Text(l10n.dialogDeleteColumnTitle, style: _dialogTitle),
       content: Text(
         l10n.dialogDeleteColumnBody(columnName, taskCount),
-        style: AppTextStyles.subline,
+        style: styles.subline,
       ),
       actions: [
         TextButton(
@@ -180,13 +182,14 @@ Future<bool> showDeleteTaskDialog(
   required String taskTitle,
 }) async {
   final l10n = AppLocalizations.of(context);
+  final styles = AppTextStyles.of(context);
   final confirmed = await showDialog<bool>(
     context: context,
     builder: (context) => AlertDialog(
       title: Text(l10n.dialogDeleteTaskTitle, style: _dialogTitle),
       content: Text(
         l10n.dialogDeleteTaskBody(taskTitle),
-        style: AppTextStyles.subline,
+        style: styles.subline,
       ),
       actions: [
         TextButton(
@@ -211,6 +214,7 @@ Future<String?> _showNameDialog(
   String? placeholder,
 }) {
   final l10n = AppLocalizations.of(context);
+  final styles = AppTextStyles.of(context);
   final controller = TextEditingController(text: current ?? '');
   final formKey = GlobalKey<FormState>();
 
@@ -230,10 +234,10 @@ Future<String?> _showNameDialog(
           controller: controller,
           autofocus: true,
           maxLength: 60,
-          style: AppTextStyles.fieldInput,
+          style: styles.fieldInput,
           decoration: InputDecoration(
             hintText: placeholder ?? l10n.dialogNamePlaceholder,
-            hintStyle: AppTextStyles.fieldPlaceholder,
+            hintStyle: styles.fieldPlaceholder,
             counterText: '',
           ),
           onSubmitted: (_) => submit(),

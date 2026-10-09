@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../../app/theme/colors.dart';
+import '../../app/theme/palette.dart';
 import '../../app/theme/text_styles.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/habit.dart';
@@ -62,17 +62,19 @@ class HabitCheckList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final styles = AppTextStyles.of(context);
+    final palette = Palette.of(context);
     final done = habits.where(isDone).length;
 
     return Material(
-      color: AppColors.cardBg,
+      color: palette.cardBg,
       borderRadius: BorderRadius.circular(12),
       // Recorta el trazo del resalte al radio de la tarjeta.
       clipBehavior: Clip.antiAlias,
       child: Container(
         key: const Key('habit-check-list'),
         decoration: BoxDecoration(
-          border: Border.all(color: AppColors.line),
+          border: Border.all(color: palette.line),
           borderRadius: BorderRadius.circular(12),
         ),
         padding: const EdgeInsets.all(_padding),
@@ -87,7 +89,7 @@ class HabitCheckList extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             if (habits.isEmpty)
-              Text(l10n.habitsEmpty, style: AppTextStyles.emptyHint)
+              Text(l10n.habitsEmpty, style: styles.emptyHint)
             else
               for (var i = 0; i < habits.length; i++)
                 _row(context, l10n, habits[i], i == 0),
@@ -117,6 +119,9 @@ class HabitCheckList extends StatelessWidget {
   ) {
     final done = isDone(habit);
 
+    final palette = Palette.of(context);
+    final styles = AppTextStyles.of(context);
+
     return InkWell(
       onTap: editable ? () => onToggle(habit) : null,
       borderRadius: BorderRadius.circular(8),
@@ -125,8 +130,8 @@ class HabitCheckList extends StatelessWidget {
         // La regla separa hábitos entre sí: la primera fila no lleva línea.
         decoration: first
             ? null
-            : const BoxDecoration(
-                border: Border(top: BorderSide(color: AppColors.line)),
+            : BoxDecoration(
+                border: Border(top: BorderSide(color: palette.line)),
               ),
         padding: const EdgeInsets.symmetric(vertical: rowPadding),
         child: Row(
@@ -141,8 +146,8 @@ class HabitCheckList extends StatelessWidget {
               child: Text(
                 habit.title,
                 style: done
-                    ? AppTextStyles.habitLabel
-                    : AppTextStyles.habitLabelPending,
+                    ? styles.habitLabel
+                    : styles.habitLabelPending,
               ),
             ),
             _DeleteMenu(
@@ -176,6 +181,7 @@ class _Heading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final styles = AppTextStyles.of(context);
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -184,14 +190,14 @@ class _Heading extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(l10n.habitsTitle, style: AppTextStyles.habitCardTitle),
+              Text(l10n.habitsTitle, style: styles.habitCardTitle),
               const SizedBox(height: _titleGap),
               Text(
                 // Con clave propia: el día de la lista se confunde con el
                 // botón «Hoy» de la cabecera, que dice lo mismo.
                 key: const Key('habit-day-label'),
                 label,
-                style: AppTextStyles.habitDay,
+                style: styles.habitDay,
               ),
             ],
           ),
@@ -199,7 +205,7 @@ class _Heading extends StatelessWidget {
         Text(
           key: const Key('habits-progress'),
           l10n.habitsProgress(done, total),
-          style: AppTextStyles.habitProgress,
+          style: styles.habitProgress,
         ),
       ],
     );
@@ -229,6 +235,8 @@ class _CheckBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = Palette.of(context);
+
     return Semantics(
       checked: value,
       enabled: enabled,
@@ -241,15 +249,15 @@ class _CheckBox extends StatelessWidget {
           width: size,
           height: size,
           decoration: BoxDecoration(
-            color: value ? AppColors.pine : Colors.transparent,
+            color: value ? palette.pine : Colors.transparent,
             border: Border.all(
-              color: value ? AppColors.pine : AppColors.line,
+              color: value ? palette.pine : palette.line,
               width: 1.5,
             ),
             borderRadius: BorderRadius.circular(radius),
           ),
           child: value
-              ? const Icon(Icons.check, size: 12, color: AppColors.paper)
+              ? Icon(Icons.check, size: 12, color: palette.paper)
               : null,
         ),
       ),
@@ -282,6 +290,9 @@ class _DeleteMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = Palette.of(context);
+    final styles = AppTextStyles.of(context);
+
     return Semantics(
       label: '$label: $habitTitle',
       button: true,
@@ -290,7 +301,7 @@ class _DeleteMenu extends StatelessWidget {
       // puede borrar.
       child: ExcludeSemantics(
         child: PopupMenuButton<String>(
-          icon: const Icon(Icons.more_vert, size: 16, color: AppColors.inkFaint),
+          icon: Icon(Icons.more_vert, size: 16, color: palette.inkFaint),
           padding: EdgeInsets.zero,
           constraints: const BoxConstraints(minWidth: 128),
           shape:
@@ -305,7 +316,7 @@ class _DeleteMenu extends StatelessWidget {
           itemBuilder: (context) => [
             PopupMenuItem(
               value: 'delete',
-              child: Text(label, style: AppTextStyles.columnTitle),
+              child: Text(label, style: styles.columnTitle),
             ),
           ],
         ),
@@ -323,6 +334,7 @@ class _AddButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final styles = AppTextStyles.of(context);
 
     return Align(
       alignment: Alignment.centerLeft,
@@ -332,7 +344,7 @@ class _AddButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 6),
-          child: Text(l10n.habitsAddHabit, style: AppTextStyles.link),
+          child: Text(l10n.habitsAddHabit, style: styles.link),
         ),
       ),
     );

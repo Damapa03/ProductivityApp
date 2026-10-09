@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../app/theme/colors.dart';
+import '../../app/theme/palette.dart';
 import '../../app/theme/text_styles.dart';
+import '../../app/theme/theme_controller.dart';
 import '../../data/profile_repository.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/profile.dart';
@@ -11,8 +12,10 @@ import '../../models/profile.dart';
 ///
 /// Es una pestaña del shell, así que la navegación inferior la pinta
 /// [HomeShell]; la pantalla solo ocupa su cuerpo. De momento es **solo UI**:
-/// las filas tienen ripple pero no abren nada, los interruptores guardan su
-/// estado únicamente en memoria y «Cerrar sesión» no cierra la sesión.
+/// las filas tienen ripple pero no abren nada, los recordatorios guardan su
+/// estado únicamente en memoria y «Cerrar sesión» no cierra la sesión. La
+/// excepción es «Modo oscuro», que sí cambia y persiste el tema con
+/// [ThemeController].
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key, required this.ownerId});
 
@@ -32,9 +35,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   /// false mientras se carga el perfil de local.
   bool _loaded = false;
 
-  /// Estado visual de los interruptores (no se persiste, ver clase).
+  /// Estado visual del recordatorio diario (no se persiste, ver clase).
   bool _dailyReminders = true;
-  bool _darkMode = false;
 
   @override
   void initState() {
@@ -82,9 +84,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final palette = Palette.of(context);
+    final styles = AppTextStyles.of(context);
 
     return Scaffold(
-      backgroundColor: AppColors.paper,
+      backgroundColor: palette.paper,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -93,7 +97,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             // mockup 07.
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
-              child: Text(l10n.profileTitle, style: AppTextStyles.screenTitle),
+              child: Text(l10n.profileTitle, style: styles.screenTitle),
             ),
             const SizedBox(height: 22),
             Expanded(
@@ -126,7 +130,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 label: l10n.profileConnectedCalendars,
                                 trailing: Text(
                                   l10n.profileConnectedValue,
-                                  style: AppTextStyles.profileRowValue,
+                                  style: styles.profileRowValue,
                                 ),
                               ),
                             ],
@@ -149,11 +153,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 icon: Icons.dark_mode_outlined,
                                 label: l10n.profileDarkMode,
                                 interactive: false,
-                                trailing: _ProfileToggle(
-                                  key: const Key('profile-toggle-dark'),
-                                  value: _darkMode,
-                                  onChanged: (value) =>
-                                      setState(() => _darkMode = value),
+                                // El tema lo comparte toda la app, así que el
+                                // estado vive en [ThemeController] y este
+                                // interruptor solo lo refleja y lo cambia.
+                                trailing: ValueListenableBuilder<ThemeMode>(
+                                  valueListenable: ThemeController.instance,
+                                  builder: (context, mode, _) => _ProfileToggle(
+                                    key: const Key('profile-toggle-dark'),
+                                    value: mode == ThemeMode.dark,
+                                    onChanged: ThemeController.instance.setDark,
+                                  ),
                                 ),
                               ),
                               _ProfileRow(
@@ -161,7 +170,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 label: l10n.profileWeekStartsOn,
                                 trailing: Text(
                                   l10n.profileWeekMonday,
-                                  style: AppTextStyles.profileRowValue,
+                                  style: styles.profileRowValue,
                                 ),
                               ),
                             ],
@@ -191,12 +200,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   /// Etiqueta de grupo + su tarjeta de filas, con el aire del mockup (22 px
   /// por encima de la etiqueta y 8 hasta la tarjeta).
   Widget _group(String label, List<Widget> rows) {
+    final styles = AppTextStyles.of(context);
     return Padding(
       padding: const EdgeInsets.only(top: 22),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(label, style: AppTextStyles.profileGroupLabel),
+          Text(label, style: styles.profileGroupLabel),
           const SizedBox(height: 8),
           _ProfileGroupCard(rows: rows),
         ],
@@ -221,18 +231,20 @@ class _Identity extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = Palette.of(context);
+    final styles = AppTextStyles.of(context);
     return Row(
       children: [
         Container(
           width: size,
           height: size,
           alignment: Alignment.center,
-          decoration: const BoxDecoration(
-            color: AppColors.pinePale,
+          decoration: BoxDecoration(
+            color: palette.pinePale,
             shape: BoxShape.circle,
-            border: Border.fromBorderSide(BorderSide(color: AppColors.line)),
+            border: Border.fromBorderSide(BorderSide(color: palette.line)),
           ),
-          child: Text(initials, style: AppTextStyles.profileInitials),
+          child: Text(initials, style: styles.profileInitials),
         ),
         const SizedBox(width: 14),
         Expanded(
@@ -241,14 +253,14 @@ class _Identity extends StatelessWidget {
             children: [
               Text(
                 name,
-                style: AppTextStyles.profileName,
+                style: styles.profileName,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 2),
               Text(
                 email,
-                style: AppTextStyles.profileEmail,
+                style: styles.profileEmail,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -271,20 +283,21 @@ class _ProfileGroupCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = Palette.of(context);
     return Material(
-      color: AppColors.cardBg,
+      color: palette.cardBg,
       borderRadius: BorderRadius.circular(radius),
       // Recorta el resalte del ripple al radio de la tarjeta.
       clipBehavior: Clip.antiAlias,
       child: Container(
         decoration: BoxDecoration(
-          border: Border.all(color: AppColors.line),
+          border: Border.all(color: palette.line),
           borderRadius: BorderRadius.circular(radius),
         ),
         child: Column(
           children: [
             for (var i = 0; i < rows.length; i++) ...[
-              if (i > 0) const Divider(height: 1, color: AppColors.line),
+              if (i > 0) Divider(height: 1, color: palette.line),
               rows[i],
             ],
           ],
@@ -325,6 +338,8 @@ class _ProfileRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = Palette.of(context);
+    final styles = AppTextStyles.of(context);
     final content = Padding(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
       child: Row(
@@ -336,17 +351,17 @@ class _ProfileRow extends StatelessWidget {
             // Centra el icono con holgura: sin esto el chip aprieta al Icon a
             // 30×30 y su caja dejan de medir los 16 px del mockup.
             alignment: Alignment.center,
-            decoration: const BoxDecoration(
-              color: AppColors.pinePale,
-              borderRadius: BorderRadius.all(Radius.circular(chipRadius)),
+            decoration: BoxDecoration(
+              color: palette.pinePale,
+              borderRadius: const BorderRadius.all(Radius.circular(chipRadius)),
             ),
             child: IconTheme(
-              data: const IconThemeData(color: AppColors.pineDeep, size: chipIcon),
+              data: IconThemeData(color: palette.pineDeep, size: chipIcon),
               child: Icon(icon),
             ),
           ),
           const SizedBox(width: gap),
-          Expanded(child: Text(label, style: AppTextStyles.profileRowLabel)),
+          Expanded(child: Text(label, style: styles.profileRowLabel)),
           trailing,
         ],
       ),
@@ -365,7 +380,11 @@ class _Chevron extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Icon(Icons.chevron_right, size: 16, color: AppColors.inkSoft);
+    return Icon(
+      Icons.chevron_right,
+      size: 16,
+      color: Palette.of(context).inkSoft,
+    );
   }
 }
 
@@ -385,7 +404,7 @@ class _ProfileToggle extends StatelessWidget {
   /// Estado actual del interruptor.
   final bool value;
 
-  /// Notifica el nuevo estado (solo estado en memoria, ver [ProfileScreen]).
+  /// Notifica el nuevo estado (ver [ProfileScreen]).
   final ValueChanged<bool> onChanged;
 
   static const double width = 38;
@@ -395,6 +414,7 @@ class _ProfileToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = Palette.of(context);
     return Semantics(
       toggled: value,
       // El nombre lo aporta la etiqueta de la fila, que se fusiona con él.
@@ -410,14 +430,14 @@ class _ProfileToggle extends StatelessWidget {
           alignment: value ? Alignment.centerRight : Alignment.centerLeft,
           padding: const EdgeInsets.symmetric(horizontal: 2),
           decoration: BoxDecoration(
-            color: value ? AppColors.pine : AppColors.line,
+            color: value ? palette.pine : palette.line,
             borderRadius: BorderRadius.circular(radius),
           ),
           child: Container(
             width: knob,
             height: knob,
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.onPrimary,
+              color: palette.onPrimary,
               shape: BoxShape.circle,
             ),
           ),
@@ -438,6 +458,8 @@ class _ProfileLogout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = Palette.of(context);
+    final styles = AppTextStyles.of(context);
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -449,10 +471,10 @@ class _ProfileLogout extends StatelessWidget {
           alignment: Alignment.center,
           padding: const EdgeInsets.symmetric(vertical: 14),
           decoration: BoxDecoration(
-            border: Border.all(color: AppColors.line),
+            border: Border.all(color: palette.line),
             borderRadius: BorderRadius.circular(radius),
           ),
-          child: Text(label, style: AppTextStyles.profileLogout),
+          child: Text(label, style: styles.profileLogout),
         ),
       ),
     );
