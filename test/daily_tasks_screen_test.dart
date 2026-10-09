@@ -1,0 +1,458 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:intl/intl.dart';
+import 'package:productyivity_app/features/daily_tasks/add_task_fab.dart';
+import 'package:productyivity_app/features/daily_tasks/daily_tasks_screen.dart';
+import 'package:productyivity_app/l10n/app_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+Widget _harness() {
+  return MaterialApp(
+    locale: const Locale('es'),
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: AppLocalizations.supportedLocales,
+    home: const DailyTasksScreen(ownerId: 'ana@flowly.com'),
+  );
+}
+
+void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  setUp(() {
+    SharedPreferences.setMockInitialValues({});
+  });
+
+  testWidgets('muestra las columnas por defecto en orden', (tester) async {
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    expect(find.text('Search'), findsOneWidget);
+    expect(find.text('TODO'), findsOneWidget);
+    expect(find.text('Doing'), findsOneWidget);
+    expect(find.text('Done'), findsOneWidget);
+  });
+
+  testWidgets('permite añadir una tarea a una columna', (tester) async {
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('+ Añadir tarea').first);
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextField), 'Preparar café');
+    await tester.tap(find.text('Confirmar'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Preparar café'), findsOneWidget);
+  });
+
+  testWidgets('permite editar una tarea desde su menú', (tester) async {
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    // Crear la tarea.
+    await tester.tap(find.text('+ Añadir tarea').first);
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'Preparar café');
+    await tester.tap(find.text('Confirmar'));
+    await tester.pumpAndSettle();
+    expect(find.text('Preparar café'), findsOneWidget);
+
+    // Editar desde el menú de la tarjeta.
+    await tester.tap(find.byIcon(Icons.more_vert));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Editar'));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextField), 'Preparar café con leche');
+    await tester.tap(find.text('Confirmar'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Preparar café con leche'), findsOneWidget);
+    expect(find.text('Preparar café'), findsNothing);
+  });
+
+  testWidgets('permite eliminar una tarea desde su menú', (tester) async {
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    // Crear la tarea.
+    await tester.tap(find.text('+ Añadir tarea').first);
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'Preparar café');
+    await tester.tap(find.text('Confirmar'));
+    await tester.pumpAndSettle();
+    expect(find.text('Preparar café'), findsOneWidget);
+
+    // Eliminar desde el menú de la tarjeta.
+    await tester.tap(find.byIcon(Icons.more_vert));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Eliminar'));
+    await tester.pumpAndSettle();
+
+    // Confirmar el borrado.
+    expect(find.text('Eliminar tarea'), findsOneWidget);
+    await tester.tap(find.text('Confirmar'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Preparar café'), findsNothing);
+  });
+
+  testWidgets('no elimina la tarea si se cancela el diálogo', (tester) async {
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    // Crear la tarea.
+    await tester.tap(find.text('+ Añadir tarea').first);
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'Preparar café');
+    await tester.tap(find.text('Confirmar'));
+    await tester.pumpAndSettle();
+
+    // Abrir el diálogo de borrado y cancelar.
+    await tester.tap(find.byIcon(Icons.more_vert));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Eliminar'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Cancelar'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Preparar café'), findsOneWidget);
+  });
+
+  testWidgets('permite reordenar columnas arrastrando por la cabecera',
+      (tester) async {
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    // Orden inicial: Search, TODO, Doing, Done.
+    expect(
+      tester.getTopLeft(find.text('Doing')).dx,
+      greaterThan(tester.getTopLeft(find.text('Search')).dx),
+    );
+
+    // Long-press sobre la cabecera de Search y soltar sobre Doing.
+    final gesture =
+        await tester.startGesture(tester.getCenter(find.text('Search')));
+    await tester.pump(const Duration(milliseconds: 160));
+    await gesture.moveTo(tester.getCenter(find.text('Doing')));
+    await tester.pump();
+    await gesture.up();
+    await tester.pumpAndSettle();
+
+    // Orden esperado: TODO, Doing, Search, Done.
+    final todoX = tester.getTopLeft(find.text('TODO')).dx;
+    final doingX = tester.getTopLeft(find.text('Doing')).dx;
+    final searchX = tester.getTopLeft(find.text('Search')).dx;
+    final doneX = tester.getTopLeft(find.text('Done')).dx;
+    expect(todoX, lessThan(doingX));
+    expect(doingX, lessThan(searchX));
+    expect(searchX, lessThan(doneX));
+  });
+
+  testWidgets('el drag de tareas sigue funcionando tras reordenar columnas',
+      (tester) async {
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    // Mover Search al final para comprobar que todo sigue en su sitio.
+    final gesture =
+        await tester.startGesture(tester.getCenter(find.text('Search')));
+    await tester.pump(const Duration(milliseconds: 160));
+    await gesture.moveTo(tester.getCenter(find.text('Done')));
+    await tester.pump();
+    await gesture.up();
+    await tester.pumpAndSettle();
+
+    // Crear una tarea en la primera columna (ahora TODO).
+    await tester.tap(find.text('+ Añadir tarea').first);
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'Preparar café');
+    await tester.tap(find.text('Confirmar'));
+    await tester.pumpAndSettle();
+
+    // Arrastrar la tarjeta hasta la columna Doing.
+    final drag = await tester.startGesture(
+      tester.getCenter(find.text('Preparar café')),
+    );
+    await tester.pump(const Duration(milliseconds: 160));
+    await drag.moveTo(tester.getCenter(find.text('Doing')));
+    await tester.pump();
+    await drag.up();
+    await tester.pumpAndSettle();
+
+    // La tarea debe verse ahora dentro de la columna Doing (entre sus vecinos).
+    final doingCenterX = tester.getCenter(find.text('Doing')).dx;
+    final doneCenterX = tester.getCenter(find.text('Done')).dx;
+    final taskCenterX = tester.getCenter(find.text('Preparar café')).dx;
+    expect(taskCenterX, greaterThan(doingCenterX));
+    expect(taskCenterX, lessThan(doneCenterX));
+  });
+
+  testWidgets('el selector muestra ambas vistas y por defecto está Por estado',
+      (tester) async {
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    expect(find.text('Por estado'), findsOneWidget);
+    expect(find.text('Todas las tareas'), findsOneWidget);
+    // Vista por defecto: el kanban.
+    expect(find.text('Search'), findsOneWidget);
+    expect(find.text('+ Añadir tarea'), findsNWidgets(4));
+  });
+
+  testWidgets('tocar la opción ya activa del selector es un no-op',
+      (tester) async {
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    // «Por estado» está activa por defecto; tocarla no cambia la vista.
+    await tester.tap(find.text('Por estado'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Search'), findsOneWidget);
+    expect(find.text('+ Añadir tarea'), findsNWidgets(4));
+  });
+
+  testWidgets('la vista todas las tareas muestra nombre, burbuja del estado y '
+      'menú', (tester) async {
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    // Crear una tarea en la columna TODO.
+    await tester.tap(find.text('+ Añadir tarea').at(1));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'Preparar café');
+    await tester.tap(find.text('Confirmar'));
+    await tester.pumpAndSettle();
+
+    // Cambiar a «Todas las tareas».
+    await tester.tap(find.text('Todas las tareas'));
+    await tester.pumpAndSettle();
+
+    // La fila muestra el nombre, la burbuja con el estado y el menú.
+    expect(find.text('Preparar café'), findsOneWidget);
+    expect(find.text('TODO'), findsOneWidget);
+    expect(find.byIcon(Icons.more_vert), findsOneWidget);
+    // El kanban ya no está visible.
+    expect(find.text('+ Añadir tarea'), findsNothing);
+  });
+
+  testWidgets('permite editar una tarea desde la vista de lista', (tester) async {
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    // Crear una tarea en la columna TODO.
+    await tester.tap(find.text('+ Añadir tarea').at(1));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'Preparar café');
+    await tester.tap(find.text('Confirmar'));
+    await tester.pumpAndSettle();
+
+    // Cambiar a «Todas las tareas» y editar.
+    await tester.tap(find.text('Todas las tareas'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.more_vert));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Editar'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'Preparar café con leche');
+    await tester.tap(find.text('Confirmar'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Preparar café con leche'), findsOneWidget);
+    expect(find.text('Preparar café'), findsNothing);
+  });
+
+  testWidgets('permite eliminar una tarea desde la vista de lista',
+      (tester) async {
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    // Crear una tarea en la columna TODO.
+    await tester.tap(find.text('+ Añadir tarea').at(1));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'Preparar café');
+    await tester.tap(find.text('Confirmar'));
+    await tester.pumpAndSettle();
+
+    // Cambiar a «Todas las tareas» y eliminar.
+    await tester.tap(find.text('Todas las tareas'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.more_vert));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Eliminar'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Confirmar'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Preparar café'), findsNothing);
+    expect(find.text('Sin tareas todavía'), findsOneWidget);
+  });
+
+  testWidgets('volver a Por estado restaura el kanban', (tester) async {
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    // Crear una tarea y cambiar a la vista de lista.
+    await tester.tap(find.text('+ Añadir tarea').first);
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'Preparar café');
+    await tester.tap(find.text('Confirmar'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Todas las tareas'));
+    await tester.pumpAndSettle();
+
+    // Volver a «Por estado»: el kanban vuelve a verse con la tarea.
+    await tester.tap(find.text('Por estado'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Search'), findsOneWidget);
+    expect(find.text('+ Añadir tarea'), findsNWidgets(4));
+    expect(find.text('Preparar café'), findsOneWidget);
+  });
+
+  testWidgets('el botón flotante añade una tarea pidiendo nombre y columna',
+      (tester) async {
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    // Abrir el diálogo desde el FAB.
+    await tester.tap(find.byType(AddTaskFab));
+    await tester.pumpAndSettle();
+
+    // Pide el título y la columna destino.
+    expect(find.text('Columna'), findsOneWidget);
+    await tester.enterText(find.byType(TextField), 'Preparar café');
+    await tester.tap(find.text('Confirmar'));
+    await tester.pumpAndSettle();
+
+    // La tarea se añade a la primera columna (Search, la seleccionada).
+    expect(find.text('Preparar café'), findsOneWidget);
+    final searchCenterX = tester.getCenter(find.text('Search')).dx;
+    final todoCenterX = tester.getCenter(find.text('TODO')).dx;
+    final taskCenterX = tester.getCenter(find.text('Preparar café')).dx;
+    expect(taskCenterX, greaterThan(searchCenterX));
+    expect(taskCenterX, lessThan(todoCenterX));
+  });
+
+  testWidgets('el FAB está en la lista y permite elegir la columna',
+      (tester) async {
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    // Cambiar a «Todas las tareas».
+    await tester.tap(find.text('Todas las tareas'));
+    await tester.pumpAndSettle();
+    expect(find.byType(AddTaskFab), findsOneWidget);
+
+    // Crear una tarea eligiendo la columna Doing.
+    await tester.tap(find.byType(AddTaskFab));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'Preparar café');
+    await tester.tap(find.byType(DropdownButtonFormField<String>));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Doing').last);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Confirmar'));
+    await tester.pumpAndSettle();
+
+    // Aparece en la lista con la burbuja del estado Doing.
+    expect(find.text('Preparar café'), findsOneWidget);
+    expect(find.text('Doing'), findsOneWidget);
+  });
+
+  testWidgets('el botón lateral añade una columna al final del tablero',
+      (tester) async {
+    tester.view.physicalSize = const Size(1200, 800);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('add-column-button')));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'Backlog');
+    await tester.tap(find.text('Confirmar'));
+    await tester.pumpAndSettle();
+
+    // La nueva columna se añade al final.
+    expect(find.text('Backlog'), findsOneWidget);
+    final doneX = tester.getTopLeft(find.text('Done')).dx;
+    final backlogX = tester.getTopLeft(find.text('Backlog')).dx;
+    expect(backlogX, greaterThan(doneX));
+  });
+
+  testWidgets('la cabecera no tiene flecha y la fecha queda con margen',
+      (tester) async {
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    // Sin flecha de retroceso.
+    expect(find.byIcon(Icons.arrow_back_ios_new), findsNothing);
+
+    // La fecha (primer texto de la cabecera) parte 12 px más abajo del borde.
+    final formatted = DateFormat('EEEE, d MMMM', 'es').format(DateTime.now());
+    final dateText = formatted[0].toUpperCase() + formatted.substring(1);
+    final dateTop = tester.getTopLeft(find.text(dateText)).dy;
+    expect(dateTop, 12.0);
+
+    // El título queda a 24 px, el mismo margen que el selector de vista y el
+    // tablero (ya no hay flecha de retroceso que reserves hueco).
+    final titleLeft = tester.getTopLeft(find.text('Tareas diarias')).dx;
+    expect(titleLeft, 24.0);
+  });
+
+  testWidgets('el botón de columna es compacto y no lleva texto',
+      (tester) async {
+    tester.view.physicalSize = const Size(1200, 800);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    // Sin texto visible.
+    expect(find.text('Añadir columna'), findsNothing);
+
+    // Botón compacto (~40x40), no ocupa el alto de una columna.
+    final button = find.byKey(const Key('add-column-button'));
+    expect(button, findsOneWidget);
+    final size = tester.getSize(button);
+    expect(size.width, lessThanOrEqualTo(48));
+    expect(size.height, lessThanOrEqualTo(48));
+  });
+
+  testWidgets('en viewport estrecho las columnas se desplazan horizontalmente',
+      (tester) async {
+    tester.view.physicalSize = const Size(420, 800);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    // La última columna (Done) y el botón «+» no caben a la vista inicial.
+    final board = find
+        .descendant(
+          of: find.byType(Scrollbar),
+          matching: find.byType(SingleChildScrollView),
+        )
+        .first;
+    expect(tester.getCenter(find.text('Done')).dx, greaterThan(420));
+
+    // Desplazar el tablero hacia la izquierda deja verlas.
+    await tester.drag(board, const Offset(-600, 0));
+    await tester.pumpAndSettle();
+
+    expect(tester.getCenter(find.text('Done')).dx, lessThan(420));
+    expect(
+      tester.getCenter(find.byKey(const Key('add-column-button'))).dx,
+      lessThan(420),
+    );
+  });
+}

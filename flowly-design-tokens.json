@@ -1,0 +1,97 @@
+{
+  "name": "Flowly Design Tokens",
+  "description": "Color and typography tokens used across the Flowly productivity app mockup.",
+  "color": {
+    "base": {
+      "paper": { "value": "#EDEFEA", "usage": "Screen/device background" },
+      "ink": { "value": "#191C19", "usage": "Primary text" },
+      "inkSoft": { "value": "#565B54", "usage": "Secondary text, subtitles, eyebrows" },
+      "inkFaint": { "value": "#9CA097", "usage": "Placeholder text, tertiary text" },
+      "line": { "value": "#C9CDC3", "usage": "Borders, dividers, input outlines" },
+      "lineFaint": { "value": "#DDE0D6", "usage": "Subtle separators (hour rows, thin rules)" },
+      "cardBg": { "value": "#F7F8F4", "usage": "Card, input and chip backgrounds" },
+      "onPrimary": { "value": "#F3F4EF", "usage": "Text and icons on top of the pine accent" }
+    },
+    "accentPrimary": {
+      "pine": { "value": "#33564A", "usage": "Active state color, icons, progress ring" },
+      "pineDeep": { "value": "#22392F", "usage": "Primary buttons, text on pinePale" },
+      "pinePale": { "value": "#DCE5DF", "usage": "Soft accent backgrounds (avatar, active tab, selected chip)" }
+    },
+    "accentSecondary": {
+      "amber": { "value": "#D9A441", "usage": "Amber accent dot / highlight" },
+      "amberPale": { "value": "#F3E4C4", "usage": "Research tag, deep-work event block" },
+      "rose": { "value": "#B5675C", "usage": "Rose accent, now-line marker, logout text" },
+      "rosePale": { "value": "#F0DBD7", "usage": "Design tag, client-call event, missed habit day" },
+      "done": { "value": "#4C7A62", "usage": "Completed habit day (solid)" },
+      "donePale": { "value": "#CBDDD1", "usage": "Completed habit day (soft variant, unused solid preferred)" },
+      "missPale": { "value": "#EFD9D4", "usage": "Incomplete habit day background" },
+      "futurePale": { "value": "#E4E6DF", "usage": "Future/not-yet-happened calendar day" }
+    },
+    "surface": {
+      "stageBg": { "value": "#DADDD3", "usage": "Backdrop behind a single device mockup" },
+      "overviewBg": { "value": "#C9CDBF", "usage": "Backdrop behind the multi-screen overview page" }
+    },
+    "dark": {
+      "base": {
+        "paper": { "value": "#141714", "usage": "Screen/device background" },
+        "ink": { "value": "#EDEFEA", "usage": "Primary text" },
+        "inkSoft": { "value": "#B4B9B0", "usage": "Secondary text, subtitles, eyebrows" },
+        "inkFaint": { "value": "#83887F", "usage": "Placeholder text, tertiary text" },
+        "line": { "value": "#33382F", "usage": "Borders, dividers, input outlines" },
+        "lineFaint": { "value": "#262A25", "usage": "Subtle separators (hour rows, thin rules)" },
+        "cardBg": { "value": "#1D211C", "usage": "Card, input and chip backgrounds" },
+        "onPrimary": { "value": "#141714", "usage": "Text and icons on top of the pine accent" }
+      },
+      "accentPrimary": {
+        "pine": { "value": "#8FBFA8", "usage": "Active state color, icons, progress ring" },
+        "pineDeep": { "value": "#A9CFB9", "usage": "Primary buttons, text on pinePale" },
+        "pinePale": { "value": "#26312B", "usage": "Soft accent backgrounds (avatar, active tab, selected chip)" }
+      },
+      "accentSecondary": {
+        "amber": { "value": "#E0B65C", "usage": "Amber accent dot / highlight" },
+        "amberPale": { "value": "#3A3223", "usage": "Research tag, deep-work event block" },
+        "rose": { "value": "#D0857A", "usage": "Rose accent, now-line marker, logout text" },
+        "rosePale": { "value": "#3B2A28", "usage": "Design tag, client-call event, missed habit day" },
+        "done": { "value": "#7FB89A", "usage": "Completed habit day (solid)" },
+        "donePale": { "value": "#25352C", "usage": "Completed habit day (soft variant, unused solid preferred)" },
+        "missPale": { "value": "#3A2B29", "usage": "Incomplete habit day background" },
+        "futurePale": { "value": "#232722", "usage": "Future/not-yet-happened calendar day" },
+        "amberDeep": { "value": "#E8C77E", "usage": "Text on amberPale (kanban Doing, deep-work block)" },
+        "roseDeep": { "value": "#E0A79C", "usage": "Text on rosePale (missed habit day, client-call block)" }
+      },
+      "surface": {
+        "stageBg": { "value": "#0F110F", "usage": "Backdrop behind a single device mockup" },
+        "overviewBg": { "value": "#0D0F0D", "usage": "Backdrop behind the multi-screen overview page" }
+      },
+      "navigation": {
+        "navInactive": { "value": "#6E746B", "usage": "Inactive bottom-navigation icon" }
+      },
+      "kanban": {
+        "columnGray": { "value": "#7E8A82", "usage": "Search column dot" },
+        "columnGrayPale": { "value": "#232823", "usage": "Search column background" }
+      }
+    }
+  },
+  "typography": {
+    "fontFamilies": {
+      "display": {
+        "family": "Space Grotesk",
+        "weights": [400, 500, 600, 700],
+        "usage": "Titles, headlines, timer digits, brand wordmark, primary button labels"
+      },
+      "body": {
+        "family": "IBM Plex Sans",
+        "weights": [400, 500, 600],
+        "usage": "Body copy, labels, form fields, captions, navigation"
+      }
+    },
+    "source": "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+  },
+  "radii": {
+    "device": "36px",
+    "card": "8px to 12px",
+    "button": "6px to 10px",
+    "pill": "20px",
+    "avatar": "50%"
+  }
+}

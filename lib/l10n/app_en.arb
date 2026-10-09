@@ -1,0 +1,169 @@
+{
+  "@@locale": "en",
+  "appName": "Flowly",
+  "loginHeadline": "Good to see you again.",
+  "loginSubline": "Pick up your tasks where you left off.",
+  "loginForgotPassword": "Forgot password?",
+  "loginSubmit": "Log in",
+  "loginOrContinueWith": "or continue with",
+  "loginNewToFlowly": "New to Flowly? ",
+  "loginCreateAccount": "Create an account",
+  "registerHeadline": "Create your account.",
+  "registerSubline": "Start building habits that stick.",
+  "registerSubmit": "Create account",
+  "registerWelcome": "Welcome to Flowly, {name} 🎉",
+  "fieldNameLabel": "NAME",
+  "fieldNamePlaceholder": "Your full name",
+  "fieldEmailLabel": "EMAIL",
+  "fieldEmailPlaceholder": "you@flowly.com",
+  "fieldEmailInvalid": "Enter a valid email address.",
+  "fieldPasswordLabel": "PASSWORD",
+  "fieldPasswordPlaceholder": "8+ characters",
+  "fieldPasswordRequired": "Password is required.",
+  "fieldPasswordMinLength": "Use at least 8 characters.",
+  "fieldConfirmPasswordLabel": "CONFIRM PASSWORD",
+  "fieldConfirmPasswordPlaceholder": "Repeat your password",
+  "fieldPasswordMismatch": "Passwords do not match.",
+  "socialGoogle": "Google",
+  "socialApple": "Apple",
+  "dailyTasksTitle": "Daily tasks",
+  "dailyTasksNewColumn": "New column",
+  "dailyTasksAddColumn": "Add column",
+  "dailyTasksAddTask": "+ Add task",
+  "dailyTasksEmptyColumn": "No tasks yet",
+  "dailyTasksViewByStatus": "By status",
+  "dailyTasksViewAll": "All tasks",
+  "scheduleTitle": "Today's plan",
+  "scheduleWeekTitle": "This week",
+  "scheduleViewDay": "Day",
+  "scheduleViewWeek": "Week",
+  "scheduleCreateEventTitle": "New task",
+  "scheduleEventNameLabel": "Task",
+  "scheduleEventNamePlaceholder": "What will you do in this time slot",
+  "scheduleStartLabel": "Start",
+  "scheduleEndLabel": "End",
+  "scheduleDayLabel": "Day",
+  "scheduleToday": "Today",
+  "schedulePreviousDay": "Previous day",
+  "scheduleNextDay": "Next day",
+  "schedulePreviousWeek": "Previous week",
+  "scheduleNextWeek": "Next week",
+  "scheduleInvalidRange": "End time must be later than start.",
+  "columnRename": "Rename",
+  "columnDelete": "Delete",
+  "taskEdit": "Edit",
+  "taskDelete": "Delete",
+  "dialogCreateColumnTitle": "New column",
+  "dialogRenameColumnTitle": "Rename column",
+  "dialogCreateTaskTitle": "New task",
+  "dialogNameLabel": "Name",
+  "dialogNamePlaceholder": "Column name",
+  "dialogTaskPlaceholder": "Describe the task",
+  "dialogConfirm": "Confirm",
+  "dialogCancel": "Cancel",
+  "dialogDeleteColumnTitle": "Delete column",
+  "dialogDeleteColumnBody": "Column \"{column}\" and its {count} tasks will be deleted. This cannot be undone.",
+  "dialogEditTaskTitle": "Edit task",
+  "dialogDeleteTaskTitle": "Delete task",
+  "dialogDeleteTaskBody": "Task \"{task}\" will be deleted. This cannot be undone.",
+  "dialogTaskColumnLabel": "Column",
+  "dialogTaskNoColumns": "Add a column before creating tasks.",
+  "navTasks": "Tasks",
+  "navHabits": "Habits",
+  "navSchedule": "Schedule",
+  "navFocus": "Timer",
+  "navBlackList": "Black List",
+  "navProfile": "Profile",
+  "habitsTitle": "Habits",
+  "habitsToday": "Today",
+  "habitsProgress": "{done} of {total}",
+  "@habitsProgress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "habitsAddHabit": "+ Add habit",
+  "habitsAddHabitTitle": "New habit",
+  "habitsAddHabitLabel": "HABIT",
+  "habitsAddHabitPlaceholder": "Drink 2 L of water",
+  "habitsAdd": "Add",
+  "habitsEmpty": "No habits yet. Add the first one.",
+  "habitsDelete": "Delete",
+  "habitsDeleteTitle": "Delete habit",
+  "habitsDeleteBody": "Habit \"{habit}\" and its marked days will be deleted. This cannot be undone.",
+  "@habitsDeleteBody": {
+    "placeholders": {
+      "habit": {
+        "type": "String"
+      }
+    }
+  },
+  "habitsPreviousMonth": "Previous month",
+  "habitsNextMonth": "Next month",
+  "habitsLegendDone": "All habits done",
+  "habitsLegendMissed": "Missed one or more",
+  "habitsDayStatus": "{day} of {month}: {status}",
+  "@habitsDayStatus": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      },
+      "month": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "habitsStatusDone": "all habits done",
+  "habitsStatusMissed": "one or more habits pending",
+  "habitsStatusNeutral": "not closed yet",
+  "habitsStatusFuture": "upcoming day",
+  "habitsToggleSemantics": "{habit}, for {date}",
+  "@habitsToggleSemantics": {
+    "placeholders": {
+      "habit": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "blackListTitle": "Black List",
+  "blackListHint": "Start typing…",
+  "comingSoonTitle": "Coming soon",
+  "comingSoonBody": "This screen is not available yet.",
+  "timerTitle": "Timer",
+  "timerMode": "Mode",
+  "timerModeWork": "Work",
+  "timerModeStudy": "Study",
+  "timerTimes": "Times",
+  "timerPhaseWork": "Work",
+  "timerPhaseBreak": "Break",
+  "timerPhaseReview": "Review",
+  "timerStart": "Start",
+  "timerPause": "Pause",
+  "timerResume": "Resume",
+  "timerReset": "Reset",
+  "profileTitle": "Profile",
+  "profileGroupAccount": "Account",
+  "profileGroupPreferences": "Preferences",
+  "profileGroupSupport": "Support",
+  "profileEditProfile": "Edit profile",
+  "profileChangePassword": "Change password",
+  "profileConnectedCalendars": "Connected calendars",
+  "profileConnectedValue": "2 linked",
+  "profileDailyReminders": "Daily reminders",
+  "profileDarkMode": "Dark mode",
+  "profileWeekStartsOn": "Week starts on",
+  "profileWeekMonday": "Monday",
+  "profileHelpCentre": "Help centre",
+  "profileLogout": "Log out"
+}

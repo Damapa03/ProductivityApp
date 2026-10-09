@@ -1,0 +1,194 @@
+{
+  "@@locale": "es",
+  "@@last_modified": "2026-09-17",
+  "appName": "Flowly",
+  "loginHeadline": "Buenas, de nuevo.",
+  "loginSubline": "Retoma tus tareas donde las dejaste.",
+  "loginForgotPassword": "¿Olvidaste tu contraseña?",
+  "loginSubmit": "Iniciar sesión",
+  "loginOrContinueWith": "o continúa con",
+  "loginNewToFlowly": "¿Nuevo en Flowly? ",
+  "loginCreateAccount": "Crear una cuenta",
+  "registerHeadline": "Crea tu cuenta.",
+  "registerSubline": "Empieza a crear hábitos que perduran.",
+  "registerSubmit": "Crear cuenta",
+  "registerWelcome": "Bienvenido a Flowly, {name} 🎉",
+  "@registerWelcome": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "fieldNameLabel": "NOMBRE",
+  "fieldNamePlaceholder": "Tu nombre completo",
+  "fieldEmailLabel": "EMAIL",
+  "fieldEmailPlaceholder": "tu@flowly.com",
+  "fieldEmailInvalid": "Introduce un email válido.",
+  "fieldPasswordLabel": "CONTRASEÑA",
+  "fieldPasswordPlaceholder": "8+ caracteres",
+  "fieldPasswordRequired": "La contraseña es obligatoria.",
+  "fieldPasswordMinLength": "Usa al menos 8 caracteres.",
+  "fieldConfirmPasswordLabel": "CONFIRMAR CONTRASEÑA",
+  "fieldConfirmPasswordPlaceholder": "Repite tu contraseña",
+  "fieldPasswordMismatch": "Las contraseñas no coinciden.",
+  "socialGoogle": "Google",
+  "socialApple": "Apple",
+  "dailyTasksTitle": "Tareas diarias",
+  "dailyTasksNewColumn": "Nueva columna",
+  "dailyTasksAddColumn": "Añadir columna",
+  "dailyTasksAddTask": "+ Añadir tarea",
+  "dailyTasksEmptyColumn": "Sin tareas todavía",
+  "dailyTasksViewByStatus": "Por estado",
+  "dailyTasksViewAll": "Todas las tareas",
+  "scheduleTitle": "Plan de hoy",
+  "scheduleWeekTitle": "Esta semana",
+  "scheduleViewDay": "Día",
+  "scheduleViewWeek": "Semana",
+  "scheduleCreateEventTitle": "Nueva tarea",
+  "scheduleEventNameLabel": "Tarea",
+  "scheduleEventNamePlaceholder": "Qué vas a hacer en esta franja",
+  "scheduleStartLabel": "Inicio",
+  "scheduleEndLabel": "Fin",
+  "scheduleDayLabel": "Día",
+  "scheduleToday": "Hoy",
+  "schedulePreviousDay": "Día anterior",
+  "scheduleNextDay": "Día siguiente",
+  "schedulePreviousWeek": "Semana anterior",
+  "scheduleNextWeek": "Semana siguiente",
+  "scheduleInvalidRange": "La hora de fin debe ser posterior al inicio.",
+  "columnRename": "Renombrar",
+  "columnDelete": "Eliminar",
+  "taskEdit": "Editar",
+  "taskDelete": "Eliminar",
+  "dialogCreateColumnTitle": "Nueva columna",
+  "dialogRenameColumnTitle": "Renombrar columna",
+  "dialogCreateTaskTitle": "Nueva tarea",
+  "dialogNameLabel": "Nombre",
+  "dialogNamePlaceholder": "Nombre de la columna",
+  "dialogTaskPlaceholder": "Describe la tarea",
+  "dialogConfirm": "Confirmar",
+  "dialogCancel": "Cancelar",
+  "dialogDeleteColumnTitle": "Eliminar columna",
+  "dialogDeleteColumnBody": "Se eliminará la columna «{column}» y sus {count} tareas. Esta acción no se puede deshacer.",
+  "@dialogDeleteColumnBody": {
+    "placeholders": {
+      "column": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dialogEditTaskTitle": "Editar tarea",
+  "dialogDeleteTaskTitle": "Eliminar tarea",
+  "dialogDeleteTaskBody": "Se eliminará la tarea «{task}». Esta acción no se puede deshacer.",
+  "@dialogDeleteTaskBody": {
+    "placeholders": {
+      "task": {
+        "type": "String"
+      }
+    }
+  },
+  "dialogTaskColumnLabel": "Columna",
+  "dialogTaskNoColumns": "Añade una columna antes de crear tareas.",
+  "navTasks": "Tareas",
+  "navHabits": "Hábitos",
+  "navSchedule": "Agenda",
+  "navFocus": "Timer",
+  "navBlackList": "Lista negra",
+  "navProfile": "Perfil",
+  "habitsTitle": "Hábitos",
+  "habitsToday": "Hoy",
+  "habitsProgress": "{done} de {total}",
+  "@habitsProgress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "habitsAddHabit": "+ Añadir hábito",
+  "habitsAddHabitTitle": "Nuevo hábito",
+  "habitsAddHabitLabel": "HÁBITO",
+  "habitsAddHabitPlaceholder": "Beber 2 L de agua",
+  "habitsAdd": "Añadir",
+  "habitsEmpty": "Sin hábitos todavía. Añade el primero.",
+  "habitsDelete": "Eliminar",
+  "habitsDeleteTitle": "Eliminar hábito",
+  "habitsDeleteBody": "Se eliminará el hábito «{habit}» y sus días marcados. Esta acción no se puede deshacer.",
+  "@habitsDeleteBody": {
+    "placeholders": {
+      "habit": {
+        "type": "String"
+      }
+    }
+  },
+  "habitsPreviousMonth": "Mes anterior",
+  "habitsNextMonth": "Mes siguiente",
+  "habitsLegendDone": "Todo cumplido",
+  "habitsLegendMissed": "Faltó alguno",
+  "habitsDayStatus": "{day} de {month}: {status}",
+  "@habitsDayStatus": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      },
+      "month": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "habitsStatusDone": "todos los hábitos cumplidos",
+  "habitsStatusMissed": "algún hábito sin cumplir",
+  "habitsStatusNeutral": "aún sin cerrar",
+  "habitsStatusFuture": "día por venir",
+  "habitsToggleSemantics": "{habit}, del {date}",
+  "@habitsToggleSemantics": {
+    "placeholders": {
+      "habit": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "blackListTitle": "Lista negra",
+  "blackListHint": "Empieza a escribir…",
+  "comingSoonTitle": "Próximamente",
+  "comingSoonBody": "Esta pantalla todavía no está disponible.",
+  "timerTitle": "Temporizador",
+  "timerMode": "Modo",
+  "timerModeWork": "Trabajo",
+  "timerModeStudy": "Estudio",
+  "timerTimes": "Tiempos",
+  "timerPhaseWork": "Trabajo",
+  "timerPhaseBreak": "Descanso",
+  "timerPhaseReview": "Repaso",
+  "timerStart": "Iniciar",
+  "timerPause": "Pausar",
+  "timerResume": "Reanudar",
+  "timerReset": "Reiniciar",
+  "profileTitle": "Perfil",
+  "profileGroupAccount": "Cuenta",
+  "profileGroupPreferences": "Preferencias",
+  "profileGroupSupport": "Soporte",
+  "profileEditProfile": "Editar perfil",
+  "profileChangePassword": "Cambiar contraseña",
+  "profileConnectedCalendars": "Calendarios vinculados",
+  "profileConnectedValue": "2 vinculados",
+  "profileDailyReminders": "Recordatorios diarios",
+  "profileDarkMode": "Modo oscuro",
+  "profileWeekStartsOn": "La semana empieza en",
+  "profileWeekMonday": "Lunes",
+  "profileHelpCentre": "Centro de ayuda",
+  "profileLogout": "Cerrar sesión"
+}
